@@ -8,29 +8,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
-const promise_1 = require("mysql2/promise");
+const db_1 = __importDefault(require("../db/db"));
 class UserRepository {
-    getConnection() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return (0, promise_1.createConnection)({
-                host: 'localhost',
-                user: 'root',
-                password: 'root',
-                database: 'recommendation_engine'
-            });
-        });
+    constructor() {
+        this.pool = db_1.default.getPool();
     }
     findUserByUsername(username) {
         return __awaiter(this, void 0, void 0, function* () {
-            const connection = yield this.getConnection();
-            const [rows] = yield connection.execute('SELECT * FROM users WHERE email = ?', [username]);
-            yield connection.end();
-            if (Array.isArray(rows) && rows.length) {
-                return rows[0];
+            const connection = yield this.pool.getConnection();
+            try {
+                const [rows] = yield connection.execute(`
+                SELECT u.id, u.name, u.email, r.roleName AS role
+                FROM user u
+                JOIN role r ON u.roleId = r.id
+                WHERE u.email = ?
+            `, [username]);
+                if (Array.isArray(rows) && rows.length) {
+                    return rows[0];
+                }
+                return null;
             }
-            return null;
+            finally {
+                connection.release();
+            }
         });
     }
 }

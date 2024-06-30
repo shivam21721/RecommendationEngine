@@ -12,26 +12,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserAuthenticationRepository = void 0;
-const db_1 = __importDefault(require("../db/db"));
-class UserAuthenticationRepository {
+const promise_1 = __importDefault(require("mysql2/promise"));
+class Database {
     constructor() {
-        this.pool = db_1.default.getPool();
+        this.pool = promise_1.default.createPool({
+            host: 'localhost',
+            user: 'root',
+            password: 'root',
+            database: 'recommendation_engine',
+            waitForConnections: true,
+            connectionLimit: 10, // Number of connections in the pool
+            queueLimit: 0
+        });
     }
-    getUserPassword(userId) {
+    static getInstance() {
+        if (!Database.instance) {
+            Database.instance = new Database();
+        }
+        return Database.instance;
+    }
+    getPool() {
+        return this.pool;
+    }
+    disconnect() {
         return __awaiter(this, void 0, void 0, function* () {
-            const connection = yield this.pool.getConnection();
-            try {
-                const [rows] = yield connection.execute('SELECT * FROM userAuthentication WHERE userId = ?', [userId]);
-                if (Array.isArray(rows) && rows.length > 0) {
-                    return rows[0];
-                }
-                return null;
-            }
-            finally {
-                connection.release();
-            }
+            yield this.pool.end();
         });
     }
 }
-exports.UserAuthenticationRepository = UserAuthenticationRepository;
+const db = Database.getInstance();
+exports.default = db;

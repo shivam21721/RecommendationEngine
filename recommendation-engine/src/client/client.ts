@@ -12,7 +12,7 @@ let user;
 
 socket.on('loginSuccess', (userData: any) => {
     user = userData;
-    console.log(`Logged in as ${user.name} with role: ${user.role_id}`);
+    console.log(`Logged in as ${user.name} with role: ${user.role}`);
 
     if(user.role === 'Admin') {
         showAdminOptions();

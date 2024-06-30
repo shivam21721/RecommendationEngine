@@ -1,26 +1,22 @@
 import { createConnection } from "mysql2/promise";
 import { UserAuthentication } from "../models/UserAuthentication";
+import db from "../db/db";
 
 export class UserAuthenticationRepository {
-    private async getConnection() {
-        return createConnection({
-            host: 'localhost',
-            user: 'root',
-            password: 'root',
-            database: 'recommendation_engine'
-        });
-    }
-
+    private pool = db.getPool();
+    
     async getUserPassword(userId: number): Promise<UserAuthentication | null> {
-        const connection = await this.getConnection();
-        const [rows] = await connection.execute('SELECT * FROM user_authentication WHERE user_id = ?', [userId]);
-        await connection.end();
-
-        if (Array.isArray(rows) && rows.length > 0) {
-            console.log(rows[0]);
-            return rows[0] as UserAuthentication;
+        const connection = await this.pool.getConnection();
+        try {
+            const [rows] = await connection.execute('SELECT * FROM userAuthentication WHERE userId = ?', [userId]);
+            
+            if (Array.isArray(rows) && rows.length > 0) {
+                return rows[0] as UserAuthentication;
+            }
+            
+            return null;
+        } finally {
+            connection.release();
         }
-        
-        return null;
     }
 }
