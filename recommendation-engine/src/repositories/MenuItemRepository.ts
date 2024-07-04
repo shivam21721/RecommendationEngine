@@ -14,9 +14,10 @@ export class MenuItemRepository {
         }
     }
 
-    async addMenuItem(name: string, categoryId: number,  availability: boolean, price: number): Promise<MenuItem> {
+    async addMenuItem(itemData: any): Promise<MenuItem> {
         const connection = await this.pool.getConnection();
         try {
+            const {name, categoryId, availability, price} = itemData;
             const [result] = await connection.execute('INSERT INTO MenuItem (name, categoryId, availability, price) VALUES (?, ?, ?, ?)', [name, categoryId, availability, price]);
             const insertId = (result as any).insertId;
             return { id: insertId, name, categoryId, price, availability };
@@ -26,20 +27,31 @@ export class MenuItemRepository {
         
     }
 
-    async deleteMenuItem(id: number): Promise<void> {
+    async deleteMenuItem(id: number): Promise<number> {
         const connection = await this.pool.getConnection();
         try {
-            await connection.execute('DELETE FROM MenuItem WHERE id = ?', [id]);
+            const [result] = await connection.execute('DELETE FROM MenuItem WHERE id = ?', [id]);
+            if ((result as any).affectedRows > 0) {
+                return id; 
+            } else {
+                throw new Error('Item not found or already deleted');
+            }
         } finally {
             connection.release();
         }
         
     }
 
-    async updateMenuItem(id: number, name: string, categoryId: number,  availability: boolean, price: number): Promise<void>  {
+    async updateMenuItem(itemData: any): Promise<number>  {
         const connection = await this.pool.getConnection();
         try {
-            await connection.execute('UPDATE MenuItem SET name = ?, categoryId = ?, price = ?, availability = ? WHERE id = ?', [name, categoryId, price, availability, id]);
+            const {id, name, categoryId, availability, price} = itemData;
+            const [result] = await connection.execute('UPDATE MenuItem SET name = ?, categoryId = ?, price = ?, availability = ? WHERE id = ?', [name, categoryId, price, availability, id]);
+            if ((result as any).affectedRows > 0) {
+                return id; 
+            } else {
+                throw new Error('Item not found or already deleted');
+            }
         } finally {
             connection.release();
         }

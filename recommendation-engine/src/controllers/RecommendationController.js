@@ -9,31 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MenuItemController = void 0;
-const MenuItemService_1 = require("../services/MenuItemService");
-class MenuItemController {
+exports.RecommendationController = void 0;
+const RecommendationService_1 = require("../services/RecommendationService");
+class RecommendationController {
     constructor() {
-        this.menuItemService = new MenuItemService_1.MenuItemService();
+        this.recommendationService = new RecommendationService_1.RecommendationService();
     }
-    getMenuItems() {
+    getNextDayMenuRecommendation() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.getMenuItems();
-        });
-    }
-    addMenuItem(itemData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.addMenuItem(itemData);
-        });
-    }
-    deleteMenuItem(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.deleteMenuItem(id);
-        });
-    }
-    updateMenuItem(itemData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.updateMenuItem(itemData);
+            try {
+                const recommendedMenu = yield this.recommendationService.getNextDayMenuRecommendation();
+                return recommendedMenu;
+            }
+            catch (error) {
+                return error;
+            }
         });
     }
 }
-exports.MenuItemController = MenuItemController;
+exports.RecommendationController = RecommendationController;

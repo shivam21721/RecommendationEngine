@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketHandler = void 0;
 const AdminHandler_1 = require("./handlers/AdminHandler");
+const ChefHandler_1 = require("./handlers/ChefHandler");
 const UserAuthenticationController_1 = require("../controllers/UserAuthenticationController");
 class SocketHandler {
     constructor(io) {
@@ -18,10 +19,11 @@ class SocketHandler {
         this.userAuthenticationController = new UserAuthenticationController_1.UserAuthenticationController();
     }
     handleConnection(socket) {
-        socket.on('login', (username, password) => __awaiter(this, void 0, void 0, function* () {
+        socket.on('login', (userCredential) => __awaiter(this, void 0, void 0, function* () {
+            const { username, password } = userCredential;
             try {
                 const user = yield this.userAuthenticationController.login(username, password);
-                socket.emit('loginSuccess', user);
+                socket.emit('loginResponse', user);
                 this.handleUser(socket, user);
             }
             catch (error) {
@@ -30,17 +32,25 @@ class SocketHandler {
                 }
             }
         }));
+        socket.on('logout', () => {
+            this.handleLogout(socket);
+        });
     }
     handleUser(socket, user) {
         if (user.role === 'Admin') {
             (0, AdminHandler_1.handleAdmin)(socket, user);
         }
         else if (user.role === 'Chef') {
-            //handleChef(socket, user);
+            (0, ChefHandler_1.handleChef)(socket, user);
         }
         else if (user.role === 'Employee') {
             // handleEmployee(socket, user);
         }
+    }
+    ;
+    handleLogout(socket) {
+        socket.emit('logoutSuccess');
+        socket.disconnect();
     }
 }
 exports.SocketHandler = SocketHandler;

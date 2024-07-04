@@ -12,15 +12,15 @@ export class MenuItemService {
         return await this.menuItemRepository.getAllMenuItems();
     }
 
-    async addMenuItem(name: string, categoryId: number,  availability: boolean, price: number): Promise<MenuItem> {
-        return await this.menuItemRepository.addMenuItem(name, categoryId, availability, price);
+    async addMenuItem(itemData: any): Promise<MenuItem> {
+        return await this.menuItemRepository.addMenuItem(itemData);
     }
 
-    async deleteMenuItem(id: number): Promise<void> {
-        await this.menuItemRepository.deleteMenuItem(id);
+    async deleteMenuItem(id: number): Promise<number> {
+        return await this.menuItemRepository.deleteMenuItem(id);
     }
 
-    async updateMenuItem(id: number, name: string, categoryId: number,  availability: boolean, price: number): Promise<void> {
-        await this.menuItemRepository.updateMenuItem(id, name, categoryId, availability, price);
+    async updateMenuItem(itemData: any): Promise<number> {
+        return await this.menuItemRepository.updateMenuItem(itemData);
     }
 }

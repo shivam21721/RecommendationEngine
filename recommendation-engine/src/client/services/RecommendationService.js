@@ -9,31 +9,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MenuItemService = void 0;
-const MenuItemRepository_1 = require("../repositories/MenuItemRepository");
-class MenuItemService {
-    constructor() {
-        this.menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
+exports.RecommendationService = void 0;
+class RecommendationService {
+    constructor(socket) {
+        this.socket = socket;
     }
-    getMenuItems() {
+    getNextDayMenuRecommendation() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.getAllMenuItems();
+            return new Promise((resolve, reject) => {
+                this.socket.emit('getNextDayMenuRecommendation');
+                this.socket.once('getNextDayMenuRecommendationResponse', (menuItems) => {
+                    if (menuItems) {
+                        resolve(menuItems);
+                    }
+                    else {
+                        reject(new Error('Failed to get menu items.'));
+                    }
+                });
+            });
         });
     }
-    addMenuItem(itemData) {
+    ;
+    validateSelectedItems(selectedItems, menuItems) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.addMenuItem(itemData);
         });
     }
-    deleteMenuItem(id) {
+    rollOutItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.deleteMenuItem(id);
-        });
-    }
-    updateMenuItem(itemData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.updateMenuItem(itemData);
         });
     }
 }
-exports.MenuItemService = MenuItemService;
+exports.RecommendationService = RecommendationService;

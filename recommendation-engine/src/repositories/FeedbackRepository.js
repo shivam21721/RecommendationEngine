@@ -12,72 +12,82 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MenuItemRepository = void 0;
+exports.FeedbackRepository = void 0;
 const db_1 = __importDefault(require("../db/db"));
-class MenuItemRepository {
+class FeedbackRepository {
     constructor() {
         this.pool = db_1.default.getPool();
     }
-    getAllMenuItems() {
+    addFeedback(feedback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const connection = yield this.pool.getConnection();
+            const { userId, menuItemId, comment, rating, sentimentScore, feedbackDate } = feedback;
+            try {
+                const [result] = yield connection.execute('INSERT INTO Feedback (userId, menuItemId, comment, rating, sentimentScore, feedbackDate) VALUES (?, ?, ?, ?, ?, ?)', [userId, menuItemId, comment, rating, sentimentScore, feedbackDate]);
+                return result.insertId;
+            }
+            catch (error) {
+                console.error('Error adding feedback:', error);
+                throw error;
+            }
+            finally {
+                connection.release();
+            }
+        });
+    }
+    ;
+    getAllFeedbackByMenuItem(menuItemId) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [rows] = yield connection.execute('SELECT * FROM MenuItem');
+                const [rows] = yield connection.execute('SELECT * FROM Feedback WHERE menuItemId = ?', [menuItemId]);
                 return rows;
             }
+            catch (error) {
+                console.error('Error fetching feedback:', error);
+                throw error;
+            }
             finally {
                 connection.release();
             }
         });
     }
-    addMenuItem(itemData) {
+    ;
+    getAverageSentimentScoreByMenuItem(menuItemId) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const { name, categoryId, availability, price } = itemData;
-                const [result] = yield connection.execute('INSERT INTO MenuItem (name, categoryId, availability, price) VALUES (?, ?, ?, ?)', [name, categoryId, availability, price]);
-                const insertId = result.insertId;
-                return { id: insertId, name, categoryId, price, availability };
+                const [result] = yield connection.execute('SELECT AVG(sentimentScore) AS avgSentimentScore FROM Feedback WHERE menuItemId = ?', [menuItemId]);
+                const avgSentimentScore = result[0].avgSentimentScore || 0;
+                return parseFloat(avgSentimentScore.toFixed(2));
+            }
+            catch (error) {
+                console.error('Error calculating average sentiment score:', error);
+                throw error;
             }
             finally {
                 connection.release();
             }
         });
     }
-    deleteMenuItem(id) {
+    ;
+    getAverageRatingByMenuItem(menuItemId) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [result] = yield connection.execute('DELETE FROM MenuItem WHERE id = ?', [id]);
-                if (result.affectedRows > 0) {
-                    return id;
-                }
-                else {
-                    throw new Error('Item not found or already deleted');
-                }
+                const [result] = yield connection.execute('SELECT AVG(rating) AS avgRating FROM Feedback WHERE menuItemId = ?', [menuItemId]);
+                const avgRating = result[0].avgRating || 0;
+                return parseFloat(avgRating.toFixed(2));
+            }
+            catch (error) {
+                console.error('Error calculating average rating:', error);
+                throw error;
             }
             finally {
                 connection.release();
             }
         });
     }
-    updateMenuItem(itemData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const connection = yield this.pool.getConnection();
-            try {
-                const { id, name, categoryId, availability, price } = itemData;
-                const [result] = yield connection.execute('UPDATE MenuItem SET name = ?, categoryId = ?, price = ?, availability = ? WHERE id = ?', [name, categoryId, price, availability, id]);
-                if (result.affectedRows > 0) {
-                    return id;
-                }
-                else {
-                    throw new Error('Item not found or already deleted');
-                }
-            }
-            finally {
-                connection.release();
-            }
-        });
-    }
+    ;
 }
-exports.MenuItemRepository = MenuItemRepository;
+exports.FeedbackRepository = FeedbackRepository;

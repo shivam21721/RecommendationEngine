@@ -12,16 +12,16 @@ export class MenuItemController {
         return await this.menuItemService.getMenuItems();
     }
 
-    async addMenuItem(name: string, categoryId: number,  availability: boolean, price: number): Promise<MenuItem> {
-        return await this.menuItemService.addMenuItem(name, categoryId, availability, price);
+    async addMenuItem(itemData: any): Promise<MenuItem> {
+        return await this.menuItemService.addMenuItem(itemData);
     }
 
-    async deleteMenuItem(id: number): Promise<void> {
-        await this.menuItemService.deleteMenuItem(id);
+    async deleteMenuItem(id: number): Promise<number> {
+        return await this.menuItemService.deleteMenuItem(id);
     }
 
-    async updateMenuItem(id: number, name: string, categoryId: number,  availability: boolean, price: number): Promise<void> {
-        await this.menuItemService.updateMenuItem(id, name, categoryId, availability, price);
+    async updateMenuItem(itemData: any): Promise<number> {
+        return await this.menuItemService.updateMenuItem(itemData);
     }
     
 }
