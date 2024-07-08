@@ -9,19 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//import { handleChef } from "./ChefHandler";
 const AuthController_1 = require("./controllers/AuthController");
 const AuthService_1 = require("./services/AuthService");
+const AdminController_1 = require("./controllers/AdminController");
+const ChefController_1 = require("./controllers/ChefController");
+AuthService_1.socket.on('connect', () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Connected to server');
+    const userData = yield (0, AuthController_1.login)();
+    if (userData.role == 'Admin') {
+        (0, AdminController_1.showAdminOptions)();
+    }
+    else if (userData.role === 'Chef') {
+        (0, ChefController_1.showChefOptions)();
+    }
+}));
+//import { handleChef } from "./ChefHandler";
 // const io = require('socket.io-client');
 // const readline = require('readline');
 // export const socket = io('http://localhost:3000');
-const AdminController_1 = require("./controllers/AdminController");
-const ChefController_1 = require("./controllers/ChefController");
 // export const rl = readline.createInterface({
 //     input: process.stdin,
 //     output: process.stdout
 // });
-let user;
+// let user;
 // socket.on('loginSuccess', (userData: any) => {
 //     user = userData;
 //     console.log(`Logged in as ${user.name} with role: ${user.role}`);
@@ -83,16 +93,6 @@ let user;
 // function getAdminChoices() {
 //     socket.emit('adminChoices');
 // }
-AuthService_1.socket.on('connect', () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('Connected to server');
-    const userData = yield (0, AuthController_1.login)();
-    if (userData.role == 'Admin') {
-        (0, AdminController_1.showAdminOptions)();
-    }
-    else if (userData.role === 'Chef') {
-        (0, ChefController_1.showChefOptions)();
-    }
-}));
 // rl.on('close', () => {
 //     console.log('Exiting client application');
 //     socket.disconnect();

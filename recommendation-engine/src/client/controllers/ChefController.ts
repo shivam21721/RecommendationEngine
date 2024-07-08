@@ -40,7 +40,7 @@ async function handleChefChoice(choice: string) {
             handleRollOutItemsForNextDay();
             break;
         case '3':
-            
+            handleRolloutFinalizedItems();
             break;
         case '4':
             
@@ -59,12 +59,27 @@ async function handleChefChoice(choice: string) {
 async function handleRollOutItemsForNextDay() {
     try {
         const menuItems = await recommendationService.getNextDayMenuRecommendation();
-        console.log(menuItems);
+        console.table(menuItems);
         const selectedBreakfastItems = await asyncUserInput('Enter comma separated breakfast items to roll out: ');
         const selectedLunchItems = await asyncUserInput('Enter comma separated Lunch items to roll out: ');
         const selectedDinnerItems = await asyncUserInput('Enter comma separated Dinner items to roll out: ');
         const validationDetail = await recommendationService.validateSelectedItems({breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems}, menuItems);
-        const response = await recommendationService.rollOutItems({breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems});
+        const response = await recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
+        showChefOptions();
+    } catch(error) {
+        console.log('Error: ',error);
+    }
+}
+
+async function handleRolloutFinalizedItems() {
+    try {
+        const menuItems = await recommendationService.getFinalMenuRecommendation();
+        console.table(menuItems);
+        const selectedBreakfastItems = await asyncUserInput('Enter comma separated breakfast items to roll out: ');
+        const selectedLunchItems = await asyncUserInput('Enter comma separated Lunch items to roll out: ');
+        const selectedDinnerItems = await asyncUserInput('Enter comma separated Dinner items to roll out: ');
+        const validationDetail = await recommendationService.validateSelectedItems({breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems}, menuItems);
+        const response = await recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
         showChefOptions();
     } catch(error) {
         console.log('Error: ',error);

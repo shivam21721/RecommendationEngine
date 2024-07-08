@@ -1,19 +1,32 @@
-//import { handleChef } from "./ChefHandler";
 import { login } from "./controllers/AuthController";
 import { socket } from "./services/AuthService";
+import { showAdminOptions } from "./controllers/AdminController";
+import { User } from "../models/User";
+import { showChefOptions } from "./controllers/ChefController";
+
+socket.on('connect', async () => {
+    console.log('Connected to server');
+    const userData = await login();
+    if((userData as User).role == 'Admin') {
+        showAdminOptions();
+    }
+    else if((userData as User).role === 'Chef') {
+        showChefOptions();
+    }
+});
+
+//import { handleChef } from "./ChefHandler";
+
 // const io = require('socket.io-client');
 // const readline = require('readline');
 
 // export const socket = io('http://localhost:3000');
-import { showAdminOptions } from "./controllers/AdminController";
-import { User } from "../models/User";
-import { showChefOptions } from "./controllers/ChefController";
 // export const rl = readline.createInterface({
 //     input: process.stdin,
 //     output: process.stdout
 // });
 
-let user;
+// let user;
 
 // socket.on('loginSuccess', (userData: any) => {
 //     user = userData;
@@ -89,16 +102,7 @@ let user;
 //     socket.emit('adminChoices');
 // }
 
-socket.on('connect', async () => {
-    console.log('Connected to server');
-    const userData = await login();
-    if((userData as User).role == 'Admin') {
-        showAdminOptions();
-    }
-    else if((userData as User).role === 'Chef') {
-        showChefOptions();
-    }
-})
+
 
 // rl.on('close', () => {
 //     console.log('Exiting client application');

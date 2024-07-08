@@ -1,3 +1,4 @@
+import { response } from "express";
 import { Socket } from "socket.io";
 
 export class RecommendationService {
@@ -20,12 +21,34 @@ export class RecommendationService {
         });
     };
 
+    async getFinalMenuRecommendation() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getFinalMenuRecommendation');
+            this.socket.once('getFinalMenuRecommendationResponse', (menuItems) => {
+                if (menuItems) {
+                    resolve(menuItems);
+                } else {
+                    reject(new Error('Failed to get menu items.'));
+                }
+            });
+        });
+    }
+
     async validateSelectedItems(selectedItems: any, menuItems: any) {
 
     }
 
-    async rollOutItems(items: any) {
-        
+    async rollOutItems(itemIds: any) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('rolloutItemsChoiceForNextDay', itemIds);
+            this.socket.on('rolloutItemsChoiceForNextDayResponse', (response) => {
+                if(response) {
+                    resolve(response);
+                } else {
+                    reject(new Error('Failed to rollOutItms'));
+                }
+            });
+        });
     }
 
 }

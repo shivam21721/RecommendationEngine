@@ -52,6 +52,7 @@ function handleChefChoice(choice) {
                 handleRollOutItemsForNextDay();
                 break;
             case '3':
+                handleRolloutFinalizedItems();
                 break;
             case '4':
                 break;
@@ -68,12 +69,29 @@ function handleRollOutItemsForNextDay() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const menuItems = yield recommendationService.getNextDayMenuRecommendation();
-            console.log(menuItems);
+            console.table(menuItems);
             const selectedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter comma separated breakfast items to roll out: ');
             const selectedLunchItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Lunch items to roll out: ');
-            const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Lunch items to roll out: ');
+            const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');
             const validationDetail = yield recommendationService.validateSelectedItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems }, menuItems);
-            const response = yield recommendationService.rollOutItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems });
+            const response = yield recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
+            showChefOptions();
+        }
+        catch (error) {
+            console.log('Error: ', error);
+        }
+    });
+}
+function handleRolloutFinalizedItems() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const menuItems = yield recommendationService.getFinalMenuRecommendation();
+            console.table(menuItems);
+            const selectedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter comma separated breakfast items to roll out: ');
+            const selectedLunchItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Lunch items to roll out: ');
+            const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');
+            const validationDetail = yield recommendationService.validateSelectedItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems }, menuItems);
+            const response = yield recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
             showChefOptions();
         }
         catch (error) {

@@ -26,5 +26,27 @@ class RecommendationController {
             }
         });
     }
+    rolloutItems(itemIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = yield this.recommendationService.rolloutItems(itemIds);
+                return response;
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
+    fetchFinalMenuRecommendation() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const recommendedMenu = yield this.recommendationService.fetchFinalMenuRecommendation();
+                return recommendedMenu;
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
 }
 exports.RecommendationController = RecommendationController;

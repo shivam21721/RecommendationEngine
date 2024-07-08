@@ -30,12 +30,38 @@ class RecommendationService {
         });
     }
     ;
+    getFinalMenuRecommendation() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('getFinalMenuRecommendation');
+                this.socket.once('getFinalMenuRecommendationResponse', (menuItems) => {
+                    if (menuItems) {
+                        resolve(menuItems);
+                    }
+                    else {
+                        reject(new Error('Failed to get menu items.'));
+                    }
+                });
+            });
+        });
+    }
     validateSelectedItems(selectedItems, menuItems) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
-    rollOutItems(items) {
+    rollOutItems(itemIds) {
         return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('rolloutItemsChoiceForNextDay', itemIds);
+                this.socket.on('rolloutItemsChoiceForNextDayResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error('Failed to rollOutItms'));
+                    }
+                });
+            });
         });
     }
 }

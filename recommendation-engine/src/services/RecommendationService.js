@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RecommendationService = void 0;
 const RecommendationRepository_1 = require("../repositories/RecommendationRepository");
+const RecommendationEngine_1 = require("../utility/RecommendationEngine");
 class RecommendationService {
     constructor() {
         this.recommendationRepository = new RecommendationRepository_1.RecommendationRepository();
@@ -19,7 +20,35 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const recommendedMenu = yield this.recommendationRepository.getMenuForRecommendation();
-                return recommendedMenu;
+                return (0, RecommendationEngine_1.prepareRecommendation)(recommendedMenu);
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    rolloutItems(itemIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // var recommendedItemsDetails = [];
+            try {
+                var recommendedItemsData = itemIds.map((id) => {
+                    const date = new Date();
+                    console.log({ id: parseInt(id), date });
+                    return { id: parseInt(id), date: date.toISOString().slice(0, 10) };
+                });
+                const response = yield this.recommendationRepository.addRecommendedItems(recommendedItemsData);
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    fetchFinalMenuRecommendation() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const recommendedMenu = yield this.recommendationRepository.fetchFinalMenuRecommendation();
+                return (0, RecommendationEngine_1.prepareRecommendationForFinalMenu)(recommendedMenu);
             }
             catch (error) {
                 throw error;

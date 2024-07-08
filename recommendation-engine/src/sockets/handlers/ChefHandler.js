@@ -23,5 +23,13 @@ function handleChef(socket, user) {
         const menuItems = yield recommendationController.getNextDayMenuRecommendation();
         socket.emit('getNextDayMenuRecommendationResponse', menuItems);
     }));
+    socket.on('rolloutItemsChoiceForNextDay', (items) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield recommendationController.rolloutItems(items);
+        socket.emit('rolloutItemsChoiceForNextDayResponse', response);
+    }));
+    socket.on('getFinalMenuRecommendation', () => __awaiter(this, void 0, void 0, function* () {
+        const menuItems = yield recommendationController.fetchFinalMenuRecommendation();
+        socket.emit('getFinalMenuRecommendationResponse', menuItems);
+    }));
 }
 exports.handleChef = handleChef;
