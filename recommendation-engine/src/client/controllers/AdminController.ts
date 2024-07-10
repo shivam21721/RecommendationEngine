@@ -1,13 +1,14 @@
 import { socket } from "../services/AuthService";
 import { rl } from "../readline";
 import { MenuItemService } from "../services/MenuItemService";
+
 const adminOptions = [
     '1. ADD MENU ITEM',
     '2. DELETE MENU ITEM',
     '3. UPDATE MENU ITEM',
     '4. VIEW MENU ITEM'
 ];
-4
+
 const menuItemService = new MenuItemService(socket);
 
 export async function showAdminOptions() {

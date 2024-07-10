@@ -31,5 +31,9 @@ function handleChef(socket, user) {
         const menuItems = yield recommendationController.fetchFinalMenuRecommendation();
         socket.emit('getFinalMenuRecommendationResponse', menuItems);
     }));
+    socket.on('rolloutFinalizedItems', (items) => __awaiter(this, void 0, void 0, function* () {
+        const response = recommendationController.rolloutFinalizedMenuItems(items);
+        socket.emit('rolloutFinalizedItemsResponse', response);
+    }));
 }
 exports.handleChef = handleChef;

@@ -1,11 +1,14 @@
 import { MenuItemService } from "../services/MenuItemService";
 import { MenuItem } from "../models/MenuItem";
+import { RecommendationService } from "../services/RecommendationService";
 
 export class MenuItemController {
     private menuItemService: MenuItemService;
+    private recommendationService: RecommendationService;
 
     constructor() {
         this.menuItemService= new MenuItemService();
+        this.recommendationService = new RecommendationService();
     } 
 
     async getMenuItems(): Promise<MenuItem[]> {
@@ -24,4 +27,18 @@ export class MenuItemController {
         return await this.menuItemService.updateMenuItem(itemData);
     }
     
+    async getTodayMenu() {
+        const response = await this.recommendationService.getPreparedMenuForToday();
+        return response;
+    }
+
+    async fetchRolledOutMenu() {
+        const response = await this.menuItemService.fetchRolledOutMenu();
+        return response;
+    }
+
+    async updateVotedMenuItems(itemIds: any) {
+        const response = await this.menuItemService.updateVotedMenuItems(itemIds);
+        return response;
+    }
 }

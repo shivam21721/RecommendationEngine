@@ -32,4 +32,13 @@ export class RecommendationController {
             return error;
         }
     }
+
+    async rolloutFinalizedMenuItems(items: any) {
+        try {
+            const response = await this.recommendationService.rolloutFinalizedMenuItems(items);
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }
 }

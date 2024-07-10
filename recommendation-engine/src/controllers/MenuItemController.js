@@ -11,9 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuItemController = void 0;
 const MenuItemService_1 = require("../services/MenuItemService");
+const RecommendationService_1 = require("../services/RecommendationService");
 class MenuItemController {
     constructor() {
         this.menuItemService = new MenuItemService_1.MenuItemService();
+        this.recommendationService = new RecommendationService_1.RecommendationService();
     }
     getMenuItems() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -33,6 +35,24 @@ class MenuItemController {
     updateMenuItem(itemData) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.menuItemService.updateMenuItem(itemData);
+        });
+    }
+    getTodayMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.recommendationService.getPreparedMenuForToday();
+            return response;
+        });
+    }
+    fetchRolledOutMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.menuItemService.fetchRolledOutMenu();
+            return response;
+        });
+    }
+    updateVotedMenuItems(itemIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.menuItemService.updateVotedMenuItems(itemIds);
+            return response;
         });
     }
 }

@@ -79,7 +79,7 @@ async function handleRolloutFinalizedItems() {
         const selectedLunchItems = await asyncUserInput('Enter comma separated Lunch items to roll out: ');
         const selectedDinnerItems = await asyncUserInput('Enter comma separated Dinner items to roll out: ');
         const validationDetail = await recommendationService.validateSelectedItems({breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems}, menuItems);
-        const response = await recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
+        const response = await recommendationService.rolloutFinalizedItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
         showChefOptions();
     } catch(error) {
         console.log('Error: ',error);

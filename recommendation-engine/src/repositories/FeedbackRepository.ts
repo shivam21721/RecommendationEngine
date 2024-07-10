@@ -5,7 +5,8 @@ export class FeedbackRepository {
 
     async addFeedback(feedback: any) {
         const connection = await this.pool.getConnection();
-        const { userId, menuItemId, comment, rating, sentimentScore, feedbackDate } = feedback;
+        const { userId, menuItemId, comment, rating, feedbackDate, sentimentScore } = feedback;
+        console.log(userId, menuItemId, comment, rating, feedbackDate, sentimentScore);
         try {
             const [result] = await connection.execute(
                 'INSERT INTO Feedback (userId, menuItemId, comment, rating, sentimentScore, feedbackDate) VALUES (?, ?, ?, ?, ?, ?)',

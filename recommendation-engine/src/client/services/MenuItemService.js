@@ -74,5 +74,50 @@ class MenuItemService {
             });
         });
     }
+    getTodayMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('getTodayMenu');
+                this.socket.on('getTodayMenuResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error('Failed to fetch today menu item.'));
+                    }
+                });
+            });
+        });
+    }
+    getRolledOutMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('getRolledOutMenu');
+                this.socket.on('getRolledOutMenuResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error('Failed to Rolled out menu item'));
+                    }
+                });
+            });
+        });
+    }
+    voteForMenuItem(itemIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('voteMenuItems', itemIds);
+                this.socket.on('voteMenuItemsResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error("Failed to vote the items"));
+                    }
+                });
+            });
+        });
+    }
 }
 exports.MenuItemService = MenuItemService;

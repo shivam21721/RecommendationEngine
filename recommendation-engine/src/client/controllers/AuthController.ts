@@ -1,7 +1,6 @@
 import { AuthService } from "../services/AuthService";
 import { User } from "../../models/User";
 import { asyncUserInput } from "../readline";
-//import { rl } from "../client";
 
 const authService = new AuthService();
 

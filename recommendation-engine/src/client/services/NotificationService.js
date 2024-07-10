@@ -9,22 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserService = void 0;
-const UserRepository_1 = require("../repositories/UserRepository");
-class UserService {
-    constructor() {
-        this.userRepository = new UserRepository_1.UserRepository();
+exports.NotificationService = void 0;
+class NotificationService {
+    constructor(socket) {
+        this.socket = socket;
     }
-    getUserRole(userId) {
+    fetchUserNotifications(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const role = yield this.userRepository.getUserRole(userId);
-                return role;
-            }
-            catch (error) {
-                throw error;
-            }
+            return new Promise((resolve, reject) => {
+                this.socket.emit('fetchUserNotifications', userId);
+                this.socket.on('fetchUserNotificationsResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error("Failed to fetch the notifications"));
+                    }
+                });
+            });
         });
     }
 }
-exports.UserService = UserService;
+exports.NotificationService = NotificationService;

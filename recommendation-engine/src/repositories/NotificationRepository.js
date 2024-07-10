@@ -12,40 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserRepository = void 0;
+exports.NotificationRepository = void 0;
 const db_1 = __importDefault(require("../db/db"));
-class UserRepository {
+class NotificationRepository {
     constructor() {
         this.pool = db_1.default.getPool();
     }
-    findUserByUsername(username) {
+    addNotification(notification) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [rows] = yield connection.execute(`
-                SELECT u.id, u.name, u.email, r.roleName AS role
-                FROM user u
-                JOIN role r ON u.roleId = r.id
-                WHERE u.email = ?
-            `, [username]);
-                if (Array.isArray(rows) && rows.length) {
-                    return rows[0];
-                }
-                return null;
-            }
-            finally {
-                connection.release();
-            }
-        });
-    }
-    getUserRole(userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const connection = yield this.pool.getConnection();
-            try {
-                const query = `Select roleName from role where id = ${userId}`;
-                const [result] = yield connection.execute(query);
-                console.log('result:', result);
-                return result[0].roleName;
+                const { message, date, type } = notification;
+                const query = 'INSERT INTO notification (Message, Date, NotificationTypeId) VALUES (?, ?, ?)';
+                const [result] = yield connection.execute(query, [message, date, type]);
             }
             catch (error) {
                 throw error;
@@ -55,5 +34,24 @@ class UserRepository {
             }
         });
     }
+    getUserNotifications(type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const connection = yield this.pool.getConnection();
+            try {
+                const query = `
+             SELECT n.Message, n.Date
+             FROM notification n
+             JOIN NotificationType nt ON n.NotificationTypeId = nt.Id
+             WHERE nt.Type = '${type}'
+             ORDER BY n.Date DESC
+            `;
+                const [result] = yield connection.execute(query);
+                return result;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
 }
-exports.UserRepository = UserRepository;
+exports.NotificationRepository = NotificationRepository;

@@ -23,4 +23,12 @@ export class MenuItemService {
     async updateMenuItem(itemData: any): Promise<number> {
         return await this.menuItemRepository.updateMenuItem(itemData);
     }
+
+    async fetchRolledOutMenu() {
+        return await this.menuItemRepository.fetchRolledOutMenu();
+    }
+
+    async updateVotedMenuItems(itemIds: any) {
+        return await this.menuItemRepository.updateVotedMenuItems(itemIds);
+    }
 }

@@ -9,22 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserService = void 0;
-const UserRepository_1 = require("../repositories/UserRepository");
-class UserService {
-    constructor() {
-        this.userRepository = new UserRepository_1.UserRepository();
+exports.FeedbackService = void 0;
+class FeedbackService {
+    constructor(socket) {
+        this.socket = socket;
     }
-    getUserRole(userId) {
+    addFeedback(feedback) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const role = yield this.userRepository.getUserRole(userId);
-                return role;
-            }
-            catch (error) {
-                throw error;
-            }
+            return new Promise((resolve, reject) => {
+                this.socket.emit('addFeedback', feedback);
+                this.socket.on('addFeedbackResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error('Failed to add feedback'));
+                    }
+                });
+            });
         });
     }
 }
-exports.UserService = UserService;
+exports.FeedbackService = FeedbackService;

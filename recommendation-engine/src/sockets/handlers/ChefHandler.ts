@@ -26,4 +26,9 @@ export function handleChef(socket: Socket, user: any) {
         const menuItems = await recommendationController.fetchFinalMenuRecommendation();
         socket.emit('getFinalMenuRecommendationResponse', menuItems);
     });   
+
+    socket.on('rolloutFinalizedItems', async (items: any) => {
+        const response = recommendationController.rolloutFinalizedMenuItems(items);
+        socket.emit('rolloutFinalizedItemsResponse', response);
+    })
 }

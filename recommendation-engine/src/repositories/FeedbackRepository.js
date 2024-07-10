@@ -21,7 +21,8 @@ class FeedbackRepository {
     addFeedback(feedback) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
-            const { userId, menuItemId, comment, rating, sentimentScore, feedbackDate } = feedback;
+            const { userId, menuItemId, comment, rating, feedbackDate, sentimentScore } = feedback;
+            console.log(userId, menuItemId, comment, rating, feedbackDate, sentimentScore);
             try {
                 const [result] = yield connection.execute('INSERT INTO Feedback (userId, menuItemId, comment, rating, sentimentScore, feedbackDate) VALUES (?, ?, ?, ?, ?, ?)', [userId, menuItemId, comment, rating, sentimentScore, feedbackDate]);
                 return result.insertId;

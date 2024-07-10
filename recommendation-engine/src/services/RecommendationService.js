@@ -11,10 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RecommendationService = void 0;
 const RecommendationRepository_1 = require("../repositories/RecommendationRepository");
+const NotificationService_1 = require("./NotificationService");
 const RecommendationEngine_1 = require("../utility/RecommendationEngine");
 class RecommendationService {
     constructor() {
         this.recommendationRepository = new RecommendationRepository_1.RecommendationRepository();
+        this.notificationService = new NotificationService_1.NotificationService();
     }
     getNextDayMenuRecommendation() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -29,7 +31,6 @@ class RecommendationService {
     }
     rolloutItems(itemIds) {
         return __awaiter(this, void 0, void 0, function* () {
-            // var recommendedItemsDetails = [];
             try {
                 var recommendedItemsData = itemIds.map((id) => {
                     const date = new Date();
@@ -37,6 +38,7 @@ class RecommendationService {
                     return { id: parseInt(id), date: date.toISOString().slice(0, 10) };
                 });
                 const response = yield this.recommendationRepository.addRecommendedItems(recommendedItemsData);
+                yield this.notificationService.sendNotificationForRolledOutItems();
                 return response;
             }
             catch (error) {
@@ -49,6 +51,29 @@ class RecommendationService {
             try {
                 const recommendedMenu = yield this.recommendationRepository.fetchFinalMenuRecommendation();
                 return (0, RecommendationEngine_1.prepareRecommendationForFinalMenu)(recommendedMenu);
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    rolloutFinalizedMenuItems(itemIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = yield this.recommendationRepository.markItemAsPrepared(itemIds);
+                yield this.notificationService.sendNotificationForFinalizedMenuItems();
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    getPreparedMenuForToday() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = this.recommendationRepository.getPreparedMenuForToday();
+                return response;
             }
             catch (error) {
                 throw error;

@@ -1,11 +1,14 @@
 import { RecommendationRepository } from "../repositories/RecommendationRepository";
+import { NotificationService } from "./NotificationService";
 import { prepareRecommendation, prepareRecommendationForFinalMenu } from "../utility/RecommendationEngine";
 
 export class RecommendationService {
     private recommendationRepository: RecommendationRepository;
+    private notificationService: NotificationService;
 
     constructor() {
         this.recommendationRepository = new RecommendationRepository();
+        this.notificationService = new NotificationService();
     }
 
     async getNextDayMenuRecommendation() {
@@ -18,7 +21,6 @@ export class RecommendationService {
     }
 
     async rolloutItems(itemIds: string[]) {
-        // var recommendedItemsDetails = [];
         try {
           var recommendedItemsData = itemIds.map((id: string) => {
                 const date =new Date();
@@ -26,6 +28,7 @@ export class RecommendationService {
                 return {id: parseInt(id), date: date.toISOString().slice(0,10)};
             });
           const response = await this.recommendationRepository.addRecommendedItems(recommendedItemsData);
+          await this.notificationService.sendNotificationForRolledOutItems();
           return response;
         } catch (error) {
             throw error;
@@ -36,6 +39,25 @@ export class RecommendationService {
         try {
             const recommendedMenu = await this.recommendationRepository.fetchFinalMenuRecommendation();
             return prepareRecommendationForFinalMenu(recommendedMenu);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async rolloutFinalizedMenuItems(itemIds: string[]) {
+        try {
+            const response = await this.recommendationRepository.markItemAsPrepared(itemIds);
+            await this.notificationService.sendNotificationForFinalizedMenuItems();
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getPreparedMenuForToday() {
+        try {
+            const response = this.recommendationRepository.getPreparedMenuForToday();
+            return response
         } catch (error) {
             throw error;
         }

@@ -1,4 +1,3 @@
-import { query } from "express";
 import db from "../db/db";
 
 export class RecommendationRepository {
@@ -39,26 +38,14 @@ export class RecommendationRepository {
     async addRecommendedItems(items: any) {
           const connection = await this.pool.getConnection();
           try {
-               // Assuming items is an array of objects like [{ date: '2024-07-08', id: 1 }, { date: '2024-07-09', id: 2 }, ...]
-           
-               // Create an array of placeholders like (?, ?), (?, ?), ...
                const placeholders = items.map(() => '(?, ?)').join(', ');
-           
-               // Construct the SQL query with placeholders
                const query = `
                    INSERT INTO RecommendedItem (recommendationDate, menuItemId)
                    VALUES ${placeholders}
                `;
-           
-               // Flatten the values array to match the placeholders
                const values = items.flatMap((item: any) => [item.date, item.id]);
-           
-               console.log(values); // Debugging to see the flattened values
-           
-               // Execute the query with the flattened values array
                const [rows] = await connection.execute(query, values);
                return rows;
-               console.log('Bulk insert successful', rows);
           } catch (error) {
                console.log('Error while inserting record', (error as any).message);
           }
@@ -105,4 +92,54 @@ export class RecommendationRepository {
                connection.release();
           }
     }
+
+    async markItemAsPrepared(itemIds: string[]) {
+     const connection = await this.pool.getConnection();
+     try {
+          const placeholders = itemIds.map((id) => id).join(', ');
+          const query = `
+            UPDATE recommendeditem
+            SET isPrepared = 1
+            WHERE menuItemId IN (${placeholders}) AND recommendationDate = CURDATE()
+          `;
+          const [result] = await connection.execute(query);
+     } catch(error) {
+          console.error("Error while updating prepared items");
+          throw error;
+     }
+    }
+
+    async getPreparedMenuForToday() {
+     const connection = await this.pool.getConnection();
+     try {
+          const query = `SELECT 
+          mi.id AS menuItemId,
+          mi.name AS menuItemName,
+          mc.name AS categoryName,
+          mi.price AS menuItemPrice,
+          AVG(f.rating) AS averageRating,
+          AVG(f.sentimentScore) AS averageSentimentScore
+          FROM 
+          recommendeditem ri
+          JOIN 
+          menuitem mi ON ri.menuItemId = mi.id
+          JOIN 
+          menucategory mc ON mi.categoryId = mc.id
+          LEFT JOIN 
+          feedback f ON mi.id = f.menuItemId
+          WHERE 
+          ri.isPrepared = 1
+          AND ri.recommendationDate = CURDATE() - INTERVAL 1 DAY
+          GROUP BY 
+          mi.id, mi.name, mc.name, mi.price
+          ORDER BY 
+          mi.id;`;
+          const [result] = await connection.execute(query);
+          console.log('rep: ', result);
+          return result;
+     } catch(error) {
+          console.log("Error while fetching the today menu");
+          throw error;
+     }
+    } 
 }

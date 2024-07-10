@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { handleAdmin } from './handlers/AdminHandler'
 import { handleChef } from './handlers/ChefHandler';
+import { handleEmployee } from './handlers/EmployeeHandler';
 import { UserAuthenticationController } from '../controllers/UserAuthenticationController';
 
 export class SocketHandler {
@@ -37,7 +38,7 @@ export class SocketHandler {
         } else if (user.role === 'Chef') {
             handleChef(socket, user);
         } else if (user.role === 'Employee') {
-           // handleEmployee(socket, user);
+            handleEmployee(socket, user);
         }
     };
 

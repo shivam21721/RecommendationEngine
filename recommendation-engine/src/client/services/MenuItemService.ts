@@ -59,5 +59,44 @@ export class MenuItemService {
         });
     }
 
+    async getTodayMenu() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getTodayMenu');
+            this.socket.on('getTodayMenuResponse', (response) => {
+                if (response) {
+                    resolve(response);
+                } else {
+                    reject(new Error('Failed to fetch today menu item.'));
+                }
+            });
+        });
+    }
+
+    async getRolledOutMenu() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getRolledOutMenu');
+            this.socket.on('getRolledOutMenuResponse', (response) => {
+                if(response) {
+                    resolve(response);
+                } else {
+                    reject(new Error('Failed to Rolled out menu item'));
+                }
+            });
+        });
+    }
+
+    async voteForMenuItem(itemIds: any) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('voteMenuItems', itemIds);
+            this.socket.on('voteMenuItemsResponse', (response) => {
+                if(response) {
+                    resolve(response);
+                } else {
+                    reject(new Error("Failed to vote the items"));
+                }
+
+            })
+        })
+    }
 }
     

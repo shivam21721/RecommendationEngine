@@ -51,5 +51,18 @@ export class RecommendationService {
         });
     }
 
+    async rolloutFinalizedItems(itemIds: any) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('rolloutFinalizedItems', itemIds);
+            this.socket.on('rolloutFinalizedItemsResponse', (response) => {
+                if(response) {
+                    resolve(response);
+                } else {
+                    reject(new Error('Failed to rollOutItems'));
+                }
+            });
+        });
+    }
+
 }
     

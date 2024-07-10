@@ -58,5 +58,54 @@ export class MenuItemRepository {
         
     }
 
+    async fetchRolledOutMenu() {
+        const connection = await this.pool.getConnection();
+        try {
+            const query = `SELECT 
+                mi.id AS menuItemId,
+                mi.name AS menuItemName,
+                mc.name AS categoryName,
+                mi.price AS menuItemPrice,
+                AVG(f.rating) AS averageRating,
+                AVG(f.sentimentScore) AS averageSentimentScore
+                FROM 
+                recommendeditem ri
+                JOIN 
+                menuitem mi ON ri.menuItemId = mi.id
+                JOIN 
+                menucategory mc ON mi.categoryId = mc.id
+                LEFT JOIN 
+                feedback f ON mi.id = f.menuItemId
+                WHERE 
+                ri.recommendationDate = CURDATE()
+                GROUP BY 
+                mi.id, mi.name, mc.name, mi.price
+                ORDER BY 
+                mi.id;`;
+            const [result] = await connection.execute(query);
+            return result;
+        } catch(error) {
+            throw error;
+        }
+    }
+
+    async updateVotedMenuItems(itemIds: any) {
+        const connection = await this.pool.getConnection();
+        try {
+            const ids = itemIds.join(', ');
+            const query = `
+                UPDATE RecommendedItem
+                SET voteCount = voteCount + 1
+                WHERE recommendationDate = CURDATE()
+                AND menuItemId IN (${ids});
+            `;
+            const [result] = await connection.execute(query);
+            console.log(result);
+            return result;
+        } catch(error) {
+            throw error;
+        }
+    }
+
 }
 

@@ -13,6 +13,7 @@ const AuthController_1 = require("./controllers/AuthController");
 const AuthService_1 = require("./services/AuthService");
 const AdminController_1 = require("./controllers/AdminController");
 const ChefController_1 = require("./controllers/ChefController");
+const EmployeeController_1 = require("./controllers/EmployeeController");
 AuthService_1.socket.on('connect', () => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Connected to server');
     const userData = yield (0, AuthController_1.login)();
@@ -21,6 +22,9 @@ AuthService_1.socket.on('connect', () => __awaiter(void 0, void 0, void 0, funct
     }
     else if (userData.role === 'Chef') {
         (0, ChefController_1.showChefOptions)();
+    }
+    else {
+        (0, EmployeeController_1.showEmployeeOptions)(userData.id);
     }
 }));
 //import { handleChef } from "./ChefHandler";

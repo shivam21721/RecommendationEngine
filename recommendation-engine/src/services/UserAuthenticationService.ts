@@ -2,6 +2,7 @@ import { UserAuthenticationRepository } from "../repositories/UserAuthentication
 import { UserRepository } from "../repositories/UserRepository";
 import { UserAuthentication } from "../models/UserAuthentication";
 import { User } from "../models/User";
+
 export class UserAuthenticationService {
     private userAuthenticationRepository: UserAuthenticationRepository;
     private userRepository: UserRepository;

@@ -35,5 +35,15 @@ class MenuItemService {
             return yield this.menuItemRepository.updateMenuItem(itemData);
         });
     }
+    fetchRolledOutMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.menuItemRepository.fetchRolledOutMenu();
+        });
+    }
+    updateVotedMenuItems(itemIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.menuItemRepository.updateVotedMenuItems(itemIds);
+        });
+    }
 }
 exports.MenuItemService = MenuItemService;

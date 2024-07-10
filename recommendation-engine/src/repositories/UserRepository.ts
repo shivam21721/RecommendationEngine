@@ -22,5 +22,19 @@ export class UserRepository {
             connection.release();
         }
     }
+
+    async getUserRole(userId: any) {
+        const connection = await this.pool.getConnection();
+        try {
+            const query = `Select roleName from role where id = ${userId}`;
+            const [result] = await connection.execute(query);
+            console.log('result:', result);
+            return (result as any)[0].roleName;
+        } catch(error) {
+            throw error;
+        } finally {
+            connection.release();
+        }
+    }
 }
 

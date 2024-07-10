@@ -9,22 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserService = void 0;
-const UserRepository_1 = require("../repositories/UserRepository");
-class UserService {
+exports.FeedbackService = void 0;
+const FeedbackRepository_1 = require("../repositories/FeedbackRepository");
+class FeedbackService {
     constructor() {
-        this.userRepository = new UserRepository_1.UserRepository();
+        this.feedbackRepository = new FeedbackRepository_1.FeedbackRepository();
     }
-    getUserRole(userId) {
+    addMenuFeedback(feedback) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const role = yield this.userRepository.getUserRole(userId);
-                return role;
+                const date = new Date();
+                const dateString = date.toISOString().slice(0, 10);
+                const sentimentScore = 5;
+                feedback = Object.assign(Object.assign({}, feedback), { feedbackDate: dateString, sentimentScore });
+                const response = yield this.feedbackRepository.addFeedback(feedback);
+                return response;
             }
             catch (error) {
                 throw error;
             }
         });
     }
+    ;
 }
-exports.UserService = UserService;
+exports.FeedbackService = FeedbackService;

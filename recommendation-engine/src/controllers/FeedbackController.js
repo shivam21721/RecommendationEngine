@@ -9,22 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserService = void 0;
-const UserRepository_1 = require("../repositories/UserRepository");
-class UserService {
+exports.FeedbackController = void 0;
+const FeedbackService_1 = require("../services/FeedbackService");
+class FeedbackController {
     constructor() {
-        this.userRepository = new UserRepository_1.UserRepository();
+        this.feedbackService = new FeedbackService_1.FeedbackService();
     }
-    getUserRole(userId) {
+    addMenuFeedback(feedback) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const role = yield this.userRepository.getUserRole(userId);
-                return role;
+                const response = yield this.feedbackService.addMenuFeedback(feedback);
+                return response;
             }
             catch (error) {
-                throw error;
+                console.log(error);
             }
         });
     }
 }
-exports.UserService = UserService;
+exports.FeedbackController = FeedbackController;

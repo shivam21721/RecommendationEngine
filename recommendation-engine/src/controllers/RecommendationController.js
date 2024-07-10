@@ -48,5 +48,16 @@ class RecommendationController {
             }
         });
     }
+    rolloutFinalizedMenuItems(items) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = yield this.recommendationService.rolloutFinalizedMenuItems(items);
+                return response;
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
 }
 exports.RecommendationController = RecommendationController;

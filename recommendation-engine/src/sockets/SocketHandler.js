@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketHandler = void 0;
 const AdminHandler_1 = require("./handlers/AdminHandler");
 const ChefHandler_1 = require("./handlers/ChefHandler");
+const EmployeeHandler_1 = require("./handlers/EmployeeHandler");
 const UserAuthenticationController_1 = require("../controllers/UserAuthenticationController");
 class SocketHandler {
     constructor(io) {
@@ -44,7 +45,7 @@ class SocketHandler {
             (0, ChefHandler_1.handleChef)(socket, user);
         }
         else if (user.role === 'Employee') {
-            // handleEmployee(socket, user);
+            (0, EmployeeHandler_1.handleEmployee)(socket, user);
         }
     }
     ;

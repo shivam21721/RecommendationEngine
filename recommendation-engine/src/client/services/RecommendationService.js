@@ -64,5 +64,20 @@ class RecommendationService {
             });
         });
     }
+    rolloutFinalizedItems(itemIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('rolloutFinalizedItems', itemIds);
+                this.socket.on('rolloutFinalizedItemsResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error('Failed to rollOutItems'));
+                    }
+                });
+            });
+        });
+    }
 }
 exports.RecommendationService = RecommendationService;
