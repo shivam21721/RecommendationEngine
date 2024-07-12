@@ -37,5 +37,9 @@ function handleEmployee(socket, user) {
         const notifications = yield notificationController.getUserNotifications(userId);
         socket.emit('fetchUserNotificationsResponse', notifications);
     }));
+    socket.on('fetchNextDayFinalizedMenu', () => __awaiter(this, void 0, void 0, function* () {
+        const menuItems = yield menuItemController.getNextDayFinalizedMenu();
+        socket.emit('fetchNextDayFinalizedMenuResponse', menuItems);
+    }));
 }
 exports.handleEmployee = handleEmployee;

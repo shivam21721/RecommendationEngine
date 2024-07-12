@@ -1,6 +1,6 @@
 import { RecommendationRepository } from "../repositories/RecommendationRepository";
 import { NotificationService } from "./NotificationService";
-import { prepareRecommendation, prepareRecommendationForFinalMenu } from "../utility/RecommendationEngine";
+import { prepareRecommendation, prepareRecommendationForFinalMenu } from "../utils/RecommendationEngine";
 
 export class RecommendationService {
     private recommendationRepository: RecommendationRepository;
@@ -59,6 +59,15 @@ export class RecommendationService {
             const response = this.recommendationRepository.getPreparedMenuForToday();
             return response
         } catch (error) {
+            throw error;
+        }
+    }
+
+    async getNextDayFinalizedMenu() {
+        try {
+            const menuItems = await this.recommendationRepository.getNextDayFinalizedMenu();
+            return menuItems;
+        } catch(error) {
             throw error;
         }
     }

@@ -55,5 +55,16 @@ class MenuItemController {
             return response;
         });
     }
+    getNextDayFinalizedMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const menuItems = yield this.recommendationService.getNextDayFinalizedMenu();
+                return menuItems;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        });
+    }
 }
 exports.MenuItemController = MenuItemController;

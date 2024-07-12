@@ -1,10 +1,12 @@
 import { Socket } from "socket.io";
 import { MenuItemController } from "../../controllers/MenuItemController";
+import { NotificationController } from "../../controllers/NotificationController";
 import { RecommendationController } from "../../controllers/RecommendationController";
 import { RecommendationService } from "../../services/RecommendationService";
 
 const menuItemController = new MenuItemController();
 const recommendationController = new RecommendationController();
+const notificationController = new NotificationController();
 
 export function handleChef(socket: Socket, user: any) {
     socket.on('getMenuItems', async () => {
@@ -30,5 +32,10 @@ export function handleChef(socket: Socket, user: any) {
     socket.on('rolloutFinalizedItems', async (items: any) => {
         const response = recommendationController.rolloutFinalizedMenuItems(items);
         socket.emit('rolloutFinalizedItemsResponse', response);
+    });
+
+    socket.on('fetchUserNotifications', async (userId) => {
+        const notifications = await notificationController.getUserNotifications(userId);
+        socket.emit('fetchUserNotificationsResponse', notifications);
     })
 }

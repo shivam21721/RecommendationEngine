@@ -11,9 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleChef = void 0;
 const MenuItemController_1 = require("../../controllers/MenuItemController");
+const NotificationController_1 = require("../../controllers/NotificationController");
 const RecommendationController_1 = require("../../controllers/RecommendationController");
 const menuItemController = new MenuItemController_1.MenuItemController();
 const recommendationController = new RecommendationController_1.RecommendationController();
+const notificationController = new NotificationController_1.NotificationController();
 function handleChef(socket, user) {
     socket.on('getMenuItems', () => __awaiter(this, void 0, void 0, function* () {
         const menuItems = yield menuItemController.getMenuItems();
@@ -34,6 +36,10 @@ function handleChef(socket, user) {
     socket.on('rolloutFinalizedItems', (items) => __awaiter(this, void 0, void 0, function* () {
         const response = recommendationController.rolloutFinalizedMenuItems(items);
         socket.emit('rolloutFinalizedItemsResponse', response);
+    }));
+    socket.on('fetchUserNotifications', (userId) => __awaiter(this, void 0, void 0, function* () {
+        const notifications = yield notificationController.getUserNotifications(userId);
+        socket.emit('fetchUserNotificationsResponse', notifications);
     }));
 }
 exports.handleChef = handleChef;

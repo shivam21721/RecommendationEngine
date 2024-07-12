@@ -119,5 +119,20 @@ class MenuItemService {
             });
         });
     }
+    fetchNextDayFinalizedMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('fetchNextDayFinalizedMenu');
+                this.socket.on('fetchNextDayFinalizedMenuResponse', (response) => {
+                    if (response) {
+                        resolve(response);
+                    }
+                    else {
+                        reject(new Error("Failed to fetch the next day finalized menu"));
+                    }
+                });
+            });
+        });
+    }
 }
 exports.MenuItemService = MenuItemService;

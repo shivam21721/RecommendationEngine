@@ -80,5 +80,16 @@ class RecommendationService {
             }
         });
     }
+    getNextDayFinalizedMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const menuItems = yield this.recommendationRepository.getNextDayFinalizedMenu();
+                return menuItems;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
 }
 exports.RecommendationService = RecommendationService;

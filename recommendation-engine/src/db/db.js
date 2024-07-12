@@ -21,7 +21,7 @@ class Database {
             password: 'root',
             database: 'recommendation_engine',
             waitForConnections: true,
-            connectionLimit: 10, // Number of connections in the pool
+            connectionLimit: 10,
             queueLimit: 0
         });
     }

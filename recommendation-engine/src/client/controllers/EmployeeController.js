@@ -74,6 +74,13 @@ function handleViewTodayMenu(userId) {
 }
 function handleViewNextDayMenu(userId) {
     return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const menuItems = yield menuItemService.fetchNextDayFinalizedMenu();
+            console.log(menuItems);
+        }
+        catch (error) {
+            console.log('Error: ', error);
+        }
     });
 }
 function handleViewRolledOutMenu(userId) {

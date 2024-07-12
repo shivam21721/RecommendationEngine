@@ -169,5 +169,40 @@ class RecommendationRepository {
             }
         });
     }
+    getNextDayFinalizedMenu() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const connection = yield this.pool.getConnection();
+            const query = `SELECT 
+          mi.id AS menuItemId,
+          mi.name AS menuItemName,
+          mc.name AS categoryName,
+          mi.price AS menuItemPrice,
+          AVG(f.rating) AS averageRating,
+          AVG(f.sentimentScore) AS averageSentimentScore
+          FROM 
+          recommendeditem ri
+          JOIN 
+          menuitem mi ON ri.menuItemId = mi.id
+          JOIN 
+          menucategory mc ON mi.categoryId = mc.id
+          LEFT JOIN 
+          feedback f ON mi.id = f.menuItemId
+          WHERE 
+          ri.isPrepared = 1
+          AND ri.recommendationDate = CURDATE() 
+          GROUP BY 
+          mi.id, mi.name, mc.name, mi.price
+          ORDER BY 
+          mi.id;`;
+            try {
+                const [results] = yield connection.execute(query);
+                return results;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    ;
 }
 exports.RecommendationRepository = RecommendationRepository;

@@ -13,48 +13,50 @@ exports.showChefOptions = void 0;
 const AuthService_1 = require("../services/AuthService");
 const readline_1 = require("../readline");
 const MenuItemService_1 = require("../services/MenuItemService");
+const NotificationService_1 = require("../services/NotificationService");
 const RecommendationService_1 = require("../services/RecommendationService");
 const menuItemService = new MenuItemService_1.MenuItemService(AuthService_1.socket);
+const notificationService = new NotificationService_1.NotificationService(AuthService_1.socket);
 const recommendationService = new RecommendationService_1.RecommendationService(AuthService_1.socket);
 var chefOptions = [
     '1. VIEW MENU ITEMS',
     '2. ROLL OUT ITEMS FOR VOTING',
     '3. ROLL OUT FINALIZED ITEMS',
-    '4. GENERATE REPORTS',
-    '5. VIEW NOTIFICATIONS',
+    '4. VIEW NOTIFICATIONS',
     '6. VIEW FEEDBACKS',
     'X. LOGOUT'
 ];
-function showChefOptions() {
+function showChefOptions(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         chefOptions.forEach((option) => {
             console.log(option);
         });
         const choice = yield (0, readline_1.asyncUserInput)('Enter your choice: ');
-        handleChefChoice(choice);
+        handleChefChoice(choice, userId);
     });
 }
 exports.showChefOptions = showChefOptions;
-function handleChefChoice(choice) {
+function handleChefChoice(choice, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         switch (choice) {
             case '1':
                 try {
                     const menuItems = yield menuItemService.getMenuItems();
                     console.log(menuItems);
-                    showChefOptions();
+                    showChefOptions(userId);
                 }
                 catch (error) {
                     console.log('Error: ', error);
                 }
                 break;
             case '2':
-                handleRollOutItemsForNextDay();
+                handleRollOutItemsForNextDay(userId);
                 break;
             case '3':
-                handleRolloutFinalizedItems();
+                handleRolloutFinalizedItems(userId);
                 break;
             case '4':
+                handleNotification(userId);
                 break;
             case '5':
                 break;
@@ -65,7 +67,7 @@ function handleChefChoice(choice) {
         }
     });
 }
-function handleRollOutItemsForNextDay() {
+function handleRollOutItemsForNextDay(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const menuItems = yield recommendationService.getNextDayMenuRecommendation();
@@ -75,14 +77,14 @@ function handleRollOutItemsForNextDay() {
             const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');
             const validationDetail = yield recommendationService.validateSelectedItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems }, menuItems);
             const response = yield recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
-            showChefOptions();
+            showChefOptions(userId);
         }
         catch (error) {
             console.log('Error: ', error);
         }
     });
 }
-function handleRolloutFinalizedItems() {
+function handleRolloutFinalizedItems(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const menuItems = yield recommendationService.getFinalMenuRecommendation();
@@ -92,10 +94,22 @@ function handleRolloutFinalizedItems() {
             const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');
             const validationDetail = yield recommendationService.validateSelectedItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems }, menuItems);
             const response = yield recommendationService.rolloutFinalizedItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
-            showChefOptions();
+            showChefOptions(userId);
         }
         catch (error) {
             console.log('Error: ', error);
+        }
+    });
+}
+function handleNotification(userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const notifications = yield notificationService.fetchUserNotifications(userId);
+            console.log(notifications);
+            showChefOptions(userId);
+        }
+        catch (error) {
+            console.log(error);
         }
     });
 }

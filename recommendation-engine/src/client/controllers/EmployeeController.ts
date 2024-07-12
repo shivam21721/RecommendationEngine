@@ -60,7 +60,13 @@ async function handleViewTodayMenu(userId: number) {
 }
 
 async function handleViewNextDayMenu(userId: any) {
-
+    try {
+        const menuItems = await menuItemService.fetchNextDayFinalizedMenu();
+        console.log(menuItems);
+        showEmployeeOptions(userId);
+    } catch(error) {
+        console.log('Error: ', error);
+    }
 }
 
 async function handleViewRolledOutMenu(userId: number) {

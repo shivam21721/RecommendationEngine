@@ -19,7 +19,6 @@ const adminOptions = [
     '3. UPDATE MENU ITEM',
     '4. VIEW MENU ITEM'
 ];
-4;
 const menuItemService = new MenuItemService_1.MenuItemService(AuthService_1.socket);
 function showAdminOptions() {
     return __awaiter(this, void 0, void 0, function* () {

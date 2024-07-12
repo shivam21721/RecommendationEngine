@@ -32,5 +32,10 @@ export function handleEmployee(socket: Socket, user: any) {
     socket.on('fetchUserNotifications', async (userId) => {
         const notifications = await notificationController.getUserNotifications(userId);
         socket.emit('fetchUserNotificationsResponse', notifications);
+    });
+
+    socket.on('fetchNextDayFinalizedMenu', async () => {
+        const menuItems = await menuItemController.getNextDayFinalizedMenu();
+        socket.emit('fetchNextDayFinalizedMenuResponse', menuItems);
     })
 }

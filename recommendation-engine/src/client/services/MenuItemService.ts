@@ -98,5 +98,18 @@ export class MenuItemService {
             })
         })
     }
+
+    async fetchNextDayFinalizedMenu() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('fetchNextDayFinalizedMenu');
+            this.socket.on('fetchNextDayFinalizedMenuResponse', (response) => {
+                if(response) {
+                    resolve(response);
+                } else {
+                    reject(new Error("Failed to fetch the next day finalized menu"));
+                }
+            })
+        })
+    }
 }
     

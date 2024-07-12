@@ -41,4 +41,13 @@ export class MenuItemController {
         const response = await this.menuItemService.updateVotedMenuItems(itemIds);
         return response;
     }
+
+    async getNextDayFinalizedMenu() {
+        try {
+            const menuItems = await this.recommendationService.getNextDayFinalizedMenu();
+            return menuItems;
+        } catch(error) {
+            console.log(error);
+        }
+    }
 }

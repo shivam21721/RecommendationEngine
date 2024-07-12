@@ -12,7 +12,7 @@ socket.on('connect', async () => {
         showAdminOptions();
     }
     else if((userData as User).role === 'Chef') {
-        showChefOptions();
+        showChefOptions((userData as User).id);
     } else {
         showEmployeeOptions((userData as User).id);
     }
