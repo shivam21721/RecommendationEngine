@@ -49,10 +49,10 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
-    rollOutItems(itemIds) {
+    rollOutItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('rolloutItemsChoiceForNextDay', itemIds);
+                this.socket.emit('rolloutItemsChoiceForNextDay', items);
                 this.socket.on('rolloutItemsChoiceForNextDayResponse', (response) => {
                     if (response) {
                         resolve(response);

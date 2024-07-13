@@ -15,9 +15,9 @@ export class RecommendationController {
         }
     }
 
-    async rolloutItems(itemIds: any) {
+    async rolloutItems(items: any) {
         try {
-            const response = await this.recommendationService.rolloutItems(itemIds);
+            const response = await this.recommendationService.rolloutItems(items);
             return response;
         } catch (error) {
             return error;
@@ -26,8 +26,8 @@ export class RecommendationController {
 
     async fetchFinalMenuRecommendation() {
         try {
-            const recommendedMenu = await this.recommendationService.fetchFinalMenuRecommendation();
-            return recommendedMenu;
+            const response = await this.recommendationService.fetchFinalMenuRecommendation();
+            return response;
         } catch (error) {
             return error;
         }

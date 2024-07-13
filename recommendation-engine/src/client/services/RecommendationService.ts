@@ -38,9 +38,9 @@ export class RecommendationService {
 
     }
 
-    async rollOutItems(itemIds: any) {
+    async rollOutItems(items: any) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('rolloutItemsChoiceForNextDay', itemIds);
+            this.socket.emit('rolloutItemsChoiceForNextDay', items);
             this.socket.on('rolloutItemsChoiceForNextDayResponse', (response) => {
                 if(response) {
                     resolve(response);

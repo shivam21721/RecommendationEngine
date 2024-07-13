@@ -15,6 +15,7 @@ const readline_1 = require("../readline");
 const MenuItemService_1 = require("../services/MenuItemService");
 const FeedbackService_1 = require("../services/FeedbackService");
 const NotificationService_1 = require("../services/NotificationService");
+const Menu_1 = require("../../utils/Menu");
 const menuItemService = new MenuItemService_1.MenuItemService(AuthService_1.socket);
 const feedbackService = new FeedbackService_1.FeedbackService(AuthService_1.socket);
 const notificationService = new NotificationService_1.NotificationService(AuthService_1.socket);
@@ -63,8 +64,8 @@ function handleEmployeeChoice(choice, userId) {
 function handleViewTodayMenu(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const todayMenu = yield menuItemService.getTodayMenu();
-            console.table(todayMenu);
+            const menuItems = yield menuItemService.getTodayMenu();
+            (0, Menu_1.showMenu)(menuItems);
             showEmployeeOptions(userId);
         }
         catch (error) {
@@ -76,7 +77,8 @@ function handleViewNextDayMenu(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const menuItems = yield menuItemService.fetchNextDayFinalizedMenu();
-            console.log(menuItems);
+            (0, Menu_1.showMenu)(menuItems);
+            showEmployeeOptions(userId);
         }
         catch (error) {
             console.log('Error: ', error);
@@ -86,8 +88,8 @@ function handleViewNextDayMenu(userId) {
 function handleViewRolledOutMenu(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const rolledOutMenu = yield menuItemService.getRolledOutMenu();
-            console.table(rolledOutMenu);
+            const menuItems = yield menuItemService.getRolledOutMenu();
+            (0, Menu_1.showMenu)(menuItems);
             const votedItems = yield (0, readline_1.asyncUserInput)('Enter the comma seperated menu items id to vote: ');
             const voteResponse = yield menuItemService.voteForMenuItem([...votedItems.split(',')]);
             if (voteResponse) {

@@ -21,6 +21,7 @@ export class RecommendationRepository {
                WHERE isPrepared = TRUE
                GROUP BY menuItemId
           ) ri ON m.id = ri.menuItemId
+          where m.availability = TRUE
           GROUP BY c.id, m.id
           ORDER BY c.name`;
 
@@ -38,12 +39,13 @@ export class RecommendationRepository {
     async addRecommendedItems(items: any) {
           const connection = await this.pool.getConnection();
           try {
-               const placeholders = items.map(() => '(?, ?)').join(', ');
+               const placeholders = items.map(() => '(?, ?, ?)').join(', ');
                const query = `
-                   INSERT INTO RecommendedItem (recommendationDate, menuItemId)
+                   INSERT INTO RecommendedItem (recommendationDate, menuItemId, mealType)
                    VALUES ${placeholders}
                `;
-               const values = items.flatMap((item: any) => [item.date, item.id]);
+               const values = items.flatMap((item: any) => [item.date, item.id, item.mealType]);
+               console.log('values', values);
                const [rows] = await connection.execute(query, values);
                return rows;
           } catch (error) {
@@ -58,6 +60,7 @@ export class RecommendationRepository {
           mi.name AS menuItemName,
           mc.name AS categoryName,
           ri.voteCount,
+          ri.mealType,
           AVG(f.rating) AS avgRating,
           AVG(f.sentimentScore) AS avgSentiment,
           (
@@ -78,7 +81,7 @@ export class RecommendationRepository {
           WHERE 
                ri.recommendationDate = CURRENT_DATE()
           GROUP BY 
-               mi.id, mi.name, mc.name, ri.voteCount
+               mi.id, mi.name, mc.name, ri.voteCount, ri.mealType
           ORDER BY 
                mi.id;`;
 
@@ -117,6 +120,7 @@ export class RecommendationRepository {
           mi.name AS menuItemName,
           mc.name AS categoryName,
           mi.price AS menuItemPrice,
+          ri.mealType,
           AVG(f.rating) AS averageRating,
           AVG(f.sentimentScore) AS averageSentimentScore
           FROM 
@@ -131,11 +135,10 @@ export class RecommendationRepository {
           ri.isPrepared = 1
           AND ri.recommendationDate = CURDATE() - INTERVAL 1 DAY
           GROUP BY 
-          mi.id, mi.name, mc.name, mi.price
+          mi.id, mi.name, mc.name, mi.price, ri.mealType
           ORDER BY 
           mi.id;`;
           const [result] = await connection.execute(query);
-          console.log('rep: ', result);
           return result;
      } catch(error) {
           console.log("Error while fetching the today menu");
@@ -150,6 +153,7 @@ export class RecommendationRepository {
           mi.name AS menuItemName,
           mc.name AS categoryName,
           mi.price AS menuItemPrice,
+          ri.mealType,
           AVG(f.rating) AS averageRating,
           AVG(f.sentimentScore) AS averageSentimentScore
           FROM 
@@ -164,7 +168,7 @@ export class RecommendationRepository {
           ri.isPrepared = 1
           AND ri.recommendationDate = CURDATE() 
           GROUP BY 
-          mi.id, mi.name, mc.name, mi.price
+          mi.id, mi.name, mc.name, mi.price, ri.mealType
           ORDER BY 
           mi.id;`;
      try {

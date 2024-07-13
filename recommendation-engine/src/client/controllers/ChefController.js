@@ -15,6 +15,7 @@ const readline_1 = require("../readline");
 const MenuItemService_1 = require("../services/MenuItemService");
 const NotificationService_1 = require("../services/NotificationService");
 const RecommendationService_1 = require("../services/RecommendationService");
+const Menu_1 = require("../../utils/Menu");
 const menuItemService = new MenuItemService_1.MenuItemService(AuthService_1.socket);
 const notificationService = new NotificationService_1.NotificationService(AuthService_1.socket);
 const recommendationService = new RecommendationService_1.RecommendationService(AuthService_1.socket);
@@ -40,14 +41,7 @@ function handleChefChoice(choice, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         switch (choice) {
             case '1':
-                try {
-                    const menuItems = yield menuItemService.getMenuItems();
-                    console.log(menuItems);
-                    showChefOptions(userId);
-                }
-                catch (error) {
-                    console.log('Error: ', error);
-                }
+                handleViewMenuItem(userId);
                 break;
             case '2':
                 handleRollOutItemsForNextDay(userId);
@@ -67,16 +61,33 @@ function handleChefChoice(choice, userId) {
         }
     });
 }
+function handleViewMenuItem(userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const menuItems = yield menuItemService.getMenuItems();
+            (0, Menu_1.showCategoryBasedMenuItems)(menuItems);
+            showChefOptions(userId);
+        }
+        catch (error) {
+            console.log('Error: ', error);
+        }
+    });
+}
 function handleRollOutItemsForNextDay(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const menuItems = yield recommendationService.getNextDayMenuRecommendation();
-            console.table(menuItems);
+            (0, Menu_1.showCategoryBasedMenuItems)(menuItems);
             const selectedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter comma separated breakfast items to roll out: ');
             const selectedLunchItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Lunch items to roll out: ');
             const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');
             const validationDetail = yield recommendationService.validateSelectedItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems }, menuItems);
-            const response = yield recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
+            var selectedItems = {
+                breakfast: selectedBreakfastItems.split(','),
+                lunch: selectedLunchItems.split(','),
+                dinner: selectedDinnerItems.split(',')
+            };
+            const response = yield recommendationService.rollOutItems(selectedItems);
             showChefOptions(userId);
         }
         catch (error) {
@@ -88,7 +99,12 @@ function handleRolloutFinalizedItems(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const menuItems = yield recommendationService.getFinalMenuRecommendation();
-            console.table(menuItems);
+            console.log('BREAKFAST ITEMS');
+            console.table(menuItems.breakfast);
+            console.log('LUNCH ITEMS');
+            console.table(menuItems.lunch);
+            console.log('DINNER ITEMS');
+            console.table(menuItems.dinner);
             const selectedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter comma separated breakfast items to roll out: ');
             const selectedLunchItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Lunch items to roll out: ');
             const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');

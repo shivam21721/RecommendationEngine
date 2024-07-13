@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FeedbackService = void 0;
 const FeedbackRepository_1 = require("../repositories/FeedbackRepository");
+const Sentiment_1 = require("../utils/Sentiment");
 class FeedbackService {
     constructor() {
         this.feedbackRepository = new FeedbackRepository_1.FeedbackRepository();
@@ -20,7 +21,7 @@ class FeedbackService {
             try {
                 const date = new Date();
                 const dateString = date.toISOString().slice(0, 10);
-                const sentimentScore = 5;
+                const sentimentScore = (0, Sentiment_1.sentimentScoreGenerator)(feedback.comment);
                 feedback = Object.assign(Object.assign({}, feedback), { feedbackDate: dateString, sentimentScore });
                 const response = yield this.feedbackRepository.addFeedback(feedback);
                 return response;

@@ -1,5 +1,6 @@
 import { MenuItemRepository } from "../repositories/MenuItemRepository";
 import { MenuItem } from "../models/MenuItem";
+import { constructMenu } from "../utils/Menu";
 
 export class MenuItemService {
     private menuItemRepository: MenuItemRepository;
@@ -25,7 +26,8 @@ export class MenuItemService {
     }
 
     async fetchRolledOutMenu() {
-        return await this.menuItemRepository.fetchRolledOutMenu();
+        const menuItems =  await this.menuItemRepository.fetchRolledOutMenu();
+        return constructMenu(menuItems);
     }
 
     async updateVotedMenuItems(itemIds: any) {

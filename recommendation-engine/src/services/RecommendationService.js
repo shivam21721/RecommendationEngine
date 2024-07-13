@@ -12,7 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RecommendationService = void 0;
 const RecommendationRepository_1 = require("../repositories/RecommendationRepository");
 const NotificationService_1 = require("./NotificationService");
-const RecommendationEngine_1 = require("../utility/RecommendationEngine");
+const RecommendationEngine_1 = require("../utils/RecommendationEngine");
+const Menu_1 = require("../utils/Menu");
 class RecommendationService {
     constructor() {
         this.recommendationRepository = new RecommendationRepository_1.RecommendationRepository();
@@ -29,15 +30,22 @@ class RecommendationService {
             }
         });
     }
-    rolloutItems(itemIds) {
+    rolloutItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                var recommendedItemsData = itemIds.map((id) => {
+                var breakfastItems = items.breakfast.map((id) => {
                     const date = new Date();
-                    console.log({ id: parseInt(id), date });
-                    return { id: parseInt(id), date: date.toISOString().slice(0, 10) };
+                    return { id: parseInt(id), mealType: 'breakfast', date: date.toISOString().slice(0, 10) };
                 });
-                const response = yield this.recommendationRepository.addRecommendedItems(recommendedItemsData);
+                var lunchItems = items.lunch.map((id) => {
+                    const date = new Date();
+                    return { id: parseInt(id), mealType: 'lunch', date: date.toISOString().slice(0, 10) };
+                });
+                var dinnerItems = items.dinner.map((id) => {
+                    const date = new Date();
+                    return { id: parseInt(id), mealType: 'dinner', date: date.toISOString().slice(0, 10) };
+                });
+                const response = yield this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
                 yield this.notificationService.sendNotificationForRolledOutItems();
                 return response;
             }
@@ -50,7 +58,25 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const recommendedMenu = yield this.recommendationRepository.fetchFinalMenuRecommendation();
-                return (0, RecommendationEngine_1.prepareRecommendationForFinalMenu)(recommendedMenu);
+                const sortedRecommendedMenu = (0, RecommendationEngine_1.prepareRecommendationForFinalMenu)(recommendedMenu);
+                console.log(sortedRecommendedMenu);
+                const response = {};
+                response.breakfast = sortedRecommendedMenu.filter((item) => {
+                    if (item.mealType === 'breakfast')
+                        return true;
+                    return false;
+                });
+                response.lunch = sortedRecommendedMenu.filter((item) => {
+                    if (item.mealType === 'lunch')
+                        return true;
+                    return false;
+                });
+                response.dinner = sortedRecommendedMenu.filter((item) => {
+                    if (item.mealType === 'dinner')
+                        return true;
+                    return false;
+                });
+                return response;
             }
             catch (error) {
                 throw error;
@@ -72,7 +98,23 @@ class RecommendationService {
     getPreparedMenuForToday() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = this.recommendationRepository.getPreparedMenuForToday();
+                const menuItems = yield this.recommendationRepository.getPreparedMenuForToday();
+                const response = {};
+                response.breakfast = menuItems.filter((item) => {
+                    if (item.mealType === 'breakfast')
+                        return true;
+                    return false;
+                });
+                response.lunch = menuItems.filter((item) => {
+                    if (item.mealType === 'lunch')
+                        return true;
+                    return false;
+                });
+                response.dinner = menuItems.filter((item) => {
+                    if (item.mealType === 'dinner')
+                        return true;
+                    return false;
+                });
                 return response;
             }
             catch (error) {
@@ -84,7 +126,7 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const menuItems = yield this.recommendationRepository.getNextDayFinalizedMenu();
-                return menuItems;
+                return (0, Menu_1.constructMenu)(menuItems);
             }
             catch (error) {
                 throw error;

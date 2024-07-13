@@ -3,6 +3,7 @@ import { asyncUserInput } from "../readline";
 import { MenuItemService } from "../services/MenuItemService";
 import { FeedbackService } from "../services/FeedbackService";
 import { NotificationService } from "../services/NotificationService";
+import { showMenu } from "../../utils/Menu";
 
 const menuItemService = new MenuItemService(socket);
 const feedbackService = new FeedbackService(socket);
@@ -51,8 +52,8 @@ async function handleEmployeeChoice(choice: string, userId: number) {
 
 async function handleViewTodayMenu(userId: number) {
     try {
-        const todayMenu = await menuItemService.getTodayMenu();
-        console.table(todayMenu);
+        const menuItems: any = await menuItemService.getTodayMenu();
+        showMenu(menuItems);
         showEmployeeOptions(userId);
     } catch (error) {
         console.log("Error: ", error);
@@ -62,7 +63,7 @@ async function handleViewTodayMenu(userId: number) {
 async function handleViewNextDayMenu(userId: any) {
     try {
         const menuItems = await menuItemService.fetchNextDayFinalizedMenu();
-        console.log(menuItems);
+        showMenu(menuItems);
         showEmployeeOptions(userId);
     } catch(error) {
         console.log('Error: ', error);
@@ -71,8 +72,8 @@ async function handleViewNextDayMenu(userId: any) {
 
 async function handleViewRolledOutMenu(userId: number) {
     try {
-        const rolledOutMenu = await menuItemService.getRolledOutMenu();
-        console.table(rolledOutMenu);
+        const menuItems = await menuItemService.getRolledOutMenu();
+        showMenu(menuItems);
         const votedItems = await asyncUserInput('Enter the comma seperated menu items id to vote: ');
         const voteResponse = await menuItemService.voteForMenuItem([...votedItems.split(',')]);
         if(voteResponse) {

@@ -3,6 +3,7 @@ import { asyncUserInput } from "../readline";
 import { MenuItemService } from "../services/MenuItemService";
 import { NotificationService } from "../services/NotificationService";
 import { RecommendationService } from "../services/RecommendationService";
+import { showCategoryBasedMenuItems } from "../../utils/Menu";
 
 const menuItemService = new MenuItemService(socket);
 const notificationService = new NotificationService(socket);
@@ -29,13 +30,7 @@ export async function showChefOptions(userId: any) {
 async function handleChefChoice(choice: string, userId: any) {
     switch(choice) {
         case '1':
-            try {
-                const menuItems = await menuItemService.getMenuItems();
-                console.log(menuItems);
-                showChefOptions(userId);
-            } catch(error) {
-                console.log('Error: ', error);
-            }
+            handleViewMenuItem(userId);
             break;
         case '2':
             handleRollOutItemsForNextDay(userId);
@@ -57,15 +52,30 @@ async function handleChefChoice(choice: string, userId: any) {
     }
 }
 
+async function handleViewMenuItem(userId: any) {
+    try {
+        const menuItems = await menuItemService.getMenuItems();
+        showCategoryBasedMenuItems(menuItems);
+        showChefOptions(userId);
+    } catch(error) {
+        console.log('Error: ', error);
+    }
+}
+
 async function handleRollOutItemsForNextDay(userId: any) {
     try {
         const menuItems = await recommendationService.getNextDayMenuRecommendation();
-        console.table(menuItems);
+        showCategoryBasedMenuItems(menuItems);
         const selectedBreakfastItems = await asyncUserInput('Enter comma separated breakfast items to roll out: ');
         const selectedLunchItems = await asyncUserInput('Enter comma separated Lunch items to roll out: ');
         const selectedDinnerItems = await asyncUserInput('Enter comma separated Dinner items to roll out: ');
         const validationDetail = await recommendationService.validateSelectedItems({breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems}, menuItems);
-        const response = await recommendationService.rollOutItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
+        var selectedItems = {
+            breakfast: selectedBreakfastItems.split(','),
+            lunch: selectedLunchItems.split(','),
+            dinner: selectedDinnerItems.split(',')
+        }
+        const response = await recommendationService.rollOutItems(selectedItems);
         showChefOptions(userId);
     } catch(error) {
         console.log('Error: ',error);
@@ -74,8 +84,13 @@ async function handleRollOutItemsForNextDay(userId: any) {
 
 async function handleRolloutFinalizedItems(userId: any) {
     try {
-        const menuItems = await recommendationService.getFinalMenuRecommendation();
-        console.table(menuItems);
+        const menuItems: any = await recommendationService.getFinalMenuRecommendation();
+        console.log('BREAKFAST ITEMS');
+        console.table(menuItems.breakfast);
+        console.log('LUNCH ITEMS');
+        console.table(menuItems.lunch);
+        console.log('DINNER ITEMS');
+        console.table(menuItems.dinner);
         const selectedBreakfastItems = await asyncUserInput('Enter comma separated breakfast items to roll out: ');
         const selectedLunchItems = await asyncUserInput('Enter comma separated Lunch items to roll out: ');
         const selectedDinnerItems = await asyncUserInput('Enter comma separated Dinner items to roll out: ');

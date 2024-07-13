@@ -1,4 +1,5 @@
 import { FeedbackRepository } from "../repositories/FeedbackRepository"
+import { sentimentScoreGenerator } from "../utils/Sentiment";
 export class FeedbackService {
     private feedbackRepository: FeedbackRepository;
 
@@ -10,7 +11,7 @@ export class FeedbackService {
         try {
             const date = new Date();
             const dateString = date.toISOString().slice(0,10);
-            const sentimentScore = 5;
+            const sentimentScore = sentimentScoreGenerator(feedback.comment);
             feedback = {...feedback, feedbackDate: dateString, sentimentScore};
             const response = await this.feedbackRepository.addFeedback(feedback);
             return response;

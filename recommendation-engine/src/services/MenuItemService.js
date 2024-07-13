@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuItemService = void 0;
 const MenuItemRepository_1 = require("../repositories/MenuItemRepository");
+const Menu_1 = require("../utils/Menu");
 class MenuItemService {
     constructor() {
         this.menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
@@ -37,7 +38,8 @@ class MenuItemService {
     }
     fetchRolledOutMenu() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.fetchRolledOutMenu();
+            const menuItems = yield this.menuItemRepository.fetchRolledOutMenu();
+            return (0, Menu_1.constructMenu)(menuItems);
         });
     }
     updateVotedMenuItems(itemIds) {

@@ -66,6 +66,7 @@ export class MenuItemRepository {
                 mi.name AS menuItemName,
                 mc.name AS categoryName,
                 mi.price AS menuItemPrice,
+                ri.mealType,
                 AVG(f.rating) AS averageRating,
                 AVG(f.sentimentScore) AS averageSentimentScore
                 FROM 
@@ -79,7 +80,7 @@ export class MenuItemRepository {
                 WHERE 
                 ri.recommendationDate = CURDATE()
                 GROUP BY 
-                mi.id, mi.name, mc.name, mi.price
+                mi.id, mi.name, mc.name, mi.price, ri.mealType
                 ORDER BY 
                 mi.id;`;
             const [result] = await connection.execute(query);

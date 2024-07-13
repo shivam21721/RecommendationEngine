@@ -26,10 +26,10 @@ class RecommendationController {
             }
         });
     }
-    rolloutItems(itemIds) {
+    rolloutItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.recommendationService.rolloutItems(itemIds);
+                const response = yield this.recommendationService.rolloutItems(items);
                 return response;
             }
             catch (error) {
@@ -40,8 +40,8 @@ class RecommendationController {
     fetchFinalMenuRecommendation() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const recommendedMenu = yield this.recommendationService.fetchFinalMenuRecommendation();
-                return recommendedMenu;
+                const response = yield this.recommendationService.fetchFinalMenuRecommendation();
+                return response;
             }
             catch (error) {
                 return error;

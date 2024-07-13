@@ -57,12 +57,13 @@ class RecommendationRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const placeholders = items.map(() => '(?, ?)').join(', ');
+                const placeholders = items.map(() => '(?, ?, ?)').join(', ');
                 const query = `
-                   INSERT INTO RecommendedItem (recommendationDate, menuItemId)
+                   INSERT INTO RecommendedItem (recommendationDate, menuItemId, mealType)
                    VALUES ${placeholders}
                `;
-                const values = items.flatMap((item) => [item.date, item.id]);
+                const values = items.flatMap((item) => [item.date, item.id, item.mealType]);
+                console.log('values', values);
                 const [rows] = yield connection.execute(query, values);
                 return rows;
             }
@@ -79,6 +80,7 @@ class RecommendationRepository {
           mi.name AS menuItemName,
           mc.name AS categoryName,
           ri.voteCount,
+          ri.mealType,
           AVG(f.rating) AS avgRating,
           AVG(f.sentimentScore) AS avgSentiment,
           (
@@ -99,7 +101,7 @@ class RecommendationRepository {
           WHERE 
                ri.recommendationDate = CURRENT_DATE()
           GROUP BY 
-               mi.id, mi.name, mc.name, ri.voteCount
+               mi.id, mi.name, mc.name, ri.voteCount, ri.mealType
           ORDER BY 
                mi.id;`;
             try {
@@ -142,6 +144,7 @@ class RecommendationRepository {
           mi.name AS menuItemName,
           mc.name AS categoryName,
           mi.price AS menuItemPrice,
+          ri.mealType,
           AVG(f.rating) AS averageRating,
           AVG(f.sentimentScore) AS averageSentimentScore
           FROM 
@@ -156,11 +159,10 @@ class RecommendationRepository {
           ri.isPrepared = 1
           AND ri.recommendationDate = CURDATE() - INTERVAL 1 DAY
           GROUP BY 
-          mi.id, mi.name, mc.name, mi.price
+          mi.id, mi.name, mc.name, mi.price, ri.mealType
           ORDER BY 
           mi.id;`;
                 const [result] = yield connection.execute(query);
-                console.log('rep: ', result);
                 return result;
             }
             catch (error) {
@@ -177,6 +179,7 @@ class RecommendationRepository {
           mi.name AS menuItemName,
           mc.name AS categoryName,
           mi.price AS menuItemPrice,
+          ri.mealType,
           AVG(f.rating) AS averageRating,
           AVG(f.sentimentScore) AS averageSentimentScore
           FROM 
@@ -191,7 +194,7 @@ class RecommendationRepository {
           ri.isPrepared = 1
           AND ri.recommendationDate = CURDATE() 
           GROUP BY 
-          mi.id, mi.name, mc.name, mi.price
+          mi.id, mi.name, mc.name, mi.price, ri.mealType
           ORDER BY 
           mi.id;`;
             try {
