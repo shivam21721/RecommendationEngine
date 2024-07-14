@@ -18,11 +18,17 @@ class RecommendationController {
     getNextDayMenuRecommendation() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const recommendedMenu = yield this.recommendationService.getNextDayMenuRecommendation();
-                return recommendedMenu;
+                const response = yield this.recommendationService.getNextDayMenuRecommendation();
+                return response;
             }
             catch (error) {
-                return error;
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }
@@ -33,7 +39,13 @@ class RecommendationController {
                 return response;
             }
             catch (error) {
-                return error;
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }
@@ -44,7 +56,13 @@ class RecommendationController {
                 return response;
             }
             catch (error) {
-                return error;
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }
@@ -55,7 +73,13 @@ class RecommendationController {
                 return response;
             }
             catch (error) {
-                return error;
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }

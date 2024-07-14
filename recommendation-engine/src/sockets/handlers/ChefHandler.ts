@@ -10,13 +10,13 @@ const notificationController = new NotificationController();
 
 export function handleChef(socket: Socket, user: any) {
     socket.on('getMenuItems', async () => {
-        const menuItems = await menuItemController.getMenuItems();
-        socket.emit('getMenuItemsResponse', menuItems);
+        const response = await menuItemController.getMenuItems();
+        socket.emit('getMenuItemsResponse', response);
     });
 
     socket.on('getNextDayMenuRecommendation', async () => {
-        const menuItems = await recommendationController.getNextDayMenuRecommendation();
-        socket.emit('getNextDayMenuRecommendationResponse', menuItems);
+        const response = await recommendationController.getNextDayMenuRecommendation();
+        socket.emit('getNextDayMenuRecommendationResponse', response);
     });
 
     socket.on('rolloutItemsChoiceForNextDay', async (items: any) => {
@@ -25,17 +25,17 @@ export function handleChef(socket: Socket, user: any) {
     });
  
     socket.on('getFinalMenuRecommendation', async () => {
-        const menuItems = await recommendationController.fetchFinalMenuRecommendation();
-        socket.emit('getFinalMenuRecommendationResponse', menuItems);
+        const response = await recommendationController.fetchFinalMenuRecommendation();
+        socket.emit('getFinalMenuRecommendationResponse', response);
     });   
 
     socket.on('rolloutFinalizedItems', async (items: any) => {
-        const response = recommendationController.rolloutFinalizedMenuItems(items);
+        const response = await recommendationController.rolloutFinalizedMenuItems(items);
         socket.emit('rolloutFinalizedItemsResponse', response);
     });
 
     socket.on('fetchUserNotifications', async (userId) => {
-        const notifications = await notificationController.getUserNotifications(userId);
-        socket.emit('fetchUserNotificationsResponse', notifications);
+        const response = await notificationController.getUserNotifications(userId);
+        socket.emit('fetchUserNotificationsResponse', response);
     })
 }

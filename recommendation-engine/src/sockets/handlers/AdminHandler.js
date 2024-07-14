@@ -14,12 +14,12 @@ const MenuItemController_1 = require("../../controllers/MenuItemController");
 const menuItemController = new MenuItemController_1.MenuItemController();
 function handleAdmin(socket, user) {
     socket.on('getMenuItems', () => __awaiter(this, void 0, void 0, function* () {
-        const menuItems = yield menuItemController.getMenuItems();
-        socket.emit('getMenuItemsResponse', menuItems);
+        console.log('inside handler');
+        const response = yield menuItemController.getMenuItems();
+        socket.emit('getMenuItemsResponse', response);
     }));
     socket.on('addMenuItem', (itemData) => __awaiter(this, void 0, void 0, function* () {
         const response = yield menuItemController.addMenuItem(itemData);
-        console.log('response: ', response);
         socket.emit('addMenuItemResponse', response);
     }));
     socket.on('deleteMenuItem', (id) => __awaiter(this, void 0, void 0, function* () {

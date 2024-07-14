@@ -1,72 +1,33 @@
 import db from "../db/db";
+import { QueryResult } from "../interfaces/Interface";
 
 export class FeedbackRepository {
     private pool = db.getPool();
 
-    async addFeedback(feedback: any) {
+    async addFeedback(feedback: any): Promise<number> {
         const connection = await this.pool.getConnection();
         const { userId, menuItemId, comment, rating, feedbackDate, sentimentScore } = feedback;
-        console.log(userId, menuItemId, comment, rating, feedbackDate, sentimentScore);
         try {
-            const [result] = await connection.execute(
-                'INSERT INTO Feedback (userId, menuItemId, comment, rating, sentimentScore, feedbackDate) VALUES (?, ?, ?, ?, ?, ?)',
-                [userId, menuItemId, comment, rating, sentimentScore, feedbackDate]
-            );
-            return (result as any).insertId; 
+            const query = 'INSERT INTO Feedback (userId, menuItemId, comment, rating, sentimentScore, feedbackDate) VALUES (?, ?, ?, ?, ?, ?)';
+            const values = [userId, menuItemId, comment, rating, sentimentScore, feedbackDate];
+            const [result] = await connection.execute(query, values);
+            return (result as QueryResult).insertId; 
         } catch (error) {
-            console.error('Error adding feedback:', error);
-            throw error;
+            throw new Error("Error while adding the feedback: " + error);
         } finally {
             connection.release();
         }
-
     };
 
     async getAllFeedbackByMenuItem(menuItemId: number) {
         const connection = await this.pool.getConnection();
         try {
-            const [rows] = await connection.execute(
-                'SELECT * FROM Feedback WHERE menuItemId = ?',
-                [menuItemId]
-            );
-            return rows;
+            const query = 'SELECT * FROM Feedback WHERE menuItemId = ?';
+            const values = [menuItemId];
+            const [result] = await connection.execute(query, values);
+            return result;
         } catch (error) {
-            console.error('Error fetching feedback:', error);
-            throw error;
-        } finally {
-            connection.release();
-        }
-    };
-
-    async getAverageSentimentScoreByMenuItem(menuItemId: number) {
-        const connection = await this.pool.getConnection();
-        try {
-            const [result] = await connection.execute(
-                'SELECT AVG(sentimentScore) AS avgSentimentScore FROM Feedback WHERE menuItemId = ?',
-                [menuItemId]
-            );
-            const avgSentimentScore = (result as any)[0].avgSentimentScore || 0; 
-            return parseFloat(avgSentimentScore.toFixed(2)); 
-        } catch (error) {
-            console.error('Error calculating average sentiment score:', error);
-            throw error;
-        } finally {
-            connection.release();
-        }
-    };
-
-    async getAverageRatingByMenuItem(menuItemId: number) {
-        const connection = await this.pool.getConnection();
-        try {
-            const [result] = await connection.execute(
-                'SELECT AVG(rating) AS avgRating FROM Feedback WHERE menuItemId = ?',
-                [menuItemId]
-            );
-            const avgRating = (result as any)[0].avgRating || 0; 
-            return parseFloat(avgRating.toFixed(2)); 
-        } catch (error) {
-            console.error('Error calculating average rating:', error);
-            throw error;
+            throw new Error('Error while fetching the Feedbacks: ' + error);
         } finally {
             connection.release();
         }

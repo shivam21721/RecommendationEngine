@@ -22,8 +22,12 @@ class MenuItemRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [rows] = yield connection.execute('SELECT * FROM MenuItem');
-                return rows;
+                const query = 'SELECT * FROM MenuItem';
+                const [result] = yield connection.execute(query);
+                return result;
+            }
+            catch (error) {
+                throw new Error("Error while fetching all menu items: " + error);
             }
             finally {
                 connection.release();
@@ -35,9 +39,13 @@ class MenuItemRepository {
             const connection = yield this.pool.getConnection();
             try {
                 const { name, categoryId, availability, price } = itemData;
-                const [result] = yield connection.execute('INSERT INTO MenuItem (name, categoryId, availability, price) VALUES (?, ?, ?, ?)', [name, categoryId, availability, price]);
-                const insertId = result.insertId;
-                return { id: insertId, name, categoryId, price, availability };
+                const query = 'INSERT INTO MenuItem (name, categoryId, availability, price) VALUES (?, ?, ?, ?)';
+                const values = [name, categoryId, availability, price];
+                const [result] = yield connection.execute(query, values);
+                return result.insertId;
+            }
+            catch (error) {
+                throw new Error("Error while adding the menu item: " + error);
             }
             finally {
                 connection.release();
@@ -48,13 +56,18 @@ class MenuItemRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [result] = yield connection.execute('DELETE FROM MenuItem WHERE id = ?', [id]);
+                const query = 'DELETE FROM MenuItem WHERE id = ?';
+                const values = [id];
+                const [result] = yield connection.execute(query, values);
                 if (result.affectedRows > 0) {
                     return id;
                 }
                 else {
                     throw new Error('Item not found or already deleted');
                 }
+            }
+            catch (error) {
+                throw new Error("Error while deleting menu item: " + error);
             }
             finally {
                 connection.release();
@@ -66,13 +79,18 @@ class MenuItemRepository {
             const connection = yield this.pool.getConnection();
             try {
                 const { id, name, categoryId, availability, price } = itemData;
-                const [result] = yield connection.execute('UPDATE MenuItem SET name = ?, categoryId = ?, price = ?, availability = ? WHERE id = ?', [name, categoryId, price, availability, id]);
+                const query = 'UPDATE MenuItem SET name = ?, categoryId = ?, price = ?, availability = ? WHERE id = ?';
+                const values = [name, categoryId, price, availability, id];
+                const [result] = yield connection.execute(query, values);
                 if (result.affectedRows > 0) {
                     return id;
                 }
                 else {
-                    throw new Error('Item not found or already deleted');
+                    throw new Error('Item not found');
                 }
+            }
+            catch (error) {
+                throw new Error("Error while updating the menu item: " + error);
             }
             finally {
                 connection.release();
@@ -109,7 +127,10 @@ class MenuItemRepository {
                 return result;
             }
             catch (error) {
-                throw error;
+                throw new Error("Error while fetching Rolled out menu: " + error);
+            }
+            finally {
+                connection.release();
             }
         });
     }
@@ -125,11 +146,18 @@ class MenuItemRepository {
                 AND menuItemId IN (${ids});
             `;
                 const [result] = yield connection.execute(query);
-                console.log(result);
-                return result;
+                if (result.affectedRows > 0) {
+                    return result.affectedRows;
+                }
+                else {
+                    throw new Error("Failed to vote menu items, items not found");
+                }
             }
             catch (error) {
-                throw error;
+                throw new Error("Error while updating voted Menu items: " + error);
+            }
+            finally {
+                connection.release();
             }
         });
     }

@@ -1,5 +1,6 @@
 import { UserAuthenticationService } from "../services/UserAuthenticationService";
-import { User } from "../models/User";
+import { Response } from "../interfaces/Interface";
+
 export class UserAuthenticationController {
     private userAuthenticationService: UserAuthenticationService;
 
@@ -7,14 +8,18 @@ export class UserAuthenticationController {
         this.userAuthenticationService = new UserAuthenticationService();
     }
 
-    async login(username: string, password: string): Promise<User | undefined> {
+    async login(username: string, password: string): Promise<Response<any | []>> {
         try {
-            const user = await this.userAuthenticationService.login(username, password);
-            return user;
+            const response = await this.userAuthenticationService.login(username, password);
+            return response;
         } catch (error ) {
-            if (error instanceof Error) {
-                throw new Error(error.message);
+            console.error((error as Error).message);
+            const response: Response<[]> = {
+                status: 'error',
+                message: (error as Error).message,
+                data: []
             }
+            return response;
         }
     }
 }

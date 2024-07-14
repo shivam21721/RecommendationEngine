@@ -19,15 +19,25 @@ class UserAuthenticationService {
     }
     login(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.userRepository.findUserByUsername(username);
-            if (!user) {
-                throw new Error('User do not Exist');
+            try {
+                const user = yield this.userRepository.findUserByUsername(username);
+                if (!user) {
+                    throw new Error('User do not Exist');
+                }
+                const userCredentials = yield this.userAuthenticationRepository.getUserPassword(user.id);
+                if ((userCredentials === null || userCredentials === void 0 ? void 0 : userCredentials.password) !== password) {
+                    throw new Error('Invalid username or password');
+                }
+                const response = {
+                    status: 'success',
+                    message: 'User Successfully Authenticated',
+                    data: user
+                };
+                return response;
             }
-            const userCredentials = yield this.userAuthenticationRepository.getUserPassword(user.id);
-            if ((userCredentials === null || userCredentials === void 0 ? void 0 : userCredentials.password) !== password) {
-                throw new Error('Invalid username or password');
+            catch (error) {
+                throw error;
             }
-            return user;
         });
     }
 }

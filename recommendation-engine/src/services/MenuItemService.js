@@ -18,33 +18,99 @@ class MenuItemService {
     }
     getMenuItems() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.getAllMenuItems();
+            try {
+                const menuItems = yield this.menuItemRepository.getAllMenuItems();
+                const response = {
+                    status: 'success',
+                    message: 'Successfully fetched all the menu Items',
+                    data: menuItems
+                };
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
         });
     }
     addMenuItem(itemData) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.addMenuItem(itemData);
+            try {
+                const menuItemId = yield this.menuItemRepository.addMenuItem(itemData);
+                const response = {
+                    status: 'success',
+                    message: `Menu Item Successfully added with id: ${menuItemId}`,
+                    data: []
+                };
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
         });
     }
     deleteMenuItem(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.deleteMenuItem(id);
+            try {
+                const deletedItemId = yield this.menuItemRepository.deleteMenuItem(id);
+                const response = {
+                    status: 'success',
+                    message: `Menu Item Successfully Deleted with id: ${deletedItemId}`,
+                    data: []
+                };
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
         });
     }
     updateMenuItem(itemData) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.updateMenuItem(itemData);
+            try {
+                const updatedItemId = yield this.menuItemRepository.updateMenuItem(itemData);
+                const response = {
+                    status: 'success',
+                    message: `Menu Item Successfully Deleted with id: ${updatedItemId}`,
+                    data: []
+                };
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
         });
     }
     fetchRolledOutMenu() {
         return __awaiter(this, void 0, void 0, function* () {
-            const menuItems = yield this.menuItemRepository.fetchRolledOutMenu();
-            return (0, Menu_1.constructMenu)(menuItems);
+            try {
+                const menuItems = yield this.menuItemRepository.fetchRolledOutMenu();
+                const mealTypeBasedMenuItems = (0, Menu_1.constructMenu)(menuItems);
+                const response = {
+                    status: 'success',
+                    message: `Successfully fetched the menu items`,
+                    data: mealTypeBasedMenuItems
+                };
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
         });
     }
     updateVotedMenuItems(itemIds) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemRepository.updateVotedMenuItems(itemIds);
+            try {
+                const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems(itemIds);
+                const response = {
+                    status: 'success',
+                    message: `${updatedItemsCount}Items successfully voted`,
+                    data: []
+                };
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
         });
     }
 }

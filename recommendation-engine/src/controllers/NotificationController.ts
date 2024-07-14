@@ -1,4 +1,5 @@
 import { NotificationService } from "../services/NotificationService";
+import { Response, Notification } from "../interfaces/Interface";
 
 export class NotificationController {
     private notificationService: NotificationService;
@@ -7,12 +8,18 @@ export class NotificationController {
         this.notificationService = new NotificationService();
     }
 
-    async getUserNotifications(userId: any) {
+    async getUserNotifications(userId: any): Promise<Response<Notification[] | []>> {
         try {
-            const notifications = await this.notificationService.getUserNotifications(userId);
-            return notifications;
+            const response = await this.notificationService.getUserNotifications(userId);
+            return response;
         } catch(error) {
-            console.log(error);
+            console.error(error);
+            const response: Response<[]> = {
+                status: 'error',
+                message: (error as Error).message,
+                data: []
+            }
+            return response;
         }
     }
 }

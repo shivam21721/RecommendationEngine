@@ -1,20 +1,23 @@
-import { createConnection } from "mysql2/promise";
-import { UserAuthentication } from "../models/UserAuthentication";
+import { UserAuthentication } from "../interfaces/Interface";
 import db from "../db/db";
 
 export class UserAuthenticationRepository {
     private pool = db.getPool();
     
-    async getUserPassword(userId: number): Promise<UserAuthentication | null> {
+    async getUserPassword(userId: number): Promise<UserAuthentication> {
         const connection = await this.pool.getConnection();
         try {
-            const [rows] = await connection.execute('SELECT * FROM userAuthentication WHERE userId = ?', [userId]);
-            
-            if (Array.isArray(rows) && rows.length > 0) {
-                return rows[0] as UserAuthentication;
+            const query = 'SELECT * FROM userAuthentication WHERE userId = ?';
+            const values = [userId];
+            const [result] = await connection.execute(query, values);
+            if(Array.isArray(result) && result.length > 0) {
+                return result[0] as UserAuthentication;
             }
-            
-            return null;
+            else {
+                throw new Error('User not found');
+            }
+        } catch(error) {
+            throw new Error("Error while Authenticaiton: " + error);
         } finally {
             connection.release();
         }

@@ -18,11 +18,17 @@ class NotificationController {
     getUserNotifications(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const notifications = yield this.notificationService.getUserNotifications(userId);
-                return notifications;
+                const response = yield this.notificationService.getUserNotifications(userId);
+                return response;
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }

@@ -17,13 +17,15 @@ class MenuItemService {
     getMenuItems() {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
+                console.log('inside service');
                 this.socket.emit('getMenuItems');
-                this.socket.once('getMenuItemsResponse', (menuItems) => {
-                    if (menuItems) {
-                        resolve(menuItems);
+                this.socket.once('getMenuItemsResponse', (response) => {
+                    console.log('response', response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to get menu items.'));
+                        reject(new Error(response.message));
                     }
                 });
             });
@@ -34,11 +36,11 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('addMenuItem', itemData);
                 this.socket.once('addMenuItemResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to add menu item.'));
+                        reject(new Error(response.message));
                     }
                 });
             });
@@ -49,11 +51,11 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('deleteMenuItem', itemId);
                 this.socket.once('deleteMenuItemResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to delete menu item.'));
+                        reject(new Error(response.message));
                     }
                 });
             });
@@ -64,11 +66,11 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('updateMenuItem', itemData);
                 this.socket.once('updateMenuItemResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to update menu item.'));
+                        reject(new Error(response.message));
                     }
                 });
             });
@@ -79,11 +81,11 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('getTodayMenu');
                 this.socket.on('getTodayMenuResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to fetch today menu item.'));
+                        reject(new Error(response.message));
                     }
                 });
             });
@@ -94,11 +96,11 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('getRolledOutMenu');
                 this.socket.on('getRolledOutMenuResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to Rolled out menu item'));
+                        reject(new Error(response.message));
                     }
                 });
             });
@@ -109,11 +111,11 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('voteMenuItems', itemIds);
                 this.socket.on('voteMenuItemsResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error("Failed to vote the items"));
+                        reject(new Error(response.message));
                     }
                 });
             });
@@ -124,11 +126,11 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('fetchNextDayFinalizedMenu');
                 this.socket.on('fetchNextDayFinalizedMenuResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error("Failed to fetch the next day finalized menu"));
+                        reject(new Error(response.message));
                     }
                 });
             });

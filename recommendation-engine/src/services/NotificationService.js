@@ -23,7 +23,13 @@ class NotificationService {
                 const date = (new Date()).toISOString().slice(0, 10);
                 const message = `Chef has rolled out the menu items for ${date}. Please view and rolled out menu items and vote your favorites items`;
                 const type = 2;
-                yield this.notificationRepository.addNotification({ message, date, type });
+                const notificationId = yield this.notificationRepository.addNotification({ message, date, type });
+                const response = {
+                    status: 'success',
+                    message: 'Successfully sent the notification',
+                    data: []
+                };
+                return response;
             }
             catch (error) {
                 throw error;
@@ -36,7 +42,13 @@ class NotificationService {
                 const date = (new Date()).toISOString().slice(0, 10);
                 const message = `Chef has sent the finalized menu items for ${date}, you can check the menu`;
                 const type = 2;
-                yield this.notificationRepository.addNotification({ message, date, type });
+                const notificationId = yield this.notificationRepository.addNotification({ message, date, type });
+                const response = {
+                    status: 'success',
+                    message: 'Successfully sent the notification',
+                    data: []
+                };
+                return response;
             }
             catch (error) {
                 throw error;
@@ -48,7 +60,12 @@ class NotificationService {
             try {
                 const userRole = yield this.userService.getUserRole(userId);
                 const notifications = yield this.notificationRepository.getUserNotifications(userRole);
-                return notifications;
+                const response = {
+                    status: 'success',
+                    message: 'Successfully sent the notification',
+                    data: notifications
+                };
+                return response;
             }
             catch (error) {
                 throw error;

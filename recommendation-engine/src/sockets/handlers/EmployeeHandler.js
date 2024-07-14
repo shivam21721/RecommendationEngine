@@ -18,12 +18,13 @@ const feedbackController = new FeedbackController_1.FeedbackController();
 const notificationController = new NotificationController_1.NotificationController();
 function handleEmployee(socket, user) {
     socket.on('getTodayMenu', () => __awaiter(this, void 0, void 0, function* () {
-        const menuItems = yield menuItemController.getTodayMenu();
-        socket.emit('getTodayMenuResponse', menuItems);
+        const response = yield menuItemController.getTodayMenu();
+        socket.emit('getTodayMenuResponse', response);
     }));
     socket.on('getRolledOutMenu', () => __awaiter(this, void 0, void 0, function* () {
-        const rolledOutMenu = yield menuItemController.fetchRolledOutMenu();
-        socket.emit('getRolledOutMenuResponse', rolledOutMenu);
+        const response = yield menuItemController.fetchRolledOutMenu();
+        10;
+        socket.emit('getRolledOutMenuResponse', response);
     }));
     socket.on('voteMenuItems', (itemIds) => __awaiter(this, void 0, void 0, function* () {
         const response = yield menuItemController.updateVotedMenuItems(itemIds);
@@ -34,12 +35,12 @@ function handleEmployee(socket, user) {
         socket.emit('addFeedbackResponse', response);
     }));
     socket.on('fetchUserNotifications', (userId) => __awaiter(this, void 0, void 0, function* () {
-        const notifications = yield notificationController.getUserNotifications(userId);
-        socket.emit('fetchUserNotificationsResponse', notifications);
+        const response = yield notificationController.getUserNotifications(userId);
+        socket.emit('fetchUserNotificationsResponse', response);
     }));
     socket.on('fetchNextDayFinalizedMenu', () => __awaiter(this, void 0, void 0, function* () {
-        const menuItems = yield menuItemController.getNextDayFinalizedMenu();
-        socket.emit('fetchNextDayFinalizedMenuResponse', menuItems);
+        const response = yield menuItemController.getNextDayFinalizedMenu();
+        socket.emit('fetchNextDayFinalizedMenuResponse', response);
     }));
 }
 exports.handleEmployee = handleEmployee;

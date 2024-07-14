@@ -22,14 +22,14 @@ class FeedbackRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             const { userId, menuItemId, comment, rating, feedbackDate, sentimentScore } = feedback;
-            console.log(userId, menuItemId, comment, rating, feedbackDate, sentimentScore);
             try {
-                const [result] = yield connection.execute('INSERT INTO Feedback (userId, menuItemId, comment, rating, sentimentScore, feedbackDate) VALUES (?, ?, ?, ?, ?, ?)', [userId, menuItemId, comment, rating, sentimentScore, feedbackDate]);
+                const query = 'INSERT INTO Feedback (userId, menuItemId, comment, rating, sentimentScore, feedbackDate) VALUES (?, ?, ?, ?, ?, ?)';
+                const values = [userId, menuItemId, comment, rating, sentimentScore, feedbackDate];
+                const [result] = yield connection.execute(query, values);
                 return result.insertId;
             }
             catch (error) {
-                console.error('Error adding feedback:', error);
-                throw error;
+                throw new Error("Error while adding the feedback: " + error);
             }
             finally {
                 connection.release();
@@ -41,48 +41,13 @@ class FeedbackRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [rows] = yield connection.execute('SELECT * FROM Feedback WHERE menuItemId = ?', [menuItemId]);
-                return rows;
+                const query = 'SELECT * FROM Feedback WHERE menuItemId = ?';
+                const values = [menuItemId];
+                const [result] = yield connection.execute(query, values);
+                return result;
             }
             catch (error) {
-                console.error('Error fetching feedback:', error);
-                throw error;
-            }
-            finally {
-                connection.release();
-            }
-        });
-    }
-    ;
-    getAverageSentimentScoreByMenuItem(menuItemId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const connection = yield this.pool.getConnection();
-            try {
-                const [result] = yield connection.execute('SELECT AVG(sentimentScore) AS avgSentimentScore FROM Feedback WHERE menuItemId = ?', [menuItemId]);
-                const avgSentimentScore = result[0].avgSentimentScore || 0;
-                return parseFloat(avgSentimentScore.toFixed(2));
-            }
-            catch (error) {
-                console.error('Error calculating average sentiment score:', error);
-                throw error;
-            }
-            finally {
-                connection.release();
-            }
-        });
-    }
-    ;
-    getAverageRatingByMenuItem(menuItemId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const connection = yield this.pool.getConnection();
-            try {
-                const [result] = yield connection.execute('SELECT AVG(rating) AS avgRating FROM Feedback WHERE menuItemId = ?', [menuItemId]);
-                const avgRating = result[0].avgRating || 0;
-                return parseFloat(avgRating.toFixed(2));
-            }
-            catch (error) {
-                console.error('Error calculating average rating:', error);
-                throw error;
+                throw new Error('Error while fetching the Feedbacks: ' + error);
             }
             finally {
                 connection.release();

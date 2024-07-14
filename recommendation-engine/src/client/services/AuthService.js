@@ -21,11 +21,11 @@ class AuthService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('login', userCredential);
                 this.socket.on('loginResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to login'));
+                        reject(new Error(response.message));
                     }
                 });
             });

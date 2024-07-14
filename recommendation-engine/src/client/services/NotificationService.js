@@ -19,11 +19,11 @@ class NotificationService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('fetchUserNotifications', userId);
                 this.socket.on('fetchUserNotificationsResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error("Failed to fetch the notifications"));
+                        reject(new Error(response.message));
                     }
                 });
             });

@@ -2,21 +2,21 @@ import { Socket } from "socket.io";
 import { MenuItemController } from "../../controllers/MenuItemController";
 import { FeedbackController } from "../../controllers/FeedbackController";
 import { NotificationController } from "../../controllers/NotificationController";
-import { SocketAddress } from "net";
 
 const menuItemController = new MenuItemController();
 const feedbackController = new FeedbackController();
 const notificationController = new NotificationController();
 
 export function handleEmployee(socket: Socket, user: any) {
+
     socket.on('getTodayMenu', async () => {
-        const menuItems = await menuItemController.getTodayMenu();
-        socket.emit('getTodayMenuResponse', menuItems);
+        const response = await menuItemController.getTodayMenu();
+        socket.emit('getTodayMenuResponse', response);
     });
 
     socket.on('getRolledOutMenu', async () => {
-        const rolledOutMenu = await menuItemController.fetchRolledOutMenu();
-        socket.emit('getRolledOutMenuResponse', rolledOutMenu);
+        const response = await menuItemController.fetchRolledOutMenu();10
+        socket.emit('getRolledOutMenuResponse', response);
     });
 
     socket.on('voteMenuItems', async (itemIds) => {
@@ -30,12 +30,12 @@ export function handleEmployee(socket: Socket, user: any) {
     });
 
     socket.on('fetchUserNotifications', async (userId) => {
-        const notifications = await notificationController.getUserNotifications(userId);
-        socket.emit('fetchUserNotificationsResponse', notifications);
+        const response = await notificationController.getUserNotifications(userId);
+        socket.emit('fetchUserNotificationsResponse', response);
     });
 
     socket.on('fetchNextDayFinalizedMenu', async () => {
-        const menuItems = await menuItemController.getNextDayFinalizedMenu();
-        socket.emit('fetchNextDayFinalizedMenuResponse', menuItems);
+        const response = await menuItemController.getNextDayFinalizedMenu();
+        socket.emit('fetchNextDayFinalizedMenuResponse', response);
     })
 }

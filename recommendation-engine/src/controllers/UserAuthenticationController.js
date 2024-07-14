@@ -18,13 +18,17 @@ class UserAuthenticationController {
     login(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield this.userAuthenticationService.login(username, password);
-                return user;
+                const response = yield this.userAuthenticationService.login(username, password);
+                return response;
             }
             catch (error) {
-                if (error instanceof Error) {
-                    throw new Error(error.message);
-                }
+                console.error(error.message);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }

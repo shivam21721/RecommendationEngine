@@ -24,22 +24,30 @@ class NotificationRepository {
             try {
                 const { message, date, type } = notification;
                 const query = 'INSERT INTO notification (Message, Date, NotificationTypeId) VALUES (?, ?, ?)';
-                const [result] = yield connection.execute(query, [message, date, type]);
+                const values = [message, date, type];
+                const [result] = yield connection.execute(query, values);
+                if (result.insertId) {
+                    return result.insertId;
+                }
+                else {
+                    throw new Error("Failed to add the notification");
+                }
             }
             catch (error) {
-                throw error;
+                throw new Error("Error while adding the notification: " + error);
             }
             finally {
                 connection.release();
             }
         });
     }
+    ;
     getUserNotifications(type) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
                 const query = `
-             SELECT n.Message, n.Date
+             SELECT n.Message as message, n.Date as date
              FROM notification n
              JOIN NotificationType nt ON n.NotificationTypeId = nt.Id
              WHERE nt.Type = '${type}'
@@ -49,9 +57,13 @@ class NotificationRepository {
                 return result;
             }
             catch (error) {
-                throw error;
+                throw new Error("Error while fetching notificaitons: " + error);
+            }
+            finally {
+                connection.release();
             }
         });
     }
+    ;
 }
 exports.NotificationRepository = NotificationRepository;

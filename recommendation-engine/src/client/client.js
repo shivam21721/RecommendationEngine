@@ -16,14 +16,19 @@ const ChefController_1 = require("./controllers/ChefController");
 const EmployeeController_1 = require("./controllers/EmployeeController");
 AuthService_1.socket.on('connect', () => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Connected to server');
-    const userData = yield (0, AuthController_1.login)();
-    if (userData.role == 'Admin') {
-        (0, AdminController_1.showAdminOptions)();
+    try {
+        const userData = yield (0, AuthController_1.login)();
+        if (userData.role == 'Admin') {
+            (0, AdminController_1.showAdminOptions)();
+        }
+        else if (userData.role === 'Chef') {
+            (0, ChefController_1.showChefOptions)(userData.id);
+        }
+        else {
+            (0, EmployeeController_1.showEmployeeOptions)(userData.id);
+        }
     }
-    else if (userData.role === 'Chef') {
-        (0, ChefController_1.showChefOptions)(userData.id);
-    }
-    else {
-        (0, EmployeeController_1.showEmployeeOptions)(userData.id);
+    catch (error) {
+        console.error(error.message);
     }
 }));

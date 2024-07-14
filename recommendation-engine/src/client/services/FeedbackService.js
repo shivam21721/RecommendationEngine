@@ -19,11 +19,11 @@ class FeedbackService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('addFeedback', feedback);
                 this.socket.on('addFeedbackResponse', (response) => {
-                    if (response) {
-                        resolve(response);
+                    if (response.status === 'success') {
+                        resolve(response.data);
                     }
                     else {
-                        reject(new Error('Failed to add feedback'));
+                        reject(new Error(response.message));
                     }
                 });
             });

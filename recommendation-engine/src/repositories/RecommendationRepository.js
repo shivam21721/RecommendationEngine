@@ -21,31 +21,31 @@ class RecommendationRepository {
     getMenuForRecommendation() {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
-            const query = `SELECT 
+            try {
+                const query = `SELECT 
                m.id AS menuId, 
                m.name AS menuName, 
                c.name AS categoryName,
                ROUND(AVG(f.rating), 2) AS avgRating,
                ROUND(AVG(f.sentimentScore), 2) AS avgSentiment,
                COALESCE(ri.preparedCount, 0) AS preparedCount
-          FROM MenuItem m
-          JOIN MenuCategory c ON m.categoryId = c.id
-          LEFT JOIN Feedback f ON m.id = f.menuItemId
-          LEFT JOIN (
-               SELECT MenuItemId, COUNT(*) AS preparedCount
-               FROM RecommendedItem
-               WHERE isPrepared = TRUE
-               GROUP BY menuItemId
-          ) ri ON m.id = ri.menuItemId
-          GROUP BY c.id, m.id
-          ORDER BY c.name`;
-            try {
-                const [rows] = yield connection.execute(query);
-                return rows;
+               FROM MenuItem m
+               JOIN MenuCategory c ON m.categoryId = c.id
+               LEFT JOIN Feedback f ON m.id = f.menuItemId
+               LEFT JOIN (
+                    SELECT MenuItemId, COUNT(*) AS preparedCount
+                    FROM RecommendedItem
+                    WHERE isPrepared = TRUE
+                    GROUP BY menuItemId
+               ) ri ON m.id = ri.menuItemId
+               where m.availability = TRUE
+               GROUP BY c.id, m.id
+               ORDER BY c.name`;
+                const [result] = yield connection.execute(query);
+                return result;
             }
             catch (error) {
-                console.error('Error while fetching the recommendation menu:', error);
-                throw error;
+                throw new Error("Error while fetching the menu for recommendation");
             }
             finally {
                 connection.release();
@@ -63,75 +63,91 @@ class RecommendationRepository {
                    VALUES ${placeholders}
                `;
                 const values = items.flatMap((item) => [item.date, item.id, item.mealType]);
-                console.log('values', values);
-                const [rows] = yield connection.execute(query, values);
-                return rows;
+                const [result] = yield connection.execute(query, values);
+                if (result.affectedRows > 0) {
+                    return result.affectedRows;
+                }
+                else {
+                    throw new Error("Failed to insert the recommended items.");
+                }
             }
             catch (error) {
-                console.log('Error while inserting record', error.message);
-            }
-        });
-    }
-    fetchFinalMenuRecommendation() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const connection = yield this.pool.getConnection();
-            const query = `SELECT 
-          mi.id AS menuItemId,
-          mi.name AS menuItemName,
-          mc.name AS categoryName,
-          ri.voteCount,
-          ri.mealType,
-          AVG(f.rating) AS avgRating,
-          AVG(f.sentimentScore) AS avgSentiment,
-          (
-               SELECT COUNT(*)
-               FROM recommendeditem ri_sub
-               WHERE ri_sub.menuItemId = ri.menuItemId
-               AND ri_sub.isPrepared = 1
-               AND ri_sub.recommendationDate != CURRENT_DATE()
-                    ) AS preparedCount
-          FROM 
-               recommendeditem ri
-          JOIN 
-               menuitem mi ON ri.menuItemId = mi.id
-          JOIN 
-               menucategory mc ON mi.categoryId = mc.id
-          LEFT JOIN 
-               feedback f ON mi.id = f.menuItemId
-          WHERE 
-               ri.recommendationDate = CURRENT_DATE()
-          GROUP BY 
-               mi.id, mi.name, mc.name, ri.voteCount, ri.mealType
-          ORDER BY 
-               mi.id;`;
-            try {
-                const [rows] = yield connection.execute(query);
-                return rows;
-            }
-            catch (error) {
-                console.error('Error while fetching the recommendation menu:', error);
-                throw error;
+                throw new Error("Error while inserting the recommended Item: " + error);
             }
             finally {
                 connection.release();
             }
         });
     }
+    ;
+    fetchFinalMenuRecommendation() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const connection = yield this.pool.getConnection();
+            try {
+                const query = `SELECT 
+               mi.id AS menuItemId,
+               mi.name AS menuItemName,
+               mc.name AS categoryName,
+               ri.voteCount,
+               ri.mealType,
+               AVG(f.rating) AS avgRating,
+               AVG(f.sentimentScore) AS avgSentiment,
+               (
+                    SELECT COUNT(*)
+                    FROM recommendeditem ri_sub
+                    WHERE ri_sub.menuItemId = ri.menuItemId
+                    AND ri_sub.isPrepared = 1
+                    AND ri_sub.recommendationDate != CURRENT_DATE()
+                         ) AS preparedCount
+               FROM 
+                    recommendeditem ri
+               JOIN 
+                    menuitem mi ON ri.menuItemId = mi.id
+               JOIN 
+                    menucategory mc ON mi.categoryId = mc.id
+               LEFT JOIN 
+                    feedback f ON mi.id = f.menuItemId
+               WHERE 
+                    ri.recommendationDate = CURRENT_DATE()
+               GROUP BY 
+                    mi.id, mi.name, mc.name, ri.voteCount, ri.mealType
+               ORDER BY 
+                    mi.id;`;
+                const [result] = yield connection.execute(query);
+                return result;
+            }
+            catch (error) {
+                throw new Error("Error while fetching final menu recommendations: " + error);
+            }
+            finally {
+                connection.release();
+            }
+        });
+    }
+    ;
     markItemAsPrepared(itemIds) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
                 const placeholders = itemIds.map((id) => id).join(', ');
                 const query = `
-            UPDATE recommendeditem
-            SET isPrepared = 1
-            WHERE menuItemId IN (${placeholders}) AND recommendationDate = CURDATE()
-          `;
+               UPDATE recommendeditem
+               SET isPrepared = 1
+               WHERE menuItemId IN (${placeholders}) AND recommendationDate = CURDATE()
+               `;
                 const [result] = yield connection.execute(query);
+                if (result.affectedRows > 0) {
+                    return result.affectedRows;
+                }
+                else {
+                    throw new Error("Failed to mark the items as prepared");
+                }
             }
             catch (error) {
-                console.error("Error while updating prepared items");
-                throw error;
+                throw new Error("Error while marking items as prepared: " + error);
+            }
+            finally {
+                connection.release();
             }
         });
     }
@@ -140,69 +156,74 @@ class RecommendationRepository {
             const connection = yield this.pool.getConnection();
             try {
                 const query = `SELECT 
-          mi.id AS menuItemId,
-          mi.name AS menuItemName,
-          mc.name AS categoryName,
-          mi.price AS menuItemPrice,
-          ri.mealType,
-          AVG(f.rating) AS averageRating,
-          AVG(f.sentimentScore) AS averageSentimentScore
-          FROM 
-          recommendeditem ri
-          JOIN 
-          menuitem mi ON ri.menuItemId = mi.id
-          JOIN 
-          menucategory mc ON mi.categoryId = mc.id
-          LEFT JOIN 
-          feedback f ON mi.id = f.menuItemId
-          WHERE 
-          ri.isPrepared = 1
-          AND ri.recommendationDate = CURDATE() - INTERVAL 1 DAY
-          GROUP BY 
-          mi.id, mi.name, mc.name, mi.price, ri.mealType
-          ORDER BY 
-          mi.id;`;
+               mi.id AS menuItemId,
+               mi.name AS menuItemName,
+               mc.name AS categoryName,
+               mi.price AS menuItemPrice,
+               ri.mealType,
+               AVG(f.rating) AS averageRating,
+               AVG(f.sentimentScore) AS averageSentimentScore
+               FROM 
+               recommendeditem ri
+               JOIN 
+               menuitem mi ON ri.menuItemId = mi.id
+               JOIN 
+               menucategory mc ON mi.categoryId = mc.id
+               LEFT JOIN 
+               feedback f ON mi.id = f.menuItemId
+               WHERE 
+               ri.isPrepared = 1
+               AND ri.recommendationDate = CURDATE() - INTERVAL 1 DAY
+               GROUP BY 
+               mi.id, mi.name, mc.name, mi.price, ri.mealType
+               ORDER BY 
+               mi.id;`;
                 const [result] = yield connection.execute(query);
                 return result;
             }
             catch (error) {
-                console.log("Error while fetching the today menu");
-                throw error;
+                throw new Error("Error while fetching prepared Menu: " + error);
+            }
+            finally {
+                connection.release();
             }
         });
     }
     getNextDayFinalizedMenu() {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
-            const query = `SELECT 
-          mi.id AS menuItemId,
-          mi.name AS menuItemName,
-          mc.name AS categoryName,
-          mi.price AS menuItemPrice,
-          ri.mealType,
-          AVG(f.rating) AS averageRating,
-          AVG(f.sentimentScore) AS averageSentimentScore
-          FROM 
-          recommendeditem ri
-          JOIN 
-          menuitem mi ON ri.menuItemId = mi.id
-          JOIN 
-          menucategory mc ON mi.categoryId = mc.id
-          LEFT JOIN 
-          feedback f ON mi.id = f.menuItemId
-          WHERE 
-          ri.isPrepared = 1
-          AND ri.recommendationDate = CURDATE() 
-          GROUP BY 
-          mi.id, mi.name, mc.name, mi.price, ri.mealType
-          ORDER BY 
-          mi.id;`;
             try {
-                const [results] = yield connection.execute(query);
-                return results;
+                const query = `SELECT 
+               mi.id AS menuItemId,
+               mi.name AS menuItemName,
+               mc.name AS categoryName,
+               mi.price AS menuItemPrice,
+               ri.mealType,
+               AVG(f.rating) AS averageRating,
+               AVG(f.sentimentScore) AS averageSentimentScore
+               FROM 
+               recommendeditem ri
+               JOIN 
+               menuitem mi ON ri.menuItemId = mi.id
+               JOIN 
+               menucategory mc ON mi.categoryId = mc.id
+               LEFT JOIN 
+               feedback f ON mi.id = f.menuItemId
+               WHERE 
+               ri.isPrepared = 1
+               AND ri.recommendationDate = CURDATE() 
+               GROUP BY 
+               mi.id, mi.name, mc.name, mi.price, ri.mealType
+               ORDER BY 
+               mi.id;`;
+                const [result] = yield connection.execute(query);
+                return result;
             }
             catch (error) {
-                throw error;
+                throw new Error("Error while fetching next day final menu: " + error);
+            }
+            finally {
+                connection.release();
             }
         });
     }

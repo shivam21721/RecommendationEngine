@@ -1,5 +1,5 @@
 import { MenuItemRepository } from "../repositories/MenuItemRepository";
-import { MenuItem } from "../models/MenuItem";
+import { MenuItem, Response, RolledOutMenuItem } from "../interfaces/Interface";
 import { constructMenu } from "../utils/Menu";
 
 export class MenuItemService {
@@ -9,28 +9,90 @@ export class MenuItemService {
         this.menuItemRepository = new MenuItemRepository();
     } 
 
-    async getMenuItems(): Promise<MenuItem[]> {
-        return await this.menuItemRepository.getAllMenuItems();
+    async getMenuItems(): Promise<Response<MenuItem[]>> {
+        try {
+            const menuItems = await this.menuItemRepository.getAllMenuItems();
+            const response: Response<MenuItem[]> = {
+                status: 'success',
+                message: 'Successfully fetched all the menu Items',
+                data: menuItems
+            };
+            return response;
+        } catch(error) {
+            throw error;
+        }
     }
 
-    async addMenuItem(itemData: any): Promise<MenuItem> {
-        return await this.menuItemRepository.addMenuItem(itemData);
+    async addMenuItem(itemData: any): Promise<Response<[]>> {
+        try {
+            const menuItemId = await this.menuItemRepository.addMenuItem(itemData);
+            const response: Response<[]> =  {
+                status: 'success',
+                message: `Menu Item Successfully added with id: ${menuItemId}`,
+                data: []
+            };
+            return response;
+        } catch(error) {
+            throw error;
+        }
+        
     }
 
-    async deleteMenuItem(id: number): Promise<number> {
-        return await this.menuItemRepository.deleteMenuItem(id);
+    async deleteMenuItem(id: number): Promise<Response<[]>> {
+        try {
+            const deletedItemId = await this.menuItemRepository.deleteMenuItem(id);
+            const response: Response<[]> =  {
+                status: 'success',
+                message: `Menu Item Successfully Deleted with id: ${deletedItemId}`,
+                data: []
+            };
+            return response;
+        } catch(error) {
+            throw error;
+        }
+        
     }
 
-    async updateMenuItem(itemData: any): Promise<number> {
-        return await this.menuItemRepository.updateMenuItem(itemData);
+    async updateMenuItem(itemData: any): Promise<Response<[]>> {
+        try {
+            const updatedItemId = await this.menuItemRepository.updateMenuItem(itemData);
+            const response: Response<[]> =  {
+                status: 'success',
+                message: `Menu Item Successfully Deleted with id: ${updatedItemId}`,
+                data: []
+            };
+            return response;
+        } catch(error) {
+            throw error;
+        }
     }
 
-    async fetchRolledOutMenu() {
-        const menuItems =  await this.menuItemRepository.fetchRolledOutMenu();
-        return constructMenu(menuItems);
+    async fetchRolledOutMenu(): Promise<Response<RolledOutMenuItem[]>> {
+        try {
+            const menuItems =  await this.menuItemRepository.fetchRolledOutMenu();
+            const mealTypeBasedMenuItems = constructMenu(menuItems);
+            const response: Response<RolledOutMenuItem[]> =  {
+                status: 'success',
+                message: `Successfully fetched the menu items`,
+                data: mealTypeBasedMenuItems as RolledOutMenuItem[]
+            };
+            return response;
+        } catch(error) {
+            throw error;
+        }
     }
 
-    async updateVotedMenuItems(itemIds: any) {
-        return await this.menuItemRepository.updateVotedMenuItems(itemIds);
+    async updateVotedMenuItems(itemIds: any): Promise<Response<[]>> {
+        try {
+            const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems(itemIds);
+            const response: Response<[]> =  {
+                status: 'success',
+                message: `${updatedItemsCount}Items successfully voted`,
+                data: []
+            };
+            return response;
+        } catch (error) {
+            throw error;
+        }  
     }
 }

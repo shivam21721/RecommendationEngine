@@ -23,7 +23,13 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const recommendedMenu = yield this.recommendationRepository.getMenuForRecommendation();
-                return (0, RecommendationEngine_1.prepareRecommendation)(recommendedMenu);
+                const preparedRecommendation = (0, RecommendationEngine_1.prepareRecommendation)(recommendedMenu);
+                const response = {
+                    status: 'success',
+                    message: 'Successfully fetched next day menu recommendation menu',
+                    data: preparedRecommendation
+                };
+                return response;
             }
             catch (error) {
                 throw error;
@@ -45,8 +51,13 @@ class RecommendationService {
                     const date = new Date();
                     return { id: parseInt(id), mealType: 'dinner', date: date.toISOString().slice(0, 10) };
                 });
-                const response = yield this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
-                yield this.notificationService.sendNotificationForRolledOutItems();
+                const itemsCount = yield this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
+                const notificationResponse = yield this.notificationService.sendNotificationForRolledOutItems();
+                const response = {
+                    status: 'success',
+                    message: `Successfully rolled out ${itemsCount} menu Items`,
+                    data: []
+                };
                 return response;
             }
             catch (error) {
@@ -59,23 +70,27 @@ class RecommendationService {
             try {
                 const recommendedMenu = yield this.recommendationRepository.fetchFinalMenuRecommendation();
                 const sortedRecommendedMenu = (0, RecommendationEngine_1.prepareRecommendationForFinalMenu)(recommendedMenu);
-                console.log(sortedRecommendedMenu);
-                const response = {};
-                response.breakfast = sortedRecommendedMenu.filter((item) => {
+                const finalRecommendedMenuData = {};
+                finalRecommendedMenuData.breakfast = sortedRecommendedMenu.filter((item) => {
                     if (item.mealType === 'breakfast')
                         return true;
                     return false;
                 });
-                response.lunch = sortedRecommendedMenu.filter((item) => {
+                finalRecommendedMenuData.lunch = sortedRecommendedMenu.filter((item) => {
                     if (item.mealType === 'lunch')
                         return true;
                     return false;
                 });
-                response.dinner = sortedRecommendedMenu.filter((item) => {
+                finalRecommendedMenuData.dinner = sortedRecommendedMenu.filter((item) => {
                     if (item.mealType === 'dinner')
                         return true;
                     return false;
                 });
+                const response = {
+                    status: 'success',
+                    message: 'Successfully sent the notification',
+                    data: finalRecommendedMenuData
+                };
                 return response;
             }
             catch (error) {
@@ -86,8 +101,13 @@ class RecommendationService {
     rolloutFinalizedMenuItems(itemIds) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.recommendationRepository.markItemAsPrepared(itemIds);
-                yield this.notificationService.sendNotificationForFinalizedMenuItems();
+                const itemsCount = yield this.recommendationRepository.markItemAsPrepared(itemIds);
+                const notificationResponse = yield this.notificationService.sendNotificationForFinalizedMenuItems();
+                const response = {
+                    status: 'success',
+                    message: 'Successfully Rolled out finalized Menu Items',
+                    data: []
+                };
                 return response;
             }
             catch (error) {
@@ -99,22 +119,27 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const menuItems = yield this.recommendationRepository.getPreparedMenuForToday();
-                const response = {};
-                response.breakfast = menuItems.filter((item) => {
+                const menuItemsData = {};
+                menuItemsData.breakfast = menuItems.filter((item) => {
                     if (item.mealType === 'breakfast')
                         return true;
                     return false;
                 });
-                response.lunch = menuItems.filter((item) => {
+                menuItemsData.lunch = menuItems.filter((item) => {
                     if (item.mealType === 'lunch')
                         return true;
                     return false;
                 });
-                response.dinner = menuItems.filter((item) => {
+                menuItemsData.dinner = menuItems.filter((item) => {
                     if (item.mealType === 'dinner')
                         return true;
                     return false;
                 });
+                const response = {
+                    status: 'success',
+                    message: 'Successfully fetched Menu for today',
+                    data: menuItemsData
+                };
                 return response;
             }
             catch (error) {
@@ -126,7 +151,13 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const menuItems = yield this.recommendationRepository.getNextDayFinalizedMenu();
-                return (0, Menu_1.constructMenu)(menuItems);
+                const menuItesData = (0, Menu_1.constructMenu)(menuItems);
+                const response = {
+                    status: 'success',
+                    message: 'Successfully fetched all the menu Items',
+                    data: menuItesData
+                };
+                return response;
             }
             catch (error) {
                 throw error;

@@ -1,2 +1,7 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+// export interface User {
+//     id: number;
+//     name: string;
+//     email: string;
+//     role: string;
+// }

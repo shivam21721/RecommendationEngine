@@ -19,50 +19,139 @@ class MenuItemController {
     }
     getMenuItems() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.getMenuItems();
+            try {
+                console.log('inside');
+                const response = yield this.menuItemService.getMenuItems();
+                console.log(response);
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
         });
     }
     addMenuItem(itemData) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.addMenuItem(itemData);
+            try {
+                const response = yield this.menuItemService.addMenuItem(itemData);
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
         });
     }
     deleteMenuItem(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.deleteMenuItem(id);
+            try {
+                const response = yield this.menuItemService.deleteMenuItem(id);
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
         });
     }
     updateMenuItem(itemData) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.menuItemService.updateMenuItem(itemData);
+            try {
+                const response = yield this.menuItemService.updateMenuItem(itemData);
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
         });
     }
     getTodayMenu() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.recommendationService.getPreparedMenuForToday();
-            return response;
+            try {
+                const response = yield this.recommendationService.getPreparedMenuForToday();
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
         });
     }
     fetchRolledOutMenu() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.menuItemService.fetchRolledOutMenu();
-            return response;
+            try {
+                const response = yield this.menuItemService.fetchRolledOutMenu();
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
         });
     }
     updateVotedMenuItems(itemIds) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.menuItemService.updateVotedMenuItems(itemIds);
-            return response;
+            try {
+                const response = yield this.menuItemService.updateVotedMenuItems(itemIds);
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
         });
     }
     getNextDayFinalizedMenu() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const menuItems = yield this.recommendationService.getNextDayFinalizedMenu();
-                return menuItems;
+                const response = yield this.recommendationService.getNextDayFinalizedMenu();
+                return response;
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }

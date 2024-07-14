@@ -11,11 +11,11 @@ export class RecommendationService {
     async getNextDayMenuRecommendation() {
         return new Promise((resolve, reject) => {
             this.socket.emit('getNextDayMenuRecommendation');
-            this.socket.once('getNextDayMenuRecommendationResponse', (menuItems) => {
-                if (menuItems) {
-                    resolve(menuItems);
+            this.socket.once('getNextDayMenuRecommendationResponse', (response) => {
+                if (response.status === 'success') {
+                    resolve(response.data);
                 } else {
-                    reject(new Error('Failed to get menu items.'));
+                    reject(new Error(response.message));
                 }
             });
         });
@@ -24,11 +24,12 @@ export class RecommendationService {
     async getFinalMenuRecommendation() {
         return new Promise((resolve, reject) => {
             this.socket.emit('getFinalMenuRecommendation');
-            this.socket.once('getFinalMenuRecommendationResponse', (menuItems) => {
-                if (menuItems) {
-                    resolve(menuItems);
+            this.socket.once('getFinalMenuRecommendationResponse', (response) => {
+                console.log(response);
+                if (response.status === 'success') {
+                    resolve(response.data);
                 } else {
-                    reject(new Error('Failed to get menu items.'));
+                    reject(new Error(response.message));
                 }
             });
         });
@@ -42,10 +43,10 @@ export class RecommendationService {
         return new Promise((resolve, reject) => {
             this.socket.emit('rolloutItemsChoiceForNextDay', items);
             this.socket.on('rolloutItemsChoiceForNextDayResponse', (response) => {
-                if(response) {
-                    resolve(response);
+                if (response.status === 'success') {
+                    resolve(response.data);
                 } else {
-                    reject(new Error('Failed to rollOutItms'));
+                    reject(new Error(response.message));
                 }
             });
         });
@@ -55,10 +56,10 @@ export class RecommendationService {
         return new Promise((resolve, reject) => {
             this.socket.emit('rolloutFinalizedItems', itemIds);
             this.socket.on('rolloutFinalizedItemsResponse', (response) => {
-                if(response) {
-                    resolve(response);
+                if (response.status === 'success') {
+                    resolve(response.data);
                 } else {
-                    reject(new Error('Failed to rollOutItems'));
+                    reject(new Error(response.message));
                 }
             });
         });

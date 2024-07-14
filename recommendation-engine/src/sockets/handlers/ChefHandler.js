@@ -18,28 +18,28 @@ const recommendationController = new RecommendationController_1.RecommendationCo
 const notificationController = new NotificationController_1.NotificationController();
 function handleChef(socket, user) {
     socket.on('getMenuItems', () => __awaiter(this, void 0, void 0, function* () {
-        const menuItems = yield menuItemController.getMenuItems();
-        socket.emit('getMenuItemsResponse', menuItems);
+        const response = yield menuItemController.getMenuItems();
+        socket.emit('getMenuItemsResponse', response);
     }));
     socket.on('getNextDayMenuRecommendation', () => __awaiter(this, void 0, void 0, function* () {
-        const menuItems = yield recommendationController.getNextDayMenuRecommendation();
-        socket.emit('getNextDayMenuRecommendationResponse', menuItems);
+        const response = yield recommendationController.getNextDayMenuRecommendation();
+        socket.emit('getNextDayMenuRecommendationResponse', response);
     }));
     socket.on('rolloutItemsChoiceForNextDay', (items) => __awaiter(this, void 0, void 0, function* () {
         const response = yield recommendationController.rolloutItems(items);
         socket.emit('rolloutItemsChoiceForNextDayResponse', response);
     }));
     socket.on('getFinalMenuRecommendation', () => __awaiter(this, void 0, void 0, function* () {
-        const menuItems = yield recommendationController.fetchFinalMenuRecommendation();
-        socket.emit('getFinalMenuRecommendationResponse', menuItems);
+        const response = yield recommendationController.fetchFinalMenuRecommendation();
+        socket.emit('getFinalMenuRecommendationResponse', response);
     }));
     socket.on('rolloutFinalizedItems', (items) => __awaiter(this, void 0, void 0, function* () {
-        const response = recommendationController.rolloutFinalizedMenuItems(items);
+        const response = yield recommendationController.rolloutFinalizedMenuItems(items);
         socket.emit('rolloutFinalizedItemsResponse', response);
     }));
     socket.on('fetchUserNotifications', (userId) => __awaiter(this, void 0, void 0, function* () {
-        const notifications = yield notificationController.getUserNotifications(userId);
-        socket.emit('fetchUserNotificationsResponse', notifications);
+        const response = yield notificationController.getUserNotifications(userId);
+        socket.emit('fetchUserNotificationsResponse', response);
     }));
 }
 exports.handleChef = handleChef;

@@ -1,4 +1,6 @@
 import { RecommendationService } from "../services/RecommendationService";
+import { RecommendedMenu, Response } from "../interfaces/Interface";
+
 export class RecommendationController {
     private recommendationService: RecommendationService;
 
@@ -6,39 +8,63 @@ export class RecommendationController {
         this.recommendationService = new RecommendationService();
     }
 
-    async getNextDayMenuRecommendation() {
+    async getNextDayMenuRecommendation(): Promise<Response<RecommendedMenu[] | []>> {
         try {
-            const recommendedMenu = await this.recommendationService.getNextDayMenuRecommendation();
-            return recommendedMenu;
+            const response = await this.recommendationService.getNextDayMenuRecommendation();
+            return response;
         } catch (error) {
-            return error;
+            console.error(error);
+            const response: Response<[]> = {
+                status: 'error',
+                message: (error as Error).message,
+                data: []
+            }
+            return response;
         }
     }
 
-    async rolloutItems(items: any) {
+    async rolloutItems(items: any): Promise<Response<[]>> {
         try {
             const response = await this.recommendationService.rolloutItems(items);
             return response;
         } catch (error) {
-            return error;
+            console.error(error);
+            const response: Response<[]> = {
+                status: 'error',
+                message: (error as Error).message,
+                data: []
+            }
+            return response;
         }
     }
 
-    async fetchFinalMenuRecommendation() {
+    async fetchFinalMenuRecommendation(): Promise<Response<any | []>> {
         try {
             const response = await this.recommendationService.fetchFinalMenuRecommendation();
             return response;
         } catch (error) {
-            return error;
+            console.error(error);
+            const response: Response<[]> = {
+                status: 'error',
+                message: (error as Error).message,
+                data: []
+            }
+            return response;
         }
     }
 
-    async rolloutFinalizedMenuItems(items: any) {
+    async rolloutFinalizedMenuItems(items: any): Promise<Response<[]>> {
         try {
             const response = await this.recommendationService.rolloutFinalizedMenuItems(items);
             return response;
         } catch (error) {
-            return error;
+            console.error(error);
+            const response: Response<[]> = {
+                status: 'error',
+                message: (error as Error).message,
+                data: []
+            }
+            return response;
         }
     }
 }

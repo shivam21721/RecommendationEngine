@@ -22,7 +22,13 @@ class FeedbackController {
                 return response;
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
             }
         });
     }

@@ -2,6 +2,7 @@ import { RecommendationRepository } from "../repositories/RecommendationReposito
 import { NotificationService } from "./NotificationService";
 import { prepareRecommendation, prepareRecommendationForFinalMenu } from "../utils/RecommendationEngine";
 import { constructMenu } from "../utils/Menu";
+import { RecommendedMenu, Response } from "../interfaces/Interface";
 
 export class RecommendationService {
     private recommendationRepository: RecommendationRepository;
@@ -12,16 +13,22 @@ export class RecommendationService {
         this.notificationService = new NotificationService();
     }
 
-    async getNextDayMenuRecommendation() {
+    async getNextDayMenuRecommendation(): Promise<Response<RecommendedMenu[]>> {
         try {
             const recommendedMenu = await this.recommendationRepository.getMenuForRecommendation();
-            return prepareRecommendation(recommendedMenu);
+            const preparedRecommendation = prepareRecommendation(recommendedMenu);
+            const response: Response<RecommendedMenu[]> = {
+                status: 'success',
+                message: 'Successfully fetched next day menu recommendation menu',
+                data: preparedRecommendation
+            };
+            return response;
         } catch (error) {
             throw error;
         }
     }
 
-    async rolloutItems(items: any) {
+    async rolloutItems(items: any): Promise<Response<[]>> {
         try {
 
             var breakfastItems = items.breakfast.map((id: any) => {
@@ -39,78 +46,103 @@ export class RecommendationService {
                 return {id: parseInt(id), mealType: 'dinner', date: date.toISOString().slice(0,10)};
             });
 
-            const response = await this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
-            await this.notificationService.sendNotificationForRolledOutItems();
+            const itemsCount = await this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
+            const notificationResponse = await this.notificationService.sendNotificationForRolledOutItems();
+            const response: Response<[]> = {
+                status: 'success',
+                message: `Successfully rolled out ${itemsCount} menu Items`,
+                data: []
+            };
             return response;
         } catch (error) {
             throw error;
         }
     }
 
-    async fetchFinalMenuRecommendation() {
+    async fetchFinalMenuRecommendation(): Promise<Response<any>> {
         try {
             const recommendedMenu = await this.recommendationRepository.fetchFinalMenuRecommendation();
             const sortedRecommendedMenu = prepareRecommendationForFinalMenu(recommendedMenu);
-            console.log(sortedRecommendedMenu);
-            const response: any = {};
-            response.breakfast = sortedRecommendedMenu.filter((item: any) => {
+            const finalRecommendedMenuData: any = {};
+            finalRecommendedMenuData.breakfast = sortedRecommendedMenu.filter((item: any) => {
                 if(item.mealType === 'breakfast') return true;
                 return false;
             });
             
-            response.lunch = sortedRecommendedMenu.filter((item: any) => {
+            finalRecommendedMenuData.lunch = sortedRecommendedMenu.filter((item: any) => {
                 if(item.mealType === 'lunch') return true;
                 return false;
             });
 
-            response.dinner = sortedRecommendedMenu.filter((item: any) => {
+            finalRecommendedMenuData.dinner = sortedRecommendedMenu.filter((item: any) => {
                 if(item.mealType === 'dinner') return true;
                 return false;
             });
+            const response: Response<any> = {
+                status: 'success',
+                message: 'Successfully sent the notification',
+                data: finalRecommendedMenuData
+            };
             return response;
         } catch (error) {
             throw error;
         }
     }
 
-    async rolloutFinalizedMenuItems(itemIds: string[]) {
+    async rolloutFinalizedMenuItems(itemIds: string[]): Promise<Response<[]>> {
         try {
-            const response = await this.recommendationRepository.markItemAsPrepared(itemIds);
-            await this.notificationService.sendNotificationForFinalizedMenuItems();
+            const itemsCount = await this.recommendationRepository.markItemAsPrepared(itemIds);
+            const notificationResponse = await this.notificationService.sendNotificationForFinalizedMenuItems();
+            const response: Response<[]> = {
+                status: 'success',
+                message: 'Successfully Rolled out finalized Menu Items',
+                data: []
+            };
             return response;
         } catch (error) {
             throw error;
         }
     }
 
-    async getPreparedMenuForToday() {
+    async getPreparedMenuForToday(): Promise<Response<any>> {
         try {
             const menuItems:any = await this.recommendationRepository.getPreparedMenuForToday();
-            const response: any = {};
-            response.breakfast = menuItems.filter((item: any) => {
+            const menuItemsData: any = {};
+            menuItemsData.breakfast = menuItems.filter((item: any) => {
                 if(item.mealType === 'breakfast') return true;
                 return false;
             });
             
-            response.lunch = menuItems.filter((item: any) => {
+            menuItemsData.lunch = menuItems.filter((item: any) => {
                 if(item.mealType === 'lunch') return true;
                 return false;
             });
 
-            response.dinner = menuItems.filter((item: any) => {
+            menuItemsData.dinner = menuItems.filter((item: any) => {
                 if(item.mealType === 'dinner') return true;
                 return false;
             });
+            const response: Response<any> = {
+                status: 'success',
+                message: 'Successfully fetched Menu for today',
+                data: menuItemsData
+            };
             return response;
         } catch (error) {
             throw error;
         }
     }
 
-    async getNextDayFinalizedMenu() {
+    async getNextDayFinalizedMenu(): Promise<Response<any>> {
         try {
             const menuItems = await this.recommendationRepository.getNextDayFinalizedMenu();
-            return constructMenu(menuItems);
+            const menuItesData =  constructMenu(menuItems);
+            const response: Response<any> = {
+                status: 'success',
+                message: 'Successfully fetched all the menu Items',
+                data: menuItesData
+            };
+            return response;
         } catch(error) {
             throw error;
         }

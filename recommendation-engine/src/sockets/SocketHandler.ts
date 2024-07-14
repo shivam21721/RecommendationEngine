@@ -16,16 +16,13 @@ export class SocketHandler {
     handleConnection(socket: Socket) {
         socket.on('login', async (userCredential) => {
             const {username, password} = userCredential;
-            try {
-                const user = await this.userAuthenticationController.login(username, password);
-                socket.emit('loginResponse', user);
-                this.handleUser(socket, user);
-            } catch (error) {
-                if (error instanceof Error) {
-                    socket.emit('loginError', error.message);
-                }
+            const response = await this.userAuthenticationController.login(username, password);
+            socket.emit('loginResponse', response);
+            if(response.status === 'success') {
+                this.handleUser(socket, response.data);
             }
-        });
+        }
+        );
 
         socket.on('logout', () => {
             this.handleLogout(socket);

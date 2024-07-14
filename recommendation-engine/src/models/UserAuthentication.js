@@ -1,2 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+// export interface UserAuthentication {
+//     user_id: number;
+//     password: string;
+// }

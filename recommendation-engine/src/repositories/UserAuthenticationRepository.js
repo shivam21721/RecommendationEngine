@@ -22,11 +22,18 @@ class UserAuthenticationRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [rows] = yield connection.execute('SELECT * FROM userAuthentication WHERE userId = ?', [userId]);
-                if (Array.isArray(rows) && rows.length > 0) {
-                    return rows[0];
+                const query = 'SELECT * FROM userAuthentication WHERE userId = ?';
+                const values = [userId];
+                const [result] = yield connection.execute(query, values);
+                if (Array.isArray(result) && result.length > 0) {
+                    return result[0];
                 }
-                return null;
+                else {
+                    throw new Error('User not found');
+                }
+            }
+            catch (error) {
+                throw new Error("Error while Authenticaiton: " + error);
             }
             finally {
                 connection.release();

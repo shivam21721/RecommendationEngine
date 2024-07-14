@@ -5,13 +5,13 @@ const menuItemController = new MenuItemController();
 
 export function handleAdmin(socket: Socket, user: any) {
     socket.on('getMenuItems', async () => {
-        const menuItems = await menuItemController.getMenuItems();
-        socket.emit('getMenuItemsResponse', menuItems);
+        console.log('inside handler');
+        const response = await menuItemController.getMenuItems();
+        socket.emit('getMenuItemsResponse', response);
     });
 
     socket.on('addMenuItem', async (itemData) => {
         const response = await menuItemController.addMenuItem(itemData);
-        console.log('response: ', response);
         socket.emit('addMenuItemResponse', response);
     });
 

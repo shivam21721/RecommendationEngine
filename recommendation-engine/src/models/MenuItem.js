@@ -1,2 +1,8 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+// export interface MenuItem {
+//     id: number;
+//     name: string;
+//     categoryId: number;
+//     price: number;
+//     availability: boolean;
+// }

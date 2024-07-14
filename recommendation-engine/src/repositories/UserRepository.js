@@ -22,16 +22,23 @@ class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const [rows] = yield connection.execute(`
+                const query = `
                 SELECT u.id, u.name, u.email, r.roleName AS role
                 FROM user u
                 JOIN role r ON u.roleId = r.id
                 WHERE u.email = ?
-            `, [username]);
-                if (Array.isArray(rows) && rows.length) {
-                    return rows[0];
+            `;
+                const values = [username];
+                const [result] = yield connection.execute(query, values);
+                if (Array.isArray(result) && result.length) {
+                    return result[0];
                 }
-                return null;
+                else {
+                    throw new Error("No user found");
+                }
+            }
+            catch (error) {
+                throw new Error("Error while fething user: " + error);
             }
             finally {
                 connection.release();
@@ -44,11 +51,10 @@ class UserRepository {
             try {
                 const query = `Select roleName from role where id = ${userId}`;
                 const [result] = yield connection.execute(query);
-                console.log('result:', result);
                 return result[0].roleName;
             }
             catch (error) {
-                throw error;
+                throw new Error('Error while fetching the user role: ' + error);
             }
             finally {
                 connection.release();

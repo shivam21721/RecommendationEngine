@@ -22,15 +22,10 @@ class SocketHandler {
     handleConnection(socket) {
         socket.on('login', (userCredential) => __awaiter(this, void 0, void 0, function* () {
             const { username, password } = userCredential;
-            try {
-                const user = yield this.userAuthenticationController.login(username, password);
-                socket.emit('loginResponse', user);
-                this.handleUser(socket, user);
-            }
-            catch (error) {
-                if (error instanceof Error) {
-                    socket.emit('loginError', error.message);
-                }
+            const response = yield this.userAuthenticationController.login(username, password);
+            socket.emit('loginResponse', response);
+            if (response.status === 'success') {
+                this.handleUser(socket, response.data);
             }
         }));
         socket.on('logout', () => {

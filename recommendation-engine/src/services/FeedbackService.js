@@ -23,7 +23,12 @@ class FeedbackService {
                 const dateString = date.toISOString().slice(0, 10);
                 const sentimentScore = (0, Sentiment_1.sentimentScoreGenerator)(feedback.comment);
                 feedback = Object.assign(Object.assign({}, feedback), { feedbackDate: dateString, sentimentScore });
-                const response = yield this.feedbackRepository.addFeedback(feedback);
+                const feedbackId = yield this.feedbackRepository.addFeedback(feedback);
+                const response = {
+                    status: 'success',
+                    message: `Feedback Submitted Successfully, feedback id: ${feedbackId}`,
+                    data: []
+                };
                 return response;
             }
             catch (error) {
