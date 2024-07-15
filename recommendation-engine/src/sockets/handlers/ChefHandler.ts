@@ -3,6 +3,7 @@ import { MenuItemController } from "../../controllers/MenuItemController";
 import { NotificationController } from "../../controllers/NotificationController";
 import { RecommendationController } from "../../controllers/RecommendationController";
 import { RecommendationService } from "../../services/RecommendationService";
+import { Payload, SelectedMenuItems } from "../../interfaces/Interface";
 
 const menuItemController = new MenuItemController();
 const recommendationController = new RecommendationController();
@@ -29,7 +30,7 @@ export function handleChef(socket: Socket, user: any) {
         socket.emit('getFinalMenuRecommendationResponse', response);
     });   
 
-    socket.on('rolloutFinalizedItems', async (items: any) => {
+    socket.on('rolloutFinalizedItems', async (items: Payload<SelectedMenuItems>) => {
         const response = await recommendationController.rolloutFinalizedMenuItems(items);
         socket.emit('rolloutFinalizedItemsResponse', response);
     });

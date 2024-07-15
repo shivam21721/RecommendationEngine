@@ -45,6 +45,17 @@ export class NotificationService {
         }
     }
 
+    async sendNotificationToChef(notificationMessage: string) {
+        try {
+            const date = (new Date()).toISOString().slice(0, 10);
+            const message = notificationMessage;
+            const type = 1;
+            await this.notificationRepository.addNotification({message, date, type});
+        } catch(error) {
+            throw error;
+        }
+    }
+
     async getUserNotifications(userId: any): Promise<Response<Notification[]>> {
         try {
             const userRole = await this.userService.getUserRole(userId);

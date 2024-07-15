@@ -45,7 +45,7 @@ class SocketHandler {
     }
     ;
     handleLogout(socket) {
-        socket.emit('logoutSuccess');
+        socket.emit('logoutResponse');
         socket.disconnect();
     }
 }

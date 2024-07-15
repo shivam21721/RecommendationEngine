@@ -23,11 +23,10 @@ function handleEmployee(socket, user) {
     }));
     socket.on('getRolledOutMenu', () => __awaiter(this, void 0, void 0, function* () {
         const response = yield menuItemController.fetchRolledOutMenu();
-        10;
         socket.emit('getRolledOutMenuResponse', response);
     }));
-    socket.on('voteMenuItems', (itemIds) => __awaiter(this, void 0, void 0, function* () {
-        const response = yield menuItemController.updateVotedMenuItems(itemIds);
+    socket.on('voteMenuItems', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield menuItemController.updateVotedMenuItems(payload);
         socket.emit('voteMenuItemsResponse', response);
     }));
     socket.on('addFeedback', (feedback) => __awaiter(this, void 0, void 0, function* () {

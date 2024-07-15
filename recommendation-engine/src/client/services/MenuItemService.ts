@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Response } from "../../interfaces/Interface";
+import { MenuItem, Payload, Response } from "../../interfaces/Interface";
 
 export class MenuItemService {
     private socket: Socket;
@@ -10,10 +10,8 @@ export class MenuItemService {
 
     async getMenuItems() {
         return new Promise((resolve, reject) => {
-            console.log('inside service');
             this.socket.emit('getMenuItems');
             this.socket.once('getMenuItemsResponse', (response: Response<any>) => {
-                console.log('response', response);
                 if (response.status === 'success') {
                     resolve(response.data);
                 } else {
@@ -23,12 +21,12 @@ export class MenuItemService {
         });
     }
 
-    async addMenuItem(itemData: any) {
+    async addMenuItem(payload: Payload<MenuItem>) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('addMenuItem', itemData);
+            this.socket.emit('addMenuItem', payload);
             this.socket.once('addMenuItemResponse', (response) => {
                 if (response.status === 'success') {
-                    resolve(response.data);
+                    resolve(response.message);
                 } else {
                     reject(new Error(response.message));
                 }
@@ -41,7 +39,7 @@ export class MenuItemService {
             this.socket.emit('deleteMenuItem', itemId);
             this.socket.once('deleteMenuItemResponse', (response) => {
                 if (response.status === 'success') {
-                    resolve(response.data);
+                    resolve(response.message);
                 } else {
                     reject(new Error(response.message));
                 }
@@ -54,7 +52,7 @@ export class MenuItemService {
             this.socket.emit('updateMenuItem', itemData);
             this.socket.once('updateMenuItemResponse', (response) => {
                 if (response.status === 'success') {
-                    resolve(response.data);
+                    resolve(response.message);
                 } else {
                     reject(new Error(response.message));
                 }
@@ -88,9 +86,9 @@ export class MenuItemService {
         });
     }
 
-    async voteForMenuItem(itemIds: any) {
+    async voteForMenuItem(items: any) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('voteMenuItems', itemIds);
+            this.socket.emit('voteMenuItems', items);
             this.socket.on('voteMenuItemsResponse', (response) => {
                 if (response.status === 'success') {
                     resolve(response.data);

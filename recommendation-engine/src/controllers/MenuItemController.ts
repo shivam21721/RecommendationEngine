@@ -1,5 +1,5 @@
 import { MenuItemService } from "../services/MenuItemService";
-import { MenuItem, Response, RolledOutMenuItem } from "../interfaces/Interface";
+import { MenuItem, Payload, Response, RolledOutMenuItem, SelectedMenuItems } from "../interfaces/Interface";
 import { RecommendationService } from "../services/RecommendationService";
 
 
@@ -29,9 +29,9 @@ export class MenuItemController {
         }
     }
 
-    async addMenuItem(itemData: any): Promise<Response<[]>> {
+    async addMenuItem(payload: Payload<MenuItem>): Promise<Response<[]>> {
         try {
-            const response = await this.menuItemService.addMenuItem(itemData);
+            const response = await this.menuItemService.addMenuItem(payload.data);
             return response;
         } catch(error) {
             console.error(error);
@@ -105,9 +105,9 @@ export class MenuItemController {
         }
     }
 
-    async updateVotedMenuItems(itemIds: any): Promise<Response<[]>> {
+    async updateVotedMenuItems(payload: Payload<SelectedMenuItems>): Promise<Response<[]>> {
         try {
-            const response = await this.menuItemService.updateVotedMenuItems(itemIds);
+            const response = await this.menuItemService.updateVotedMenuItems(payload.data);
             return response;    
         } catch(error) {
             console.error(error);

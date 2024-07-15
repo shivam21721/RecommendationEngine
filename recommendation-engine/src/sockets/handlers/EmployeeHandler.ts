@@ -2,6 +2,7 @@ import { Socket } from "socket.io";
 import { MenuItemController } from "../../controllers/MenuItemController";
 import { FeedbackController } from "../../controllers/FeedbackController";
 import { NotificationController } from "../../controllers/NotificationController";
+import { Payload, SelectedMenuItems } from "../../interfaces/Interface";
 
 const menuItemController = new MenuItemController();
 const feedbackController = new FeedbackController();
@@ -15,12 +16,12 @@ export function handleEmployee(socket: Socket, user: any) {
     });
 
     socket.on('getRolledOutMenu', async () => {
-        const response = await menuItemController.fetchRolledOutMenu();10
+        const response = await menuItemController.fetchRolledOutMenu();
         socket.emit('getRolledOutMenuResponse', response);
     });
 
-    socket.on('voteMenuItems', async (itemIds) => {
-        const response = await menuItemController.updateVotedMenuItems(itemIds);
+    socket.on('voteMenuItems', async (payload: Payload<SelectedMenuItems>) => {
+        const response = await menuItemController.updateVotedMenuItems(payload);
         socket.emit('voteMenuItemsResponse', response);
     });
 

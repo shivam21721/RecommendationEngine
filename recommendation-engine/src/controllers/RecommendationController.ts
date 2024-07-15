@@ -1,5 +1,5 @@
 import { RecommendationService } from "../services/RecommendationService";
-import { RecommendedMenu, Response } from "../interfaces/Interface";
+import { Payload, RecommendedMenu, Response, SelectedMenuItems } from "../interfaces/Interface";
 
 export class RecommendationController {
     private recommendationService: RecommendationService;
@@ -53,9 +53,9 @@ export class RecommendationController {
         }
     }
 
-    async rolloutFinalizedMenuItems(items: any): Promise<Response<[]>> {
+    async rolloutFinalizedMenuItems(payload: Payload<SelectedMenuItems>): Promise<Response<[]>> {
         try {
-            const response = await this.recommendationService.rolloutFinalizedMenuItems(items);
+            const response = await this.recommendationService.rolloutFinalizedMenuItems(payload.data);
             return response;
         } catch (error) {
             console.error(error);

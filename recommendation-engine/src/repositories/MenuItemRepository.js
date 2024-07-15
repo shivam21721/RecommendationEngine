@@ -134,16 +134,16 @@ class MenuItemRepository {
             }
         });
     }
-    updateVotedMenuItems(itemIds) {
+    updateVotedMenuItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const ids = itemIds.join(', ');
+                const conditions = items.map((item) => `(menuItemId = ${item.id} AND mealType = '${item.mealType}')`).join(' OR ');
                 const query = `
                 UPDATE RecommendedItem
                 SET voteCount = voteCount + 1
-                WHERE recommendationDate = CURDATE()
-                AND menuItemId IN (${ids});
+                WHERE (${conditions})
+                AND recommendationDate = CURDATE()
             `;
                 const [result] = yield connection.execute(query);
                 if (result.affectedRows > 0) {

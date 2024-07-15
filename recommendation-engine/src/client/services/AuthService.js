@@ -34,6 +34,11 @@ class AuthService {
     logout() {
         return __awaiter(this, void 0, void 0, function* () {
             this.socket.emit('logout');
+            this.socket.on('logoutResponse', () => {
+                console.log('Exiting client application');
+                exports.socket.disconnect();
+                process.exit();
+            });
         });
     }
 }

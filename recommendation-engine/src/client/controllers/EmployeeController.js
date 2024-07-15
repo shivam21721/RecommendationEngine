@@ -16,9 +16,12 @@ const MenuItemService_1 = require("../services/MenuItemService");
 const FeedbackService_1 = require("../services/FeedbackService");
 const NotificationService_1 = require("../services/NotificationService");
 const Menu_1 = require("../../utils/Menu");
+const Validation_1 = require("../../utils/Validation");
+const AuthService_2 = require("../services/AuthService");
 const menuItemService = new MenuItemService_1.MenuItemService(AuthService_1.socket);
 const feedbackService = new FeedbackService_1.FeedbackService(AuthService_1.socket);
 const notificationService = new NotificationService_1.NotificationService(AuthService_1.socket);
+const authService = new AuthService_2.AuthService();
 const adminOptions = [
     "1. VIEW TODAY'S MENU",
     "2. VIEW FINALIZED MENU FOR NEXT DAY",
@@ -55,6 +58,9 @@ function handleEmployeeChoice(choice, userId) {
             case '5':
                 handleFeedback(userId);
                 break;
+            case 'X':
+                handleLogout();
+                break;
             default:
                 console.log('Invalid Choice');
                 showEmployeeOptions(userId);
@@ -90,15 +96,39 @@ function handleViewRolledOutMenu(userId) {
         try {
             const menuItems = yield menuItemService.getRolledOutMenu();
             (0, Menu_1.showMenu)(menuItems);
-            const votedItems = yield (0, readline_1.asyncUserInput)('Enter the comma seperated menu items id to vote: ');
-            const voteResponse = yield menuItemService.voteForMenuItem([...votedItems.split(',')]);
+            const votedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter the comma seperated breakfast menu items id to vote: ');
+            const votedBreakfastItemsList = votedBreakfastItems.split(',').map(item => Number(item));
+            if (!isValidVotedItems(votedBreakfastItemsList, menuItems.breakfast)) {
+                throw new Error("Invalid items selected for voting");
+            }
+            const votedLunchItems = yield (0, readline_1.asyncUserInput)('Enter the comma seperated lunch menu items id to vote: ');
+            const votedLunchItemsList = votedLunchItems.split(',').map(item => Number(item));
+            if (!isValidVotedItems(votedLunchItemsList, menuItems.lunch)) {
+                throw new Error("Invalid items selected for voting");
+            }
+            const votedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter the comma seperated dinner menu items id to vote: ');
+            const votedDinnerItemsList = votedDinnerItems.split(',').map(item => Number(item));
+            if (!isValidVotedItems(votedDinnerItemsList, menuItems.dinner)) {
+                throw new Error("Invalid items selected for voting");
+            }
+            const selectedItems = {
+                breakfast: votedBreakfastItemsList,
+                lunch: votedLunchItemsList,
+                dinner: votedDinnerItemsList
+            };
+            const payload = {
+                userId: userId,
+                data: selectedItems
+            };
+            const voteResponse = yield menuItemService.voteForMenuItem(payload);
             if (voteResponse) {
                 console.log("Items successfully voted");
             }
             showEmployeeOptions(userId);
         }
         catch (error) {
-            console.log('Error:', error);
+            console.log('Error:', error.message);
+            showEmployeeOptions(userId);
         }
     });
 }
@@ -132,4 +162,14 @@ function handleNotification(userId) {
             console.log('Error: ', error);
         }
     });
+}
+function handleLogout() {
+    authService.logout();
+}
+function isValidVotedItems(votedItems, menuItems) {
+    if (!(0, Validation_1.areAllItemsUnique)(votedItems))
+        return false;
+    return votedItems.every((id) => menuItems.some((item) => {
+        return item.menuItemId === id;
+    }));
 }

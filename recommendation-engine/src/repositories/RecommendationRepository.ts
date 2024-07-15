@@ -99,14 +99,15 @@ export class RecommendationRepository {
           }
     };
 
-    async markItemAsPrepared(itemIds: string[]) {
+    async markItemAsPrepared(items: any) {
           const connection = await this.pool.getConnection();
           try {
-               const placeholders = itemIds.map((id) => id).join(', ');
+               const conditions = items.map((item: any) => `(menuItemId = ${item.id} AND mealType = '${item.mealType}')`).join(' OR ');
                const query = `
-               UPDATE recommendeditem
-               SET isPrepared = 1
-               WHERE menuItemId IN (${placeholders}) AND recommendationDate = CURDATE()
+                    UPDATE RecommendedItem
+                    SET isPrepared = TRUE
+                    WHERE (${conditions})
+                    AND recommendationDate = CURDATE()
                `;
                const [result] = await connection.execute(query);
                if((result as QueryResult).affectedRows > 0) {

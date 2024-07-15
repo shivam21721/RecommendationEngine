@@ -98,10 +98,19 @@ class RecommendationService {
             }
         });
     }
-    rolloutFinalizedMenuItems(itemIds) {
+    rolloutFinalizedMenuItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const itemsCount = yield this.recommendationRepository.markItemAsPrepared(itemIds);
+                var breakfastItems = items.breakfast.map((id) => {
+                    return { id: parseInt(id), mealType: 'breakfast' };
+                });
+                var lunchItems = items.lunch.map((id) => {
+                    return { id: parseInt(id), mealType: 'lunch' };
+                });
+                var dinnerItems = items.dinner.map((id) => {
+                    return { id: parseInt(id), mealType: 'dinner' };
+                });
+                const itemsCount = yield this.recommendationRepository.markItemAsPrepared([...breakfastItems, ...lunchItems, ...dinnerItems]);
                 const notificationResponse = yield this.notificationService.sendNotificationForFinalizedMenuItems();
                 const response = {
                     status: 'success',

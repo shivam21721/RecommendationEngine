@@ -16,6 +16,9 @@ const MenuItemService_1 = require("../services/MenuItemService");
 const NotificationService_1 = require("../services/NotificationService");
 const RecommendationService_1 = require("../services/RecommendationService");
 const Menu_1 = require("../../utils/Menu");
+const Validation_1 = require("../../utils/Validation");
+const AuthService_2 = require("../services/AuthService");
+const authService = new AuthService_2.AuthService();
 const menuItemService = new MenuItemService_1.MenuItemService(AuthService_1.socket);
 const notificationService = new NotificationService_1.NotificationService(AuthService_1.socket);
 const recommendationService = new RecommendationService_1.RecommendationService(AuthService_1.socket);
@@ -52,12 +55,12 @@ function handleChefChoice(choice, userId) {
             case '4':
                 handleNotification(userId);
                 break;
-            case '5':
-                break;
-            case '6':
+            case 'X':
+                handleLogout();
                 break;
             default:
                 console.log('Invalid Choice');
+                showChefOptions(userId);
         }
     });
 }
@@ -65,7 +68,7 @@ function handleViewMenuItem(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const menuItems = yield menuItemService.getMenuItems();
-            (0, Menu_1.showCategoryBasedMenuItems)(menuItems);
+            console.table(menuItems);
             showChefOptions(userId);
         }
         catch (error) {
@@ -79,19 +82,31 @@ function handleRollOutItemsForNextDay(userId) {
             const menuItems = yield recommendationService.getNextDayMenuRecommendation();
             (0, Menu_1.showCategoryBasedMenuItems)(menuItems);
             const selectedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter comma separated breakfast items to roll out: ');
+            const selectedBreakfastItemsList = selectedBreakfastItems.split(',').map(id => Number(id));
+            if (!isValidItemsSelected(selectedBreakfastItemsList, menuItems, 'breakfast')) {
+                throw new Error('Invalid Items selected for breakfast, Please verify the menu items ids');
+            }
             const selectedLunchItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Lunch items to roll out: ');
+            const selectedLunchItemsList = selectedLunchItems.split(',').map(id => Number(id));
+            if (!isValidItemsSelected(selectedLunchItemsList, menuItems, 'lunch')) {
+                throw new Error('Invalid Items selected for Lunch, Please verify the menu items ids');
+            }
             const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');
-            const validationDetail = yield recommendationService.validateSelectedItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems }, menuItems);
+            const selectedDinnerItemsList = selectedDinnerItems.split(',').map(item => Number(item));
+            if (!isValidItemsSelected(selectedDinnerItemsList, menuItems, 'dinner')) {
+                throw new Error('Invalid Items selected for Dinner, Please verify the menu items ids');
+            }
             var selectedItems = {
-                breakfast: selectedBreakfastItems.split(','),
-                lunch: selectedLunchItems.split(','),
-                dinner: selectedDinnerItems.split(',')
+                breakfast: selectedBreakfastItemsList,
+                lunch: selectedLunchItemsList,
+                dinner: selectedDinnerItemsList
             };
             const response = yield recommendationService.rollOutItems(selectedItems);
             showChefOptions(userId);
         }
         catch (error) {
-            console.log('Error: ', error);
+            console.log('Error: ', error.message);
+            showChefOptions(userId);
         }
     });
 }
@@ -106,14 +121,35 @@ function handleRolloutFinalizedItems(userId) {
             console.log('DINNER ITEMS');
             console.table(menuItems.dinner);
             const selectedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter comma separated breakfast items to roll out: ');
+            const selectedBreakfastItemsList = selectedBreakfastItems.split(',').map(id => Number(id));
+            if (!isValidFinalItemsSelected(selectedBreakfastItemsList, menuItems.breakfast)) {
+                throw new Error('Invalid Items selected for breakfast, Please verify the menu items ids');
+            }
             const selectedLunchItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Lunch items to roll out: ');
+            const selectedLunchItemsList = selectedLunchItems.split(',').map(id => Number(id));
+            if (!isValidFinalItemsSelected(selectedLunchItemsList, menuItems.lunch)) {
+                throw new Error('Invalid Items selected for Lunch, Please verify the menu items ids');
+            }
             const selectedDinnerItems = yield (0, readline_1.asyncUserInput)('Enter comma separated Dinner items to roll out: ');
-            const validationDetail = yield recommendationService.validateSelectedItems({ breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems }, menuItems);
-            const response = yield recommendationService.rolloutFinalizedItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
+            const selectedDinnerItemsList = selectedDinnerItems.split(',').map(item => Number(item));
+            if (!isValidFinalItemsSelected(selectedDinnerItemsList, menuItems.dinner)) {
+                throw new Error('Invalid Items selected for Dinner, Please verify the menu items ids');
+            }
+            const selectedItems = {
+                breakfast: selectedBreakfastItemsList,
+                lunch: selectedLunchItemsList,
+                dinner: selectedDinnerItemsList
+            };
+            const payload = {
+                userId: userId,
+                data: selectedItems
+            };
+            const response = yield recommendationService.rolloutFinalizedItems(payload);
             showChefOptions(userId);
         }
         catch (error) {
-            console.log('Error: ', error);
+            console.log('Error: ', error.message);
+            showChefOptions(userId);
         }
     });
 }
@@ -128,4 +164,26 @@ function handleNotification(userId) {
             console.log(error);
         }
     });
+}
+function handleLogout() {
+    authService.logout();
+}
+function isValidItemsSelected(selectedItems, menuItems, category) {
+    if (!(0, Validation_1.areAllItemsUnique)(selectedItems))
+        return false;
+    return selectedItems.every((id) => menuItems.some((item) => {
+        if (category === 'breakfast') {
+            return item.menuId === id && item.categoryName === 'Breakfast';
+        }
+        else {
+            return item.menuId === id && item.categoryName !== 'Breakfast';
+        }
+    }));
+}
+function isValidFinalItemsSelected(selectedItems, menuItems) {
+    if (!(0, Validation_1.areAllItemsUnique)(selectedItems))
+        return false;
+    return selectedItems.every((id) => menuItems.some((item) => {
+        return item.menuItemId === id;
+    }));
 }

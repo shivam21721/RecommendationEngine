@@ -1,5 +1,6 @@
 import { response } from "express";
 import { Socket } from "socket.io";
+import { Payload } from "../../interfaces/Interface";
 
 export class RecommendationService {
     private socket: Socket;
@@ -52,9 +53,9 @@ export class RecommendationService {
         });
     }
 
-    async rolloutFinalizedItems(itemIds: any) {
+    async rolloutFinalizedItems(items: Payload<{}>) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('rolloutFinalizedItems', itemIds);
+            this.socket.emit('rolloutFinalizedItems', items);
             this.socket.on('rolloutFinalizedItemsResponse', (response) => {
                 if (response.status === 'success') {
                     resolve(response.data);

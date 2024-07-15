@@ -8,7 +8,7 @@ export interface QueryResult {
 };
 
 export interface MenuItem {
-    id: number;
+    id?: number;
     name: string;
     categoryId: number;
     price: number;
@@ -56,4 +56,27 @@ export interface RecommendedMenu {
     avgSentiment: number,
     preparedCount: number,
     priorityScore: number
+};
+
+export interface Payload<T> {
+    userId: number,
+    data: T
+}
+
+export interface FinalizedMenuItem {
+    menuItemId: number,
+    menuItemName: string,
+    categoryName: string,
+    voteCount: number,
+    mealType: string,
+    avgRating: number,
+    avgSentiment: number,
+    preparedCount: number,
+    priorityScore: number
+};
+
+export interface SelectedMenuItems {
+    breakfast: number[];
+    lunch: number[];
+    dinner: number[];
 };

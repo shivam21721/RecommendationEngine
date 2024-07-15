@@ -4,7 +4,11 @@ import { MenuItemService } from "../services/MenuItemService";
 import { NotificationService } from "../services/NotificationService";
 import { RecommendationService } from "../services/RecommendationService";
 import { showCategoryBasedMenuItems } from "../../utils/Menu";
+import { FinalizedMenuItem, RecommendedMenu } from "../../interfaces/Interface";
+import { areAllItemsUnique } from "../../utils/Validation";
+import { AuthService } from "../services/AuthService";
 
+const authService = new AuthService();
 const menuItemService = new MenuItemService(socket);
 const notificationService = new NotificationService(socket);
 const recommendationService = new RecommendationService(socket);
@@ -41,21 +45,19 @@ async function handleChefChoice(choice: string, userId: any) {
         case '4':
             handleNotification(userId);
             break;
-        case '5':
-            
-            break;
-        case '6':
-            
+        case 'X':
+            handleLogout();
             break;
         default:
             console.log('Invalid Choice');
+            showChefOptions(userId);
     }
 }
 
 async function handleViewMenuItem(userId: any) {
     try {
         const menuItems = await menuItemService.getMenuItems();
-        showCategoryBasedMenuItems(menuItems);
+        console.table(menuItems);
         showChefOptions(userId);
     } catch(error) {
         console.log('Error: ', error);
@@ -64,21 +66,37 @@ async function handleViewMenuItem(userId: any) {
 
 async function handleRollOutItemsForNextDay(userId: any) {
     try {
-        const menuItems = await recommendationService.getNextDayMenuRecommendation();
+        const menuItems:any = await recommendationService.getNextDayMenuRecommendation();
         showCategoryBasedMenuItems(menuItems);
+
         const selectedBreakfastItems = await asyncUserInput('Enter comma separated breakfast items to roll out: ');
+        const selectedBreakfastItemsList = selectedBreakfastItems.split(',').map(id => Number(id));
+        if(!isValidItemsSelected(selectedBreakfastItemsList, menuItems, 'breakfast')) {
+            throw new Error('Invalid Items selected for breakfast, Please verify the menu items ids');
+        }
+
         const selectedLunchItems = await asyncUserInput('Enter comma separated Lunch items to roll out: ');
+        const selectedLunchItemsList = selectedLunchItems.split(',').map(id => Number(id));
+        if(!isValidItemsSelected(selectedLunchItemsList, menuItems, 'lunch')) {
+            throw new Error('Invalid Items selected for Lunch, Please verify the menu items ids');
+        }
+
         const selectedDinnerItems = await asyncUserInput('Enter comma separated Dinner items to roll out: ');
-        const validationDetail = await recommendationService.validateSelectedItems({breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems}, menuItems);
+        const selectedDinnerItemsList = selectedDinnerItems.split(',').map(item => Number(item));
+        if(!isValidItemsSelected(selectedDinnerItemsList, menuItems, 'dinner')) {
+            throw new Error('Invalid Items selected for Dinner, Please verify the menu items ids');
+        }
+
         var selectedItems = {
-            breakfast: selectedBreakfastItems.split(','),
-            lunch: selectedLunchItems.split(','),
-            dinner: selectedDinnerItems.split(',')
+            breakfast: selectedBreakfastItemsList,
+            lunch: selectedLunchItemsList,
+            dinner: selectedDinnerItemsList
         }
         const response = await recommendationService.rollOutItems(selectedItems);
         showChefOptions(userId);
     } catch(error) {
-        console.log('Error: ',error);
+        console.log('Error: ',(error as Error).message);
+        showChefOptions(userId)
     }
 }
 
@@ -91,14 +109,41 @@ async function handleRolloutFinalizedItems(userId: any) {
         console.table(menuItems.lunch);
         console.log('DINNER ITEMS');
         console.table(menuItems.dinner);
+
         const selectedBreakfastItems = await asyncUserInput('Enter comma separated breakfast items to roll out: ');
+        const selectedBreakfastItemsList = selectedBreakfastItems.split(',').map(id => Number(id));
+        if(!isValidFinalItemsSelected(selectedBreakfastItemsList, menuItems.breakfast)) {
+            throw new Error('Invalid Items selected for breakfast, Please verify the menu items ids');
+        }
+
         const selectedLunchItems = await asyncUserInput('Enter comma separated Lunch items to roll out: ');
+        const selectedLunchItemsList = selectedLunchItems.split(',').map(id => Number(id));
+        if(!isValidFinalItemsSelected(selectedLunchItemsList, menuItems.lunch)) {
+            throw new Error('Invalid Items selected for Lunch, Please verify the menu items ids');
+        }
+
         const selectedDinnerItems = await asyncUserInput('Enter comma separated Dinner items to roll out: ');
-        const validationDetail = await recommendationService.validateSelectedItems({breakfast: selectedBreakfastItems, lunch: selectedLunchItems, dinner: selectedDinnerItems}, menuItems);
-        const response = await recommendationService.rolloutFinalizedItems([...selectedBreakfastItems.split(','), ...selectedLunchItems.split(','), selectedDinnerItems.split(',')]);
+        const selectedDinnerItemsList = selectedDinnerItems.split(',').map(item => Number(item));
+        if(!isValidFinalItemsSelected(selectedDinnerItemsList, menuItems.dinner)) {
+            throw new Error('Invalid Items selected for Dinner, Please verify the menu items ids');
+        }
+
+        const selectedItems = {
+            breakfast: selectedBreakfastItemsList,
+            lunch: selectedLunchItemsList,
+            dinner: selectedDinnerItemsList
+        }
+
+        const payload = {
+            userId: userId,
+            data: selectedItems
+        }
+
+        const response = await recommendationService.rolloutFinalizedItems(payload);
         showChefOptions(userId);
     } catch(error) {
-        console.log('Error: ',error);
+        console.log('Error: ',(error as Error).message);
+        showChefOptions(userId);
     }
 }
 
@@ -112,3 +157,25 @@ async function handleNotification(userId: any) {
     }
 }
 
+function handleLogout() {
+    authService.logout();
+}
+
+function isValidItemsSelected(selectedItems: number[], menuItems:RecommendedMenu[], category:string): boolean {
+    if(!areAllItemsUnique(selectedItems)) return false;
+    return selectedItems.every((id: number) => menuItems.some((item) => {
+        if(category === 'breakfast') {
+            return item.menuId === id && item.categoryName === 'Breakfast';
+        } else {
+            return item.menuId === id && item.categoryName !== 'Breakfast';
+        }
+    }));
+}
+
+function isValidFinalItemsSelected(selectedItems: number[], menuItems:FinalizedMenuItem[]): boolean {
+    if(!areAllItemsUnique(selectedItems)) return false;
+
+    return selectedItems.every((id: number) => menuItems.some((item) => {
+        return item.menuItemId === id;
+    }));
+}

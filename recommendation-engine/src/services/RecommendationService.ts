@@ -2,7 +2,7 @@ import { RecommendationRepository } from "../repositories/RecommendationReposito
 import { NotificationService } from "./NotificationService";
 import { prepareRecommendation, prepareRecommendationForFinalMenu } from "../utils/RecommendationEngine";
 import { constructMenu } from "../utils/Menu";
-import { RecommendedMenu, Response } from "../interfaces/Interface";
+import { RecommendedMenu, Response, Payload, SelectedMenuItems } from "../interfaces/Interface";
 
 export class RecommendationService {
     private recommendationRepository: RecommendationRepository;
@@ -89,9 +89,20 @@ export class RecommendationService {
         }
     }
 
-    async rolloutFinalizedMenuItems(itemIds: string[]): Promise<Response<[]>> {
+    async rolloutFinalizedMenuItems(items: SelectedMenuItems): Promise<Response<[]>> {
         try {
-            const itemsCount = await this.recommendationRepository.markItemAsPrepared(itemIds);
+            var breakfastItems = items.breakfast.map((id: any) => {
+                return {id: parseInt(id), mealType: 'breakfast'};
+            });
+
+            var lunchItems = items.lunch.map((id: any) => {
+                return {id: parseInt(id), mealType: 'lunch'};
+            });
+
+            var dinnerItems = items.dinner.map((id: any) => {
+                return {id: parseInt(id), mealType: 'dinner'};
+            });
+            const itemsCount = await this.recommendationRepository.markItemAsPrepared([...breakfastItems, ...lunchItems, ...dinnerItems]);
             const notificationResponse = await this.notificationService.sendNotificationForFinalizedMenuItems();
             const response: Response<[]> = {
                 status: 'success',

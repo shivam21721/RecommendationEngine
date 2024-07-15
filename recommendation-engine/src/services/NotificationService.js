@@ -55,6 +55,19 @@ class NotificationService {
             }
         });
     }
+    sendNotificationToChef(notificationMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const date = (new Date()).toISOString().slice(0, 10);
+                const message = notificationMessage;
+                const type = 1;
+                yield this.notificationRepository.addNotification({ message, date, type });
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
     getUserNotifications(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

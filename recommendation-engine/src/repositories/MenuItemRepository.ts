@@ -103,15 +103,15 @@ export class MenuItemRepository {
         }
     }
 
-    async updateVotedMenuItems(itemIds: any): Promise<number> {
+    async updateVotedMenuItems(items: any): Promise<number> {
         const connection = await this.pool.getConnection();
         try {
-            const ids = itemIds.join(', ');
+            const conditions = items.map((item: any) => `(menuItemId = ${item.id} AND mealType = '${item.mealType}')`).join(' OR ');
             const query = `
                 UPDATE RecommendedItem
                 SET voteCount = voteCount + 1
-                WHERE recommendationDate = CURDATE()
-                AND menuItemId IN (${ids});
+                WHERE (${conditions})
+                AND recommendationDate = CURDATE()
             `;
             const [result] = await connection.execute(query);
             if((result as QueryResult).affectedRows > 0) {

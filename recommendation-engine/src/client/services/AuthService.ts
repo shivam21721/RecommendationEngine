@@ -27,5 +27,10 @@ export class AuthService {
 
     async logout() {
         this.socket.emit('logout');
+        this.socket.on('logoutResponse', () => {
+            console.log('Exiting client application');
+            socket.disconnect();
+            process.exit();
+        })
     }
 }

@@ -65,10 +65,10 @@ class RecommendationService {
             });
         });
     }
-    rolloutFinalizedItems(itemIds) {
+    rolloutFinalizedItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('rolloutFinalizedItems', itemIds);
+                this.socket.emit('rolloutFinalizedItems', items);
                 this.socket.on('rolloutFinalizedItemsResponse', (response) => {
                     if (response.status === 'success') {
                         resolve(response.data);

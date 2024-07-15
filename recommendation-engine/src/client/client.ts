@@ -10,7 +10,7 @@ socket.on('connect', async () => {
     try {
         const userData = await login();
         if((userData as User).role == 'Admin') {
-            showAdminOptions();
+            showAdminOptions((userData as User).id);
         }
         else if((userData as User).role === 'Chef') {
             showChefOptions((userData as User).id);

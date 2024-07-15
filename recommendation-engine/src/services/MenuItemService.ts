@@ -1,12 +1,15 @@
 import { MenuItemRepository } from "../repositories/MenuItemRepository";
-import { MenuItem, Response, RolledOutMenuItem } from "../interfaces/Interface";
+import { MenuItem, Response, RolledOutMenuItem, SelectedMenuItems } from "../interfaces/Interface";
 import { constructMenu } from "../utils/Menu";
+import { NotificationService } from "./NotificationService";
 
 export class MenuItemService {
     private menuItemRepository: MenuItemRepository;
+    private notificationService: NotificationService;
 
     constructor() {
         this.menuItemRepository = new MenuItemRepository();
+        this.notificationService = new NotificationService();
     } 
 
     async getMenuItems(): Promise<Response<MenuItem[]>> {
@@ -26,6 +29,7 @@ export class MenuItemService {
     async addMenuItem(itemData: any): Promise<Response<[]>> {
         try {
             const menuItemId = await this.menuItemRepository.addMenuItem(itemData);
+            await this.notificationService.sendNotificationToChef(`New menu item added, item id: ${menuItemId}`);
             const response: Response<[]> =  {
                 status: 'success',
                 message: `Menu Item Successfully added with id: ${menuItemId}`,
@@ -41,6 +45,7 @@ export class MenuItemService {
     async deleteMenuItem(id: number): Promise<Response<[]>> {
         try {
             const deletedItemId = await this.menuItemRepository.deleteMenuItem(id);
+            await this.notificationService.sendNotificationToChef(`Menu Item Deleted, item id: ${deletedItemId}`);
             const response: Response<[]> =  {
                 status: 'success',
                 message: `Menu Item Successfully Deleted with id: ${deletedItemId}`,
@@ -56,6 +61,7 @@ export class MenuItemService {
     async updateMenuItem(itemData: any): Promise<Response<[]>> {
         try {
             const updatedItemId = await this.menuItemRepository.updateMenuItem(itemData);
+            await this.notificationService.sendNotificationToChef(`Menu Item Updated, item id: ${updatedItemId}`);
             const response: Response<[]> =  {
                 status: 'success',
                 message: `Menu Item Successfully Deleted with id: ${updatedItemId}`,
@@ -82,9 +88,20 @@ export class MenuItemService {
         }
     }
 
-    async updateVotedMenuItems(itemIds: any): Promise<Response<[]>> {
+    async updateVotedMenuItems(items: SelectedMenuItems): Promise<Response<[]>> {
         try {
-            const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems(itemIds);
+            var breakfastItems = items.breakfast.map((id: any) => {
+                return {id: parseInt(id), mealType: 'breakfast'};
+            });
+
+            var lunchItems = items.lunch.map((id: any) => {
+                return {id: parseInt(id), mealType: 'lunch'};
+            });
+
+            var dinnerItems = items.dinner.map((id: any) => {
+                return {id: parseInt(id), mealType: 'dinner'};
+            });
+            const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
             const response: Response<[]> =  {
                 status: 'success',
                 message: `${updatedItemsCount}Items successfully voted`,

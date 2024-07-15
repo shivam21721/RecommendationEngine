@@ -17,10 +17,8 @@ class MenuItemService {
     getMenuItems() {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                console.log('inside service');
                 this.socket.emit('getMenuItems');
                 this.socket.once('getMenuItemsResponse', (response) => {
-                    console.log('response', response);
                     if (response.status === 'success') {
                         resolve(response.data);
                     }
@@ -31,13 +29,13 @@ class MenuItemService {
             });
         });
     }
-    addMenuItem(itemData) {
+    addMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('addMenuItem', itemData);
+                this.socket.emit('addMenuItem', payload);
                 this.socket.once('addMenuItemResponse', (response) => {
                     if (response.status === 'success') {
-                        resolve(response.data);
+                        resolve(response.message);
                     }
                     else {
                         reject(new Error(response.message));
@@ -52,7 +50,7 @@ class MenuItemService {
                 this.socket.emit('deleteMenuItem', itemId);
                 this.socket.once('deleteMenuItemResponse', (response) => {
                     if (response.status === 'success') {
-                        resolve(response.data);
+                        resolve(response.message);
                     }
                     else {
                         reject(new Error(response.message));
@@ -67,7 +65,7 @@ class MenuItemService {
                 this.socket.emit('updateMenuItem', itemData);
                 this.socket.once('updateMenuItemResponse', (response) => {
                     if (response.status === 'success') {
-                        resolve(response.data);
+                        resolve(response.message);
                     }
                     else {
                         reject(new Error(response.message));
@@ -106,10 +104,10 @@ class MenuItemService {
             });
         });
     }
-    voteForMenuItem(itemIds) {
+    voteForMenuItem(items) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('voteMenuItems', itemIds);
+                this.socket.emit('voteMenuItems', items);
                 this.socket.on('voteMenuItemsResponse', (response) => {
                     if (response.status === 'success') {
                         resolve(response.data);

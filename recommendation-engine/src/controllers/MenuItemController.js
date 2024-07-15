@@ -36,10 +36,10 @@ class MenuItemController {
             }
         });
     }
-    addMenuItem(itemData) {
+    addMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.menuItemService.addMenuItem(itemData);
+                const response = yield this.menuItemService.addMenuItem(payload.data);
                 return response;
             }
             catch (error) {
@@ -121,10 +121,10 @@ class MenuItemController {
             }
         });
     }
-    updateVotedMenuItems(itemIds) {
+    updateVotedMenuItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.menuItemService.updateVotedMenuItems(itemIds);
+                const response = yield this.menuItemService.updateVotedMenuItems(payload.data);
                 return response;
             }
             catch (error) {

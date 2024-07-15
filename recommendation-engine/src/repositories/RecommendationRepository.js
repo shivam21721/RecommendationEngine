@@ -125,15 +125,16 @@ class RecommendationRepository {
         });
     }
     ;
-    markItemAsPrepared(itemIds) {
+    markItemAsPrepared(items) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield this.pool.getConnection();
             try {
-                const placeholders = itemIds.map((id) => id).join(', ');
+                const conditions = items.map((item) => `(menuItemId = ${item.id} AND mealType = '${item.mealType}')`).join(' OR ');
                 const query = `
-               UPDATE recommendeditem
-               SET isPrepared = 1
-               WHERE menuItemId IN (${placeholders}) AND recommendationDate = CURDATE()
+                    UPDATE RecommendedItem
+                    SET isPrepared = TRUE
+                    WHERE (${conditions})
+                    AND recommendationDate = CURDATE()
                `;
                 const [result] = yield connection.execute(query);
                 if (result.affectedRows > 0) {

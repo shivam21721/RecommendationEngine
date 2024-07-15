@@ -23,7 +23,6 @@ export class SocketHandler {
             }
         }
         );
-
         socket.on('logout', () => {
             this.handleLogout(socket);
         })
@@ -40,7 +39,7 @@ export class SocketHandler {
     };
 
     private handleLogout(socket: Socket) {
-        socket.emit('logoutSuccess');
+        socket.emit('logoutResponse');
         socket.disconnect();
     }
 }

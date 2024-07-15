@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuItemService = void 0;
 const MenuItemRepository_1 = require("../repositories/MenuItemRepository");
 const Menu_1 = require("../utils/Menu");
+const NotificationService_1 = require("./NotificationService");
 class MenuItemService {
     constructor() {
         this.menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
+        this.notificationService = new NotificationService_1.NotificationService();
     }
     getMenuItems() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -36,6 +38,7 @@ class MenuItemService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const menuItemId = yield this.menuItemRepository.addMenuItem(itemData);
+                yield this.notificationService.sendNotificationToChef(`New menu item added, item id: ${menuItemId}`);
                 const response = {
                     status: 'success',
                     message: `Menu Item Successfully added with id: ${menuItemId}`,
@@ -52,6 +55,7 @@ class MenuItemService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const deletedItemId = yield this.menuItemRepository.deleteMenuItem(id);
+                yield this.notificationService.sendNotificationToChef(`Menu Item Deleted, item id: ${deletedItemId}`);
                 const response = {
                     status: 'success',
                     message: `Menu Item Successfully Deleted with id: ${deletedItemId}`,
@@ -68,6 +72,7 @@ class MenuItemService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const updatedItemId = yield this.menuItemRepository.updateMenuItem(itemData);
+                yield this.notificationService.sendNotificationToChef(`Menu Item Updated, item id: ${updatedItemId}`);
                 const response = {
                     status: 'success',
                     message: `Menu Item Successfully Deleted with id: ${updatedItemId}`,
@@ -97,10 +102,19 @@ class MenuItemService {
             }
         });
     }
-    updateVotedMenuItems(itemIds) {
+    updateVotedMenuItems(items) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems(itemIds);
+                var breakfastItems = items.breakfast.map((id) => {
+                    return { id: parseInt(id), mealType: 'breakfast' };
+                });
+                var lunchItems = items.lunch.map((id) => {
+                    return { id: parseInt(id), mealType: 'lunch' };
+                });
+                var dinnerItems = items.dinner.map((id) => {
+                    return { id: parseInt(id), mealType: 'dinner' };
+                });
+                const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
                 const response = {
                     status: 'success',
                     message: `${updatedItemsCount}Items successfully voted`,
