@@ -34,45 +34,45 @@ export interface Response<T> {
 };
 
 export interface RolledOutMenuItem {
-    menuItemId: number,
-    menuItemName: string,
-    categoryName: string,
-    menuItemPrice: number,
-    mealType: string
-    averageRating: number,
-    averageSentimentScore: number
+    menuItemId: number;
+    menuItemName: string;
+    categoryName: string;
+    menuItemPrice: number;
+    mealType: string;
+    averageRating: number;
+    averageSentimentScore: number;
 };
 
 export interface Notification {
-    message: string,
-    date: Date
+    message: string;
+    date: Date;
 };
 
 export interface RecommendedMenu {
-    menuId: number,
-    menuName: string,
-    categoryName: string,
-    avgRating: number,
-    avgSentiment: number,
-    preparedCount: number,
-    priorityScore: number
+    menuId: number;
+    menuName: string;
+    categoryName: string;
+    avgRating: number;
+    avgSentiment: number;
+    preparedCount: number;
+    priorityScore: number;
 };
 
 export interface Payload<T> {
-    userId: number,
-    data: T
+    userId: number;
+    data: T;
 }
 
 export interface FinalizedMenuItem {
-    menuItemId: number,
-    menuItemName: string,
-    categoryName: string,
-    voteCount: number,
-    mealType: string,
-    avgRating: number,
-    avgSentiment: number,
-    preparedCount: number,
-    priorityScore: number
+    menuItemId: number;
+    menuItemName: string;
+    categoryName: string;
+    voteCount: number;
+    mealType: string;
+    avgRating: number;
+    avgSentiment: number;
+    preparedCount: number;
+    priorityScore: number;
 };
 
 export interface SelectedMenuItems {
@@ -80,3 +80,18 @@ export interface SelectedMenuItems {
     lunch: number[];
     dinner: number[];
 };
+
+export interface MenuRecommendation {
+    id: number;
+    mealType: string;
+    date: string;
+};
+
+export interface Feedback {
+    userId: number;
+    menuItemId: number;
+    comment: string;
+    rating: number;
+    feedbackDate?: string;
+    sentimentScore?: number;
+}

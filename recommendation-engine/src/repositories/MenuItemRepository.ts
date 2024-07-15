@@ -17,7 +17,7 @@ export class MenuItemRepository {
         }
     }
 
-    async addMenuItem(itemData: any): Promise<number> {
+    async addMenuItem(itemData: MenuItem): Promise<number> {
         const connection = await this.pool.getConnection();
         try {
             const {name, categoryId, availability, price} = itemData;
@@ -50,7 +50,7 @@ export class MenuItemRepository {
         }
     }
 
-    async updateMenuItem(itemData: any): Promise<number>  {
+    async updateMenuItem(itemData: MenuItem): Promise<number>  {
         const connection = await this.pool.getConnection();
         try {
             const {id, name, categoryId, availability, price} = itemData;
@@ -58,7 +58,7 @@ export class MenuItemRepository {
             const values = [name, categoryId, price, availability, id];
             const [result] = await connection.execute(query, values);
             if ((result as QueryResult).affectedRows > 0) {
-                return id; 
+                return id as number; 
             } else {
                 throw new Error('Item not found');
             }

@@ -80,13 +80,17 @@ function handleAddMenuItem(userId) {
 function handleDeleteMenuItem(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const menuItems = yield menuItemService.getMenuItems();
+            const menuItems = yield menuItemService.getMenuItems({ userId: userId, data: null });
             console.table(menuItems);
             const itemId = yield (0, readline_1.asyncUserInput)('Enter item ID to delete: ');
             if (!isValidMenuItemId(itemId, menuItems)) {
                 throw new Error("Invalid Menu Item Id");
             }
-            const response = yield menuItemService.deleteMenuItem(parseInt(itemId));
+            const payload = {
+                userId: userId,
+                data: parseInt(itemId)
+            };
+            const response = yield menuItemService.deleteMenuItem(payload);
             console.log(response);
             showAdminOptions(userId);
         }
@@ -101,7 +105,11 @@ function handleUpdateMenuItem(userId) {
         try {
             const itemData = yield (0, readline_1.asyncUserInput)('Enter item ID, new name, new category, new availability (true/false), and price: ');
             const { id, name, categoryId, availability, price } = processMenuItemInput(itemData, true);
-            const response = yield menuItemService.updateMenuItem({ id, name, categoryId, availability, price });
+            const payload = {
+                userId: userId,
+                data: { id, name, categoryId, availability, price }
+            };
+            const response = yield menuItemService.updateMenuItem(payload);
             console.log(response);
             showAdminOptions(userId);
         }
@@ -114,7 +122,11 @@ function handleUpdateMenuItem(userId) {
 function handleViewMenuItems(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield menuItemService.getMenuItems();
+            const payload = {
+                userId: userId,
+                data: null
+            };
+            const response = yield menuItemService.getMenuItems(payload);
             console.table(response);
             showAdminOptions(userId);
         }
@@ -159,10 +171,10 @@ function convertCategoryId(categoryIdStr) {
     return categoryId;
 }
 function convertAvailability(availabilityStr) {
-    if (availabilityStr.toLowerCase() === 'true') {
+    if ('true' === availabilityStr.toLowerCase()) {
         return true;
     }
-    else if (availabilityStr.toLowerCase() === 'false') {
+    else if ('false' === availabilityStr.toLowerCase()) {
         return false;
     }
     else {

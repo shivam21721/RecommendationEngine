@@ -23,7 +23,7 @@ class NotificationService {
                 const date = (new Date()).toISOString().slice(0, 10);
                 const message = `Chef has rolled out the menu items for ${date}. Please view and rolled out menu items and vote your favorites items`;
                 const type = 2;
-                const notificationId = yield this.notificationRepository.addNotification({ message, date, type });
+                yield this.notificationRepository.addNotification({ message, date, type });
                 const response = {
                     status: 'success',
                     message: 'Successfully sent the notification',
@@ -42,7 +42,7 @@ class NotificationService {
                 const date = (new Date()).toISOString().slice(0, 10);
                 const message = `Chef has sent the finalized menu items for ${date}, you can check the menu`;
                 const type = 2;
-                const notificationId = yield this.notificationRepository.addNotification({ message, date, type });
+                yield this.notificationRepository.addNotification({ message, date, type });
                 const response = {
                     status: 'success',
                     message: 'Successfully sent the notification',

@@ -14,6 +14,7 @@ const AdminHandler_1 = require("./handlers/AdminHandler");
 const ChefHandler_1 = require("./handlers/ChefHandler");
 const EmployeeHandler_1 = require("./handlers/EmployeeHandler");
 const UserAuthenticationController_1 = require("../controllers/UserAuthenticationController");
+const UserRoles_1 = require("../enums/UserRoles");
 class SocketHandler {
     constructor(io) {
         this.io = io;
@@ -24,7 +25,7 @@ class SocketHandler {
             const { username, password } = userCredential;
             const response = yield this.userAuthenticationController.login(username, password);
             socket.emit('loginResponse', response);
-            if (response.status === 'success') {
+            if ('success' === response.status) {
                 this.handleUser(socket, response.data);
             }
         }));
@@ -33,13 +34,13 @@ class SocketHandler {
         });
     }
     handleUser(socket, user) {
-        if (user.role === 'Admin') {
+        if (UserRoles_1.UserRole.Admin === user.role) {
             (0, AdminHandler_1.handleAdmin)(socket, user);
         }
-        else if (user.role === 'Chef') {
+        else if (UserRoles_1.UserRole.Chef === user.role) {
             (0, ChefHandler_1.handleChef)(socket, user);
         }
-        else if (user.role === 'Employee') {
+        else if (UserRoles_1.UserRole.Employee === user.role) {
             (0, EmployeeHandler_1.handleEmployee)(socket, user);
         }
     }

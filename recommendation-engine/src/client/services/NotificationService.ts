@@ -1,4 +1,5 @@
 import { Socket } from "socket.io";
+import { Payload } from "../../interfaces/Interface";
 
 export class NotificationService {
     private socket: Socket;
@@ -7,11 +8,11 @@ export class NotificationService {
         this.socket = socket;
     }
 
-    async fetchUserNotifications(userId: any) {
+    async fetchUserNotifications(payload: Payload<null>) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('fetchUserNotifications', userId);
+            this.socket.emit('fetchUserNotifications', payload);
             this.socket.on('fetchUserNotificationsResponse', (response) => {
-                if (response.status === 'success') {
+                if ('success' === response.status) {
                     resolve(response.data);
                 } else {
                     reject(new Error(response.message));

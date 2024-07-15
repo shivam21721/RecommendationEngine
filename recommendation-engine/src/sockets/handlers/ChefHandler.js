@@ -17,28 +17,28 @@ const menuItemController = new MenuItemController_1.MenuItemController();
 const recommendationController = new RecommendationController_1.RecommendationController();
 const notificationController = new NotificationController_1.NotificationController();
 function handleChef(socket, user) {
-    socket.on('getMenuItems', () => __awaiter(this, void 0, void 0, function* () {
-        const response = yield menuItemController.getMenuItems();
+    socket.on('getMenuItems', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield menuItemController.getMenuItems(payload);
         socket.emit('getMenuItemsResponse', response);
     }));
     socket.on('getNextDayMenuRecommendation', () => __awaiter(this, void 0, void 0, function* () {
         const response = yield recommendationController.getNextDayMenuRecommendation();
         socket.emit('getNextDayMenuRecommendationResponse', response);
     }));
-    socket.on('rolloutItemsChoiceForNextDay', (items) => __awaiter(this, void 0, void 0, function* () {
-        const response = yield recommendationController.rolloutItems(items);
+    socket.on('rolloutItemsChoiceForNextDay', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield recommendationController.rolloutItems(payload);
         socket.emit('rolloutItemsChoiceForNextDayResponse', response);
     }));
-    socket.on('getFinalMenuRecommendation', () => __awaiter(this, void 0, void 0, function* () {
-        const response = yield recommendationController.fetchFinalMenuRecommendation();
+    socket.on('getFinalMenuRecommendation', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield recommendationController.fetchFinalMenuRecommendation(payload);
         socket.emit('getFinalMenuRecommendationResponse', response);
     }));
-    socket.on('rolloutFinalizedItems', (items) => __awaiter(this, void 0, void 0, function* () {
-        const response = yield recommendationController.rolloutFinalizedMenuItems(items);
+    socket.on('rolloutFinalizedItems', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield recommendationController.rolloutFinalizedMenuItems(payload);
         socket.emit('rolloutFinalizedItemsResponse', response);
     }));
-    socket.on('fetchUserNotifications', (userId) => __awaiter(this, void 0, void 0, function* () {
-        const response = yield notificationController.getUserNotifications(userId);
+    socket.on('fetchUserNotifications', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield notificationController.getUserNotifications(payload);
         socket.emit('fetchUserNotificationsResponse', response);
     }));
 }

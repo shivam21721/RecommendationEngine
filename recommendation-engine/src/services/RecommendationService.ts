@@ -28,7 +28,7 @@ export class RecommendationService {
         }
     }
 
-    async rolloutItems(items: any): Promise<Response<[]>> {
+    async rolloutItems(items: SelectedMenuItems): Promise<Response<[]>> {
         try {
 
             var breakfastItems = items.breakfast.map((id: any) => {
@@ -47,7 +47,7 @@ export class RecommendationService {
             });
 
             const itemsCount = await this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
-            const notificationResponse = await this.notificationService.sendNotificationForRolledOutItems();
+            await this.notificationService.sendNotificationForRolledOutItems();
             const response: Response<[]> = {
                 status: 'success',
                 message: `Successfully rolled out ${itemsCount} menu Items`,
@@ -63,21 +63,8 @@ export class RecommendationService {
         try {
             const recommendedMenu = await this.recommendationRepository.fetchFinalMenuRecommendation();
             const sortedRecommendedMenu = prepareRecommendationForFinalMenu(recommendedMenu);
-            const finalRecommendedMenuData: any = {};
-            finalRecommendedMenuData.breakfast = sortedRecommendedMenu.filter((item: any) => {
-                if(item.mealType === 'breakfast') return true;
-                return false;
-            });
-            
-            finalRecommendedMenuData.lunch = sortedRecommendedMenu.filter((item: any) => {
-                if(item.mealType === 'lunch') return true;
-                return false;
-            });
-
-            finalRecommendedMenuData.dinner = sortedRecommendedMenu.filter((item: any) => {
-                if(item.mealType === 'dinner') return true;
-                return false;
-            });
+            const finalRecommendedMenuData = constructMenu(sortedRecommendedMenu);
+                
             const response: Response<any> = {
                 status: 'success',
                 message: 'Successfully sent the notification',
@@ -118,21 +105,8 @@ export class RecommendationService {
     async getPreparedMenuForToday(): Promise<Response<any>> {
         try {
             const menuItems:any = await this.recommendationRepository.getPreparedMenuForToday();
-            const menuItemsData: any = {};
-            menuItemsData.breakfast = menuItems.filter((item: any) => {
-                if(item.mealType === 'breakfast') return true;
-                return false;
-            });
-            
-            menuItemsData.lunch = menuItems.filter((item: any) => {
-                if(item.mealType === 'lunch') return true;
-                return false;
-            });
-
-            menuItemsData.dinner = menuItems.filter((item: any) => {
-                if(item.mealType === 'dinner') return true;
-                return false;
-            });
+            const menuItemsData = constructMenu(menuItems);
+    
             const response: Response<any> = {
                 status: 'success',
                 message: 'Successfully fetched Menu for today',

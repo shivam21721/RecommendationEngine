@@ -28,7 +28,7 @@ export class UserRepository {
         }
     }
 
-    async getUserRole(userId: any) {
+    async getUserRole(userId: number) {
         const connection = await this.pool.getConnection();
         try {
             const query = `Select roleName from role where id = ${userId}`;

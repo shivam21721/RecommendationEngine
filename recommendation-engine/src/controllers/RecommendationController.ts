@@ -1,5 +1,7 @@
 import { RecommendationService } from "../services/RecommendationService";
 import { Payload, RecommendedMenu, Response, SelectedMenuItems } from "../interfaces/Interface";
+import { isAuthorizedUser } from "../utils/Authorization";
+import { UserRole } from "../enums/UserRoles";
 
 export class RecommendationController {
     private recommendationService: RecommendationService;
@@ -23,9 +25,12 @@ export class RecommendationController {
         }
     }
 
-    async rolloutItems(items: any): Promise<Response<[]>> {
+    async rolloutItems(payload: Payload<SelectedMenuItems>): Promise<Response<[]>> {
         try {
-            const response = await this.recommendationService.rolloutItems(items);
+            if(!isAuthorizedUser(payload.userId, [UserRole.Chef])) {
+                throw new Error("Unauthorized user");
+            }
+            const response = await this.recommendationService.rolloutItems(payload.data);
             return response;
         } catch (error) {
             console.error(error);
@@ -38,8 +43,11 @@ export class RecommendationController {
         }
     }
 
-    async fetchFinalMenuRecommendation(): Promise<Response<any | []>> {
+    async fetchFinalMenuRecommendation(payload: Payload<null>): Promise<Response<any | []>> {
         try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Chef])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.recommendationService.fetchFinalMenuRecommendation();
             return response;
         } catch (error) {
@@ -55,6 +63,9 @@ export class RecommendationController {
 
     async rolloutFinalizedMenuItems(payload: Payload<SelectedMenuItems>): Promise<Response<[]>> {
         try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Chef])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.recommendationService.rolloutFinalizedMenuItems(payload.data);
             return response;
         } catch (error) {

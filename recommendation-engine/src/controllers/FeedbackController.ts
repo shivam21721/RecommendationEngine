@@ -1,5 +1,7 @@
 import { FeedbackService } from "../services/FeedbackService";
-import { Response } from "../interfaces/Interface";
+import { Feedback, Payload, Response } from "../interfaces/Interface";
+import { isAuthorizedUser } from "../utils/Authorization";
+import { UserRole } from "../enums/UserRoles";
 
 export class FeedbackController {
     private feedbackService: FeedbackService;
@@ -8,9 +10,12 @@ export class FeedbackController {
         this.feedbackService = new FeedbackService();
     }
 
-    async addMenuFeedback(feedback: any): Promise<Response<[]>> {
+    async addMenuFeedback(payload: Payload<Feedback>): Promise<Response<[]>> {
         try{
-            const response = await this.feedbackService.addMenuFeedback(feedback);
+            if(!isAuthorizedUser(payload.userId, [UserRole.Employee])) {
+                throw new Error("Unauthorized user");
+            }
+            const response = await this.feedbackService.addMenuFeedback(payload.data);
             return response;
         } catch(error) {
             console.error(error);

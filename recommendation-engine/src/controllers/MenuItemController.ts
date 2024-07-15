@@ -1,6 +1,8 @@
 import { MenuItemService } from "../services/MenuItemService";
 import { MenuItem, Payload, Response, RolledOutMenuItem, SelectedMenuItems } from "../interfaces/Interface";
 import { RecommendationService } from "../services/RecommendationService";
+import { isAuthorizedUser } from "../utils/Authorization";
+import { UserRole } from "../enums/UserRoles";
 
 
 export class MenuItemController {
@@ -12,11 +14,12 @@ export class MenuItemController {
         this.recommendationService = new RecommendationService();
     } 
 
-    async getMenuItems(): Promise<Response<MenuItem[] | []>> {
+    async getMenuItems(payload: Payload<null>): Promise<Response<MenuItem[] | []>> {
         try {
-            console.log('inside');
+            if(!isAuthorizedUser(payload.userId, [UserRole.Admin, UserRole.Chef])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.menuItemService.getMenuItems();
-            console.log(response);
             return response;
         } catch (error) {
             console.error(error);
@@ -31,6 +34,9 @@ export class MenuItemController {
 
     async addMenuItem(payload: Payload<MenuItem>): Promise<Response<[]>> {
         try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Admin])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.menuItemService.addMenuItem(payload.data);
             return response;
         } catch(error) {
@@ -44,9 +50,12 @@ export class MenuItemController {
         }
     }
 
-    async deleteMenuItem(id: number): Promise<Response<[]>> {
+    async deleteMenuItem(payload: Payload<number>): Promise<Response<[]>> {
         try {
-            const response = await this.menuItemService.deleteMenuItem(id);
+            if(!isAuthorizedUser(payload.userId, [UserRole.Admin])) {
+                throw new Error("Unauthorized user");
+            }
+            const response = await this.menuItemService.deleteMenuItem(payload.data);
             return response;
         } catch(error) {
             console.error(error);
@@ -59,9 +68,12 @@ export class MenuItemController {
         }
     }
 
-    async updateMenuItem(itemData: any): Promise<Response<[]>> {
+    async updateMenuItem(payload: Payload<MenuItem>): Promise<Response<[]>> {
         try {
-            const response = await this.menuItemService.updateMenuItem(itemData);
+            if(!isAuthorizedUser(payload.userId, [UserRole.Admin])) {
+                throw new Error("Unauthorized user");
+            }
+            const response = await this.menuItemService.updateMenuItem(payload.data);
             return response;
         } catch(error) {
             console.error(error);
@@ -75,8 +87,11 @@ export class MenuItemController {
          
     }
     
-    async getTodayMenu(): Promise<Response<any>> {
+    async getTodayMenu(payload: Payload<null>): Promise<Response<any>> {
         try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Employee])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.recommendationService.getPreparedMenuForToday();
             return response;
         } catch(error) {
@@ -90,8 +105,11 @@ export class MenuItemController {
         }
     }
 
-    async fetchRolledOutMenu(): Promise<Response<RolledOutMenuItem[] | []>> {
+    async fetchRolledOutMenu(payload: Payload<null>): Promise<Response<RolledOutMenuItem[] | []>> {
         try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Employee])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.menuItemService.fetchRolledOutMenu();
             return response;
         } catch(error) {
@@ -107,6 +125,9 @@ export class MenuItemController {
 
     async updateVotedMenuItems(payload: Payload<SelectedMenuItems>): Promise<Response<[]>> {
         try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Employee])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.menuItemService.updateVotedMenuItems(payload.data);
             return response;    
         } catch(error) {
@@ -120,8 +141,11 @@ export class MenuItemController {
         }
     }
 
-    async getNextDayFinalizedMenu(): Promise<Response<any | []>> {
+    async getNextDayFinalizedMenu(payload: Payload<null>): Promise<Response<any | []>> {
         try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Employee])) {
+                throw new Error("Unauthorized user");
+            }
             const response = await this.recommendationService.getNextDayFinalizedMenu();
             return response;
         } catch(error) {

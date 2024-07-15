@@ -10,8 +10,8 @@ const recommendationController = new RecommendationController();
 const notificationController = new NotificationController();
 
 export function handleChef(socket: Socket, user: any) {
-    socket.on('getMenuItems', async () => {
-        const response = await menuItemController.getMenuItems();
+    socket.on('getMenuItems', async (payload) => {
+        const response = await menuItemController.getMenuItems(payload);
         socket.emit('getMenuItemsResponse', response);
     });
 
@@ -20,23 +20,23 @@ export function handleChef(socket: Socket, user: any) {
         socket.emit('getNextDayMenuRecommendationResponse', response);
     });
 
-    socket.on('rolloutItemsChoiceForNextDay', async (items: any) => {
-        const response = await recommendationController.rolloutItems(items);
+    socket.on('rolloutItemsChoiceForNextDay', async (payload) => {
+        const response = await recommendationController.rolloutItems(payload);
         socket.emit('rolloutItemsChoiceForNextDayResponse', response);
     });
  
-    socket.on('getFinalMenuRecommendation', async () => {
-        const response = await recommendationController.fetchFinalMenuRecommendation();
+    socket.on('getFinalMenuRecommendation', async (payload) => {
+        const response = await recommendationController.fetchFinalMenuRecommendation(payload);
         socket.emit('getFinalMenuRecommendationResponse', response);
     });   
 
-    socket.on('rolloutFinalizedItems', async (items: Payload<SelectedMenuItems>) => {
-        const response = await recommendationController.rolloutFinalizedMenuItems(items);
+    socket.on('rolloutFinalizedItems', async (payload) => {
+        const response = await recommendationController.rolloutFinalizedMenuItems(payload);
         socket.emit('rolloutFinalizedItemsResponse', response);
     });
 
-    socket.on('fetchUserNotifications', async (userId) => {
-        const response = await notificationController.getUserNotifications(userId);
+    socket.on('fetchUserNotifications', async (payload) => {
+        const response = await notificationController.getUserNotifications(payload);
         socket.emit('fetchUserNotificationsResponse', response);
     })
 }

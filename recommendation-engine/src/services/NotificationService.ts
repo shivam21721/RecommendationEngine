@@ -16,7 +16,7 @@ export class NotificationService {
             const date = (new Date()).toISOString().slice(0, 10);
             const message = `Chef has rolled out the menu items for ${date}. Please view and rolled out menu items and vote your favorites items`;
             const type = 2;
-            const notificationId = await this.notificationRepository.addNotification({message, date, type});
+            await this.notificationRepository.addNotification({message, date, type});
             const response: Response<[]> = {
                 status: 'success',
                 message: 'Successfully sent the notification',
@@ -33,7 +33,7 @@ export class NotificationService {
             const date = (new Date()).toISOString().slice(0, 10);
             const message = `Chef has sent the finalized menu items for ${date}, you can check the menu`;
             const type = 2;
-            const notificationId = await this.notificationRepository.addNotification({message, date, type});
+            await this.notificationRepository.addNotification({message, date, type});
             const response: Response<[]> = {
                 status: 'success',
                 message: 'Successfully sent the notification',
@@ -56,7 +56,7 @@ export class NotificationService {
         }
     }
 
-    async getUserNotifications(userId: any): Promise<Response<Notification[]>> {
+    async getUserNotifications(userId: number): Promise<Response<Notification[]>> {
         try {
             const userRole = await this.userService.getUserRole(userId);
             const notifications = await this.notificationRepository.getUserNotifications(userRole);

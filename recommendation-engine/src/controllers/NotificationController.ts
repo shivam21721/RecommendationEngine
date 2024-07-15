@@ -1,5 +1,7 @@
 import { NotificationService } from "../services/NotificationService";
-import { Response, Notification } from "../interfaces/Interface";
+import { Response, Notification, Payload } from "../interfaces/Interface";
+import { UserRole } from "../enums/UserRoles";
+import { isAuthorizedUser } from "../utils/Authorization";
 
 export class NotificationController {
     private notificationService: NotificationService;
@@ -8,12 +10,15 @@ export class NotificationController {
         this.notificationService = new NotificationService();
     }
 
-    async getUserNotifications(userId: any): Promise<Response<Notification[] | []>> {
+    async getUserNotifications(payload: Payload<null>): Promise<Response<Notification[] | []>> {
         try {
-            const response = await this.notificationService.getUserNotifications(userId);
+            if(!isAuthorizedUser(payload.userId, [UserRole.Chef, UserRole.Employee])) {
+                throw new Error("Unauthorized user");
+            }
+            const response = await this.notificationService.getUserNotifications(payload.userId);
             return response;
         } catch(error) {
-            console.error(error);
+            console.error((error as Error).message);
             const response: Response<[]> = {
                 status: 'error',
                 message: (error as Error).message,

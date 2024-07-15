@@ -70,19 +70,27 @@ function handleEmployeeChoice(choice, userId) {
 function handleViewTodayMenu(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const menuItems = yield menuItemService.getTodayMenu();
+            const payload = {
+                userId: userId,
+                data: null
+            };
+            const menuItems = yield menuItemService.getTodayMenu(payload);
             (0, Menu_1.showMenu)(menuItems);
             showEmployeeOptions(userId);
         }
         catch (error) {
-            console.log("Error: ", error);
+            console.log("Error: ", error.message);
         }
     });
 }
 function handleViewNextDayMenu(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const menuItems = yield menuItemService.fetchNextDayFinalizedMenu();
+            const payload = {
+                userId: userId,
+                data: null
+            };
+            const menuItems = yield menuItemService.fetchNextDayFinalizedMenu(payload);
             (0, Menu_1.showMenu)(menuItems);
             showEmployeeOptions(userId);
         }
@@ -94,7 +102,11 @@ function handleViewNextDayMenu(userId) {
 function handleViewRolledOutMenu(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const menuItems = yield menuItemService.getRolledOutMenu();
+            const rolledOutMenuPayload = {
+                userId: userId,
+                data: null
+            };
+            const menuItems = yield menuItemService.getRolledOutMenu(rolledOutMenuPayload);
             (0, Menu_1.showMenu)(menuItems);
             const votedBreakfastItems = yield (0, readline_1.asyncUserInput)('Enter the comma seperated breakfast menu items id to vote: ');
             const votedBreakfastItemsList = votedBreakfastItems.split(',').map(item => Number(item));
@@ -135,15 +147,17 @@ function handleViewRolledOutMenu(userId) {
 function handleFeedback(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const todayMenu = yield menuItemService.getTodayMenu();
+            const todayMenu = yield menuItemService.getTodayMenu({ userId: userId, data: null });
             console.table(todayMenu);
             const menuItemId = yield (0, readline_1.asyncUserInput)("Enter the Menu Item Id for feedback: ");
             const comment = yield (0, readline_1.asyncUserInput)("Enter your feedback comment: ");
             const rating = yield (0, readline_1.asyncUserInput)("Rate the menu on the scale of 1 to 5: ");
-            const feedbacResponse = yield feedbackService.addFeedback({ userId, menuItemId, comment, rating });
-            if (feedbacResponse) {
-                console.log('Feedback submitted successfully');
-            }
+            const payload = {
+                userId: userId,
+                data: { userId, menuItemId: parseInt(menuItemId), comment, rating: parseInt(rating) }
+            };
+            const feedbacResponse = yield feedbackService.addFeedback(payload);
+            console.log(feedbacResponse);
             showEmployeeOptions(userId);
         }
         catch (error) {
@@ -154,7 +168,11 @@ function handleFeedback(userId) {
 function handleNotification(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const notifications = yield notificationService.fetchUserNotifications(userId);
+            const payload = {
+                userId: userId,
+                data: null
+            };
+            const notifications = yield notificationService.fetchUserNotifications(payload);
             console.table(notifications);
             showEmployeeOptions(userId);
         }

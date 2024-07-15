@@ -14,12 +14,12 @@ class MenuItemService {
     constructor(socket) {
         this.socket = socket;
     }
-    getMenuItems() {
+    getMenuItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('getMenuItems');
+                this.socket.emit('getMenuItems', payload);
                 this.socket.once('getMenuItemsResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.data);
                     }
                     else {
@@ -34,7 +34,7 @@ class MenuItemService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('addMenuItem', payload);
                 this.socket.once('addMenuItemResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.message);
                     }
                     else {
@@ -44,12 +44,12 @@ class MenuItemService {
             });
         });
     }
-    deleteMenuItem(itemId) {
+    deleteMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('deleteMenuItem', itemId);
+                this.socket.emit('deleteMenuItem', payload);
                 this.socket.once('deleteMenuItemResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.message);
                     }
                     else {
@@ -59,12 +59,12 @@ class MenuItemService {
             });
         });
     }
-    updateMenuItem(itemData) {
+    updateMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('updateMenuItem', itemData);
+                this.socket.emit('updateMenuItem', payload);
                 this.socket.once('updateMenuItemResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.message);
                     }
                     else {
@@ -74,12 +74,12 @@ class MenuItemService {
             });
         });
     }
-    getTodayMenu() {
+    getTodayMenu(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('getTodayMenu');
+                this.socket.emit('getTodayMenu', payload);
                 this.socket.on('getTodayMenuResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.data);
                     }
                     else {
@@ -89,12 +89,12 @@ class MenuItemService {
             });
         });
     }
-    getRolledOutMenu() {
+    getRolledOutMenu(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('getRolledOutMenu');
+                this.socket.emit('getRolledOutMenu', payload);
                 this.socket.on('getRolledOutMenuResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.data);
                     }
                     else {
@@ -104,13 +104,13 @@ class MenuItemService {
             });
         });
     }
-    voteForMenuItem(items) {
+    voteForMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('voteMenuItems', items);
+                this.socket.emit('voteMenuItems', payload);
                 this.socket.on('voteMenuItemsResponse', (response) => {
-                    if (response.status === 'success') {
-                        resolve(response.data);
+                    if ('success' === response.status) {
+                        resolve(response.message);
                     }
                     else {
                         reject(new Error(response.message));
@@ -119,12 +119,12 @@ class MenuItemService {
             });
         });
     }
-    fetchNextDayFinalizedMenu() {
+    fetchNextDayFinalizedMenu(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('fetchNextDayFinalizedMenu');
+                this.socket.emit('fetchNextDayFinalizedMenu', payload);
                 this.socket.on('fetchNextDayFinalizedMenuResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.data);
                     }
                     else {

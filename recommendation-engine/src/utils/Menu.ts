@@ -18,17 +18,17 @@ export function showMenu(menuItems: any) {
 export function constructMenu(menuItems: any) {
     const response: any = {};
     response.breakfast = menuItems.filter((item: any) => {
-        if(item.mealType === 'breakfast') return true;
+        if('breakfast' === item.mealType) return true;
         return false;
     });
     
     response.lunch = menuItems.filter((item: any) => {
-        if(item.mealType === 'lunch') return true;
+        if('lunch' === item.mealType) return true;
         return false;
     });
 
     response.dinner = menuItems.filter((item: any) => {
-        if(item.mealType === 'dinner') return true;
+        if('dinner' === item.mealType) return true;
         return false;
     });
     return response;

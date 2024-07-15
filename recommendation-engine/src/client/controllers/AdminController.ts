@@ -67,13 +67,18 @@ async function handleAddMenuItem(userId: number) {
 
 async function handleDeleteMenuItem(userId: number) {
     try {
-        const menuItems = await menuItemService.getMenuItems();
+        const menuItems = await menuItemService.getMenuItems({userId: userId, data: null});
         console.table(menuItems);
         const itemId = await asyncUserInput('Enter item ID to delete: ');
         if(!isValidMenuItemId(itemId, menuItems as MenuItem[])) {
             throw new Error("Invalid Menu Item Id");
         }
-        const response = await menuItemService.deleteMenuItem(parseInt(itemId));
+
+        const payload = {
+            userId: userId,
+            data: parseInt(itemId)
+        }
+        const response = await menuItemService.deleteMenuItem(payload);
         console.log(response);
         showAdminOptions(userId);
     } catch(error) {
@@ -86,7 +91,11 @@ async function handleUpdateMenuItem(userId: number) {
     try {
         const itemData = await asyncUserInput('Enter item ID, new name, new category, new availability (true/false), and price: ');
         const {id, name, categoryId, availability, price} = processMenuItemInput(itemData, true);
-        const response = await menuItemService.updateMenuItem({id, name, categoryId, availability, price});
+        const payload = {
+            userId: userId,
+            data: {id, name, categoryId, availability, price} 
+        }
+        const response = await menuItemService.updateMenuItem(payload);
         console.log(response);
         showAdminOptions(userId);
     } catch(error) {
@@ -97,7 +106,11 @@ async function handleUpdateMenuItem(userId: number) {
 
 async function handleViewMenuItems(userId: number) {
     try {
-        const response = await menuItemService.getMenuItems();
+        const payload = {
+            userId: userId,
+            data: null
+        }
+        const response = await menuItemService.getMenuItems(payload);
         console.table(response);
         showAdminOptions(userId);
     } catch(error) {
@@ -147,9 +160,9 @@ function convertCategoryId(categoryIdStr: string): number {
 }
 
 function convertAvailability(availabilityStr: string): boolean {
-    if (availabilityStr.toLowerCase() === 'true') {
+    if ('true' === availabilityStr.toLowerCase()) {
         return true;
-    } else if (availabilityStr.toLowerCase() === 'false') {
+    } else if ('false' === availabilityStr.toLowerCase()) {
         return false;
     } else {
         throw new Error("Invalid availability, must be 'true' or 'false'");
@@ -166,7 +179,6 @@ function convertPrice(priceStr: string): number {
 
 function processMenuItemInput(input: string, hasMenuId: boolean): MenuItem {
     const values = parseMenuItemInput(input, hasMenuId);
-
     let index = 0;
     const menuItem: MenuItem = {
         name: "",
@@ -174,16 +186,13 @@ function processMenuItemInput(input: string, hasMenuId: boolean): MenuItem {
         price: 0,
         availability: false
     };
-
     if (hasMenuId) {
         menuItem.id = convertMenuId(values[index++]);
     }
-
     menuItem.name = validateName(values[index++]);
     menuItem.categoryId = convertCategoryId(values[index++]);
     menuItem.availability = convertAvailability(values[index++]);
     menuItem.price = convertPrice(values[index++]);
-
     return menuItem;
 }
 

@@ -26,7 +26,7 @@ export class MenuItemService {
         }
     }
 
-    async addMenuItem(itemData: any): Promise<Response<[]>> {
+    async addMenuItem(itemData: MenuItem): Promise<Response<[]>> {
         try {
             const menuItemId = await this.menuItemRepository.addMenuItem(itemData);
             await this.notificationService.sendNotificationToChef(`New menu item added, item id: ${menuItemId}`);
@@ -58,7 +58,7 @@ export class MenuItemService {
         
     }
 
-    async updateMenuItem(itemData: any): Promise<Response<[]>> {
+    async updateMenuItem(itemData: MenuItem): Promise<Response<[]>> {
         try {
             const updatedItemId = await this.menuItemRepository.updateMenuItem(itemData);
             await this.notificationService.sendNotificationToChef(`Menu Item Updated, item id: ${updatedItemId}`);

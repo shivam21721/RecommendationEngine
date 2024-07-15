@@ -9,25 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FeedbackService = void 0;
-class FeedbackService {
-    constructor(socket) {
-        this.socket = socket;
-    }
-    addFeedback(payload) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                this.socket.emit('addFeedback', payload);
-                this.socket.on('addFeedbackResponse', (response) => {
-                    if ('success' === response.status) {
-                        resolve(response.message);
-                    }
-                    else {
-                        reject(new Error(response.message));
-                    }
-                });
-            });
-        });
-    }
+exports.isAuthorizedUser = void 0;
+const UserService_1 = require("../services/UserService");
+const userService = new UserService_1.UserService();
+function isAuthorizedUser(userId, requiredRoles) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const userRole = yield userService.getUserRole(userId);
+        return requiredRoles.includes(userRole);
+    });
 }
-exports.FeedbackService = FeedbackService;
+exports.isAuthorizedUser = isAuthorizedUser;

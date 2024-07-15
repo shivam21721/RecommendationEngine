@@ -1,10 +1,10 @@
 import db from "../db/db";
-import { QueryResult } from "../interfaces/Interface";
+import { Feedback, QueryResult } from "../interfaces/Interface";
 
 export class FeedbackRepository {
     private pool = db.getPool();
 
-    async addFeedback(feedback: any): Promise<number> {
+    async addFeedback(feedback: Feedback): Promise<number> {
         const connection = await this.pool.getConnection();
         const { userId, menuItemId, comment, rating, feedbackDate, sentimentScore } = feedback;
         try {

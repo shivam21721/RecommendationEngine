@@ -1,5 +1,5 @@
 import db from "../db/db";
-import { QueryResult } from "../interfaces/Interface";
+import { MenuRecommendation, QueryResult } from "../interfaces/Interface";
 
 export class RecommendationRepository {
     private pool = db.getPool();
@@ -35,7 +35,7 @@ export class RecommendationRepository {
           }
     };
 
-    async addRecommendedItems(items: any) {
+    async addRecommendedItems(items: MenuRecommendation[]) {
           const connection = await this.pool.getConnection();
           try {
                const placeholders = items.map(() => '(?, ?, ?)').join(', ');

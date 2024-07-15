@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RecommendationController = void 0;
 const RecommendationService_1 = require("../services/RecommendationService");
+const Authorization_1 = require("../utils/Authorization");
+const UserRoles_1 = require("../enums/UserRoles");
 class RecommendationController {
     constructor() {
         this.recommendationService = new RecommendationService_1.RecommendationService();
@@ -32,10 +34,13 @@ class RecommendationController {
             }
         });
     }
-    rolloutItems(items) {
+    rolloutItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.recommendationService.rolloutItems(items);
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Chef])) {
+                    throw new Error("Unauthorized user");
+                }
+                const response = yield this.recommendationService.rolloutItems(payload.data);
                 return response;
             }
             catch (error) {
@@ -49,9 +54,12 @@ class RecommendationController {
             }
         });
     }
-    fetchFinalMenuRecommendation() {
+    fetchFinalMenuRecommendation(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Chef])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.recommendationService.fetchFinalMenuRecommendation();
                 return response;
             }
@@ -69,6 +77,9 @@ class RecommendationController {
     rolloutFinalizedMenuItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Chef])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.recommendationService.rolloutFinalizedMenuItems(payload.data);
                 return response;
             }

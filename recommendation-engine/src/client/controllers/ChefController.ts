@@ -3,7 +3,7 @@ import { asyncUserInput } from "../readline";
 import { MenuItemService } from "../services/MenuItemService";
 import { NotificationService } from "../services/NotificationService";
 import { RecommendationService } from "../services/RecommendationService";
-import { showCategoryBasedMenuItems } from "../../utils/Menu";
+import { showCategoryBasedMenuItems, showMenu } from "../../utils/Menu";
 import { FinalizedMenuItem, RecommendedMenu } from "../../interfaces/Interface";
 import { areAllItemsUnique } from "../../utils/Validation";
 import { AuthService } from "../services/AuthService";
@@ -18,7 +18,6 @@ var chefOptions = [
     '2. ROLL OUT ITEMS FOR VOTING',
     '3. ROLL OUT FINALIZED ITEMS',
     '4. VIEW NOTIFICATIONS',
-    '6. VIEW FEEDBACKS',
     'X. LOGOUT'
 ]
 
@@ -56,7 +55,11 @@ async function handleChefChoice(choice: string, userId: any) {
 
 async function handleViewMenuItem(userId: any) {
     try {
-        const menuItems = await menuItemService.getMenuItems();
+        const payload = {
+            userId: userId,
+            data: null
+        }
+        const menuItems = await menuItemService.getMenuItems(payload);
         console.table(menuItems);
         showChefOptions(userId);
     } catch(error) {
@@ -92,7 +95,13 @@ async function handleRollOutItemsForNextDay(userId: any) {
             lunch: selectedLunchItemsList,
             dinner: selectedDinnerItemsList
         }
-        const response = await recommendationService.rollOutItems(selectedItems);
+
+        const payload = {
+            userId: userId,
+            data: selectedItems
+        }
+        const response = await recommendationService.rollOutItems(payload);
+        console.log(response);
         showChefOptions(userId);
     } catch(error) {
         console.log('Error: ',(error as Error).message);
@@ -102,13 +111,12 @@ async function handleRollOutItemsForNextDay(userId: any) {
 
 async function handleRolloutFinalizedItems(userId: any) {
     try {
-        const menuItems: any = await recommendationService.getFinalMenuRecommendation();
-        console.log('BREAKFAST ITEMS');
-        console.table(menuItems.breakfast);
-        console.log('LUNCH ITEMS');
-        console.table(menuItems.lunch);
-        console.log('DINNER ITEMS');
-        console.table(menuItems.dinner);
+        const getFinalMenuRecommendationPayload = {
+            userId: userId,
+            data: null
+        }
+        const menuItems: any = await recommendationService.getFinalMenuRecommendation(getFinalMenuRecommendationPayload);
+        showMenu(menuItems);
 
         const selectedBreakfastItems = await asyncUserInput('Enter comma separated breakfast items to roll out: ');
         const selectedBreakfastItemsList = selectedBreakfastItems.split(',').map(id => Number(id));
@@ -140,6 +148,7 @@ async function handleRolloutFinalizedItems(userId: any) {
         }
 
         const response = await recommendationService.rolloutFinalizedItems(payload);
+        console.log(response);
         showChefOptions(userId);
     } catch(error) {
         console.log('Error: ',(error as Error).message);
@@ -149,8 +158,12 @@ async function handleRolloutFinalizedItems(userId: any) {
 
 async function handleNotification(userId: any) {
     try {
-        const notifications = await notificationService.fetchUserNotifications(userId);
-        console.log(notifications);
+        const payload = {
+            userId: userId,
+            data: null
+        }
+        const notifications = await notificationService.fetchUserNotifications(payload);
+        console.table(notifications);
         showChefOptions(userId);
     } catch(error) {
         console.log(error);
@@ -165,9 +178,9 @@ function isValidItemsSelected(selectedItems: number[], menuItems:RecommendedMenu
     if(!areAllItemsUnique(selectedItems)) return false;
     return selectedItems.every((id: number) => menuItems.some((item) => {
         if(category === 'breakfast') {
-            return item.menuId === id && item.categoryName === 'Breakfast';
+            return item.menuId === id && 'Breakfast' === item.categoryName;
         } else {
-            return item.menuId === id && item.categoryName !== 'Breakfast';
+            return item.menuId === id && 'Breakfast' !== item.categoryName;
         }
     }));
 }

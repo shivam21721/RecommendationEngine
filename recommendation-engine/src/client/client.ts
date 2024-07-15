@@ -9,10 +9,10 @@ socket.on('connect', async () => {
     console.log('Connected to server');
     try {
         const userData = await login();
-        if((userData as User).role == 'Admin') {
+        if('Admin' == (userData as User).role) {
             showAdminOptions((userData as User).id);
         }
-        else if((userData as User).role === 'Chef') {
+        else if('Chef' === (userData as User).role) {
             showChefOptions((userData as User).id);
         } else {
             showEmployeeOptions((userData as User).id);

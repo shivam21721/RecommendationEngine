@@ -1,5 +1,5 @@
 import { UserAuthenticationService } from "../services/UserAuthenticationService";
-import { Response } from "../interfaces/Interface";
+import { Response, User } from "../interfaces/Interface";
 
 export class UserAuthenticationController {
     private userAuthenticationService: UserAuthenticationService;
@@ -8,7 +8,7 @@ export class UserAuthenticationController {
         this.userAuthenticationService = new UserAuthenticationService();
     }
 
-    async login(username: string, password: string): Promise<Response<any | []>> {
+    async login(username: string, password: string): Promise<Response<User | []>> {
         try {
             const response = await this.userAuthenticationService.login(username, password);
             return response;

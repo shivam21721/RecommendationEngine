@@ -21,7 +21,7 @@ class AuthService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('login', userCredential);
                 this.socket.on('loginResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.data);
                     }
                     else {

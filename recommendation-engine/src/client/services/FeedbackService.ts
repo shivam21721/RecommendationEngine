@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Response } from "../../interfaces/Interface";
+import { Feedback, Payload, Response } from "../../interfaces/Interface";
 
 export class FeedbackService {
     private socket: Socket;
@@ -8,12 +8,12 @@ export class FeedbackService {
         this.socket = socket;
     }
 
-    async addFeedback(feedback: any) {
+    async addFeedback(payload: Payload<Feedback>) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('addFeedback', feedback);
+            this.socket.emit('addFeedback', payload);
             this.socket.on('addFeedbackResponse', (response: Response<any>) => {
-                if(response.status === 'success') {
-                    resolve(response.data);
+                if('success' === response.status) {
+                    resolve(response.message);
                 } else {
                     reject(new Error(response.message));
                 }

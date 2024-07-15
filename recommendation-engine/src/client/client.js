@@ -18,10 +18,10 @@ AuthService_1.socket.on('connect', () => __awaiter(void 0, void 0, void 0, funct
     console.log('Connected to server');
     try {
         const userData = yield (0, AuthController_1.login)();
-        if (userData.role == 'Admin') {
+        if ('Admin' == userData.role) {
             (0, AdminController_1.showAdminOptions)(userData.id);
         }
-        else if (userData.role === 'Chef') {
+        else if ('Chef' === userData.role) {
             (0, ChefController_1.showChefOptions)(userData.id);
         }
         else {

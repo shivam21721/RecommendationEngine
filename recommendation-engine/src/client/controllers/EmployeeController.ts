@@ -59,17 +59,25 @@ async function handleEmployeeChoice(choice: string, userId: number) {
 
 async function handleViewTodayMenu(userId: number) {
     try {
-        const menuItems: any = await menuItemService.getTodayMenu();
+        const payload = {
+            userId: userId,
+            data: null
+        }
+        const menuItems: any = await menuItemService.getTodayMenu(payload);
         showMenu(menuItems);
         showEmployeeOptions(userId);
     } catch (error) {
-        console.log("Error: ", error);
+        console.log("Error: ", (error as Error).message);
     }
 }
 
 async function handleViewNextDayMenu(userId: any) {
     try {
-        const menuItems = await menuItemService.fetchNextDayFinalizedMenu();
+        const payload = {
+            userId: userId,
+            data: null
+        }
+        const menuItems = await menuItemService.fetchNextDayFinalizedMenu(payload);
         showMenu(menuItems);
         showEmployeeOptions(userId);
     } catch(error) {
@@ -79,7 +87,11 @@ async function handleViewNextDayMenu(userId: any) {
 
 async function handleViewRolledOutMenu(userId: number) {
     try {
-        const menuItems: any = await menuItemService.getRolledOutMenu();
+        const rolledOutMenuPayload = {
+            userId: userId,
+            data: null
+        }
+        const menuItems: any = await menuItemService.getRolledOutMenu(rolledOutMenuPayload);
         showMenu(menuItems);
         const votedBreakfastItems = await asyncUserInput('Enter the comma seperated breakfast menu items id to vote: ');
         const votedBreakfastItemsList = votedBreakfastItems.split(',').map(item => Number(item));
@@ -123,15 +135,18 @@ async function handleViewRolledOutMenu(userId: number) {
 
 async function handleFeedback(userId: number) {
     try {
-        const todayMenu = await menuItemService.getTodayMenu();
+        const todayMenu = await menuItemService.getTodayMenu({userId: userId, data: null});
         console.table(todayMenu);
         const menuItemId = await asyncUserInput("Enter the Menu Item Id for feedback: ");
         const comment = await asyncUserInput("Enter your feedback comment: ");
         const rating = await asyncUserInput("Rate the menu on the scale of 1 to 5: ");
-        const feedbacResponse = await feedbackService.addFeedback({userId, menuItemId, comment, rating});
-        if(feedbacResponse) {
-            console.log('Feedback submitted successfully');
+
+        const payload = {
+            userId: userId,
+            data: {userId, menuItemId: parseInt(menuItemId), comment, rating: parseInt(rating)}
         }
+        const feedbacResponse = await feedbackService.addFeedback(payload);
+        console.log(feedbacResponse);
         showEmployeeOptions(userId);
 
     } catch(error) {
@@ -142,7 +157,11 @@ async function handleFeedback(userId: number) {
 
 async function handleNotification(userId: any) {
     try {
-        const notifications = await notificationService.fetchUserNotifications(userId);
+        const payload = {
+            userId: userId,
+            data: null
+        }
+        const notifications = await notificationService.fetchUserNotifications(payload);
         console.table(notifications);
         showEmployeeOptions(userId);
     } catch(error) {

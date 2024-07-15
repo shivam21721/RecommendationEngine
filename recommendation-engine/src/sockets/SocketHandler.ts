@@ -3,6 +3,8 @@ import { handleAdmin } from './handlers/AdminHandler'
 import { handleChef } from './handlers/ChefHandler';
 import { handleEmployee } from './handlers/EmployeeHandler';
 import { UserAuthenticationController } from '../controllers/UserAuthenticationController';
+import { User } from '../interfaces/Interface';
+import { UserRole } from '../enums/UserRoles';
 
 export class SocketHandler {
     private io: Server;
@@ -18,8 +20,8 @@ export class SocketHandler {
             const {username, password} = userCredential;
             const response = await this.userAuthenticationController.login(username, password);
             socket.emit('loginResponse', response);
-            if(response.status === 'success') {
-                this.handleUser(socket, response.data);
+            if('success' === response.status) {
+                this.handleUser(socket, response.data as User);
             }
         }
         );
@@ -28,12 +30,12 @@ export class SocketHandler {
         })
     }
 
-    private handleUser(socket: Socket, user: any) {
-        if (user.role === 'Admin') {
+    private handleUser(socket: Socket, user: User) {
+        if (UserRole.Admin === user.role) {
             handleAdmin(socket, user);
-        } else if (user.role === 'Chef') {
+        } else if (UserRole.Chef === user.role) {
             handleChef(socket, user);
-        } else if (user.role === 'Employee') {
+        } else if (UserRole.Employee === user.role) {
             handleEmployee(socket, user);
         }
     };

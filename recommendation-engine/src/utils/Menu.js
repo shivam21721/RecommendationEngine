@@ -19,17 +19,17 @@ exports.showMenu = showMenu;
 function constructMenu(menuItems) {
     const response = {};
     response.breakfast = menuItems.filter((item) => {
-        if (item.mealType === 'breakfast')
+        if ('breakfast' === item.mealType)
             return true;
         return false;
     });
     response.lunch = menuItems.filter((item) => {
-        if (item.mealType === 'lunch')
+        if ('lunch' === item.mealType)
             return true;
         return false;
     });
     response.dinner = menuItems.filter((item) => {
-        if (item.mealType === 'dinner')
+        if ('dinner' === item.mealType)
             return true;
         return false;
     });

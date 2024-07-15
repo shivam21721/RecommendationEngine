@@ -11,7 +11,7 @@ export class UserAuthenticationService {
         this.userRepository = new UserRepository;
     }
 
-    async login(username: string, password: string): Promise<Response<any>>{
+    async login(username: string, password: string): Promise<Response<User>>{
         try {
             const user = await this.userRepository.findUserByUsername(username);
             if(!user) {
@@ -21,7 +21,7 @@ export class UserAuthenticationService {
             if(userCredentials?.password !== password) {
                 throw new Error('Invalid username or password');
             }
-            const response: Response<any> = {
+            const response: Response<User> = {
                 status: 'success',
                 message: 'User Successfully Authenticated',
                 data: user

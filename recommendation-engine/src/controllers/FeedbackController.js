@@ -11,14 +11,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FeedbackController = void 0;
 const FeedbackService_1 = require("../services/FeedbackService");
+const Authorization_1 = require("../utils/Authorization");
+const UserRoles_1 = require("../enums/UserRoles");
 class FeedbackController {
     constructor() {
         this.feedbackService = new FeedbackService_1.FeedbackService();
     }
-    addMenuFeedback(feedback) {
+    addMenuFeedback(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.feedbackService.addMenuFeedback(feedback);
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Employee])) {
+                    throw new Error("Unauthorized user");
+                }
+                const response = yield this.feedbackService.addMenuFeedback(payload.data);
                 return response;
             }
             catch (error) {

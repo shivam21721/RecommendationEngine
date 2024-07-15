@@ -10,33 +10,33 @@ const notificationController = new NotificationController();
 
 export function handleEmployee(socket: Socket, user: any) {
 
-    socket.on('getTodayMenu', async () => {
-        const response = await menuItemController.getTodayMenu();
+    socket.on('getTodayMenu', async (payload) => {
+        const response = await menuItemController.getTodayMenu(payload);
         socket.emit('getTodayMenuResponse', response);
     });
 
-    socket.on('getRolledOutMenu', async () => {
-        const response = await menuItemController.fetchRolledOutMenu();
+    socket.on('getRolledOutMenu', async (payload) => {
+        const response = await menuItemController.fetchRolledOutMenu(payload);
         socket.emit('getRolledOutMenuResponse', response);
     });
 
-    socket.on('voteMenuItems', async (payload: Payload<SelectedMenuItems>) => {
+    socket.on('voteMenuItems', async (payload) => {
         const response = await menuItemController.updateVotedMenuItems(payload);
         socket.emit('voteMenuItemsResponse', response);
     });
 
-    socket.on('addFeedback', async (feedback) => {
-        const response = await feedbackController.addMenuFeedback(feedback);
+    socket.on('addFeedback', async (payload) => {
+        const response = await feedbackController.addMenuFeedback(payload);
         socket.emit('addFeedbackResponse', response);
     });
 
-    socket.on('fetchUserNotifications', async (userId) => {
-        const response = await notificationController.getUserNotifications(userId);
+    socket.on('fetchUserNotifications', async (payload) => {
+        const response = await notificationController.getUserNotifications(payload);
         socket.emit('fetchUserNotificationsResponse', response);
     });
 
-    socket.on('fetchNextDayFinalizedMenu', async () => {
-        const response = await menuItemController.getNextDayFinalizedMenu();
+    socket.on('fetchNextDayFinalizedMenu', async (payload) => {
+        const response = await menuItemController.getNextDayFinalizedMenu(payload);
         socket.emit('fetchNextDayFinalizedMenuResponse', response);
     })
 }

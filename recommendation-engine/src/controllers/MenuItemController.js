@@ -12,17 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuItemController = void 0;
 const MenuItemService_1 = require("../services/MenuItemService");
 const RecommendationService_1 = require("../services/RecommendationService");
+const Authorization_1 = require("../utils/Authorization");
+const UserRoles_1 = require("../enums/UserRoles");
 class MenuItemController {
     constructor() {
         this.menuItemService = new MenuItemService_1.MenuItemService();
         this.recommendationService = new RecommendationService_1.RecommendationService();
     }
-    getMenuItems() {
+    getMenuItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('inside');
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Admin, UserRoles_1.UserRole.Chef])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.menuItemService.getMenuItems();
-                console.log(response);
                 return response;
             }
             catch (error) {
@@ -39,6 +42,9 @@ class MenuItemController {
     addMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Admin])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.menuItemService.addMenuItem(payload.data);
                 return response;
             }
@@ -53,10 +59,13 @@ class MenuItemController {
             }
         });
     }
-    deleteMenuItem(id) {
+    deleteMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.menuItemService.deleteMenuItem(id);
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Admin])) {
+                    throw new Error("Unauthorized user");
+                }
+                const response = yield this.menuItemService.deleteMenuItem(payload.data);
                 return response;
             }
             catch (error) {
@@ -70,10 +79,13 @@ class MenuItemController {
             }
         });
     }
-    updateMenuItem(itemData) {
+    updateMenuItem(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.menuItemService.updateMenuItem(itemData);
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Admin])) {
+                    throw new Error("Unauthorized user");
+                }
+                const response = yield this.menuItemService.updateMenuItem(payload.data);
                 return response;
             }
             catch (error) {
@@ -87,9 +99,12 @@ class MenuItemController {
             }
         });
     }
-    getTodayMenu() {
+    getTodayMenu(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Employee])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.recommendationService.getPreparedMenuForToday();
                 return response;
             }
@@ -104,9 +119,12 @@ class MenuItemController {
             }
         });
     }
-    fetchRolledOutMenu() {
+    fetchRolledOutMenu(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Employee])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.menuItemService.fetchRolledOutMenu();
                 return response;
             }
@@ -124,6 +142,9 @@ class MenuItemController {
     updateVotedMenuItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Employee])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.menuItemService.updateVotedMenuItems(payload.data);
                 return response;
             }
@@ -138,9 +159,12 @@ class MenuItemController {
             }
         });
     }
-    getNextDayFinalizedMenu() {
+    getNextDayFinalizedMenu(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Employee])) {
+                    throw new Error("Unauthorized user");
+                }
                 const response = yield this.recommendationService.getNextDayFinalizedMenu();
                 return response;
             }

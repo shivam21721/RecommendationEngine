@@ -7,7 +7,7 @@ export class UserService {
         this.userRepository = new UserRepository();
     }
 
-    async getUserRole(userId: any) {
+    async getUserRole(userId: number) {
         try {
             const role = await this.userRepository.getUserRole(userId);
             return role;

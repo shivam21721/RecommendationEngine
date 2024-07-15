@@ -19,7 +19,7 @@ class RecommendationService {
             return new Promise((resolve, reject) => {
                 this.socket.emit('getNextDayMenuRecommendation');
                 this.socket.once('getNextDayMenuRecommendationResponse', (response) => {
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.data);
                     }
                     else {
@@ -30,13 +30,13 @@ class RecommendationService {
         });
     }
     ;
-    getFinalMenuRecommendation() {
+    getFinalMenuRecommendation(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('getFinalMenuRecommendation');
+                this.socket.emit('getFinalMenuRecommendation', payload);
                 this.socket.once('getFinalMenuRecommendationResponse', (response) => {
                     console.log(response);
-                    if (response.status === 'success') {
+                    if ('success' === response.status) {
                         resolve(response.data);
                     }
                     else {
@@ -50,13 +50,13 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
-    rollOutItems(items) {
+    rollOutItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('rolloutItemsChoiceForNextDay', items);
+                this.socket.emit('rolloutItemsChoiceForNextDay', payload);
                 this.socket.on('rolloutItemsChoiceForNextDayResponse', (response) => {
-                    if (response.status === 'success') {
-                        resolve(response.data);
+                    if ('success' === response.status) {
+                        resolve(response.message);
                     }
                     else {
                         reject(new Error(response.message));
@@ -65,13 +65,13 @@ class RecommendationService {
             });
         });
     }
-    rolloutFinalizedItems(items) {
+    rolloutFinalizedItems(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.socket.emit('rolloutFinalizedItems', items);
+                this.socket.emit('rolloutFinalizedItems', payload);
                 this.socket.on('rolloutFinalizedItemsResponse', (response) => {
-                    if (response.status === 'success') {
-                        resolve(response.data);
+                    if ('success' === response.status) {
+                        resolve(response.message);
                     }
                     else {
                         reject(new Error(response.message));

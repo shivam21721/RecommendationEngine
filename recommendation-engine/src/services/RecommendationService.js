@@ -52,7 +52,7 @@ class RecommendationService {
                     return { id: parseInt(id), mealType: 'dinner', date: date.toISOString().slice(0, 10) };
                 });
                 const itemsCount = yield this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
-                const notificationResponse = yield this.notificationService.sendNotificationForRolledOutItems();
+                yield this.notificationService.sendNotificationForRolledOutItems();
                 const response = {
                     status: 'success',
                     message: `Successfully rolled out ${itemsCount} menu Items`,
@@ -70,22 +70,7 @@ class RecommendationService {
             try {
                 const recommendedMenu = yield this.recommendationRepository.fetchFinalMenuRecommendation();
                 const sortedRecommendedMenu = (0, RecommendationEngine_1.prepareRecommendationForFinalMenu)(recommendedMenu);
-                const finalRecommendedMenuData = {};
-                finalRecommendedMenuData.breakfast = sortedRecommendedMenu.filter((item) => {
-                    if (item.mealType === 'breakfast')
-                        return true;
-                    return false;
-                });
-                finalRecommendedMenuData.lunch = sortedRecommendedMenu.filter((item) => {
-                    if (item.mealType === 'lunch')
-                        return true;
-                    return false;
-                });
-                finalRecommendedMenuData.dinner = sortedRecommendedMenu.filter((item) => {
-                    if (item.mealType === 'dinner')
-                        return true;
-                    return false;
-                });
+                const finalRecommendedMenuData = (0, Menu_1.constructMenu)(sortedRecommendedMenu);
                 const response = {
                     status: 'success',
                     message: 'Successfully sent the notification',
@@ -128,22 +113,7 @@ class RecommendationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const menuItems = yield this.recommendationRepository.getPreparedMenuForToday();
-                const menuItemsData = {};
-                menuItemsData.breakfast = menuItems.filter((item) => {
-                    if (item.mealType === 'breakfast')
-                        return true;
-                    return false;
-                });
-                menuItemsData.lunch = menuItems.filter((item) => {
-                    if (item.mealType === 'lunch')
-                        return true;
-                    return false;
-                });
-                menuItemsData.dinner = menuItems.filter((item) => {
-                    if (item.mealType === 'dinner')
-                        return true;
-                    return false;
-                });
+                const menuItemsData = (0, Menu_1.constructMenu)(menuItems);
                 const response = {
                     status: 'success',
                     message: 'Successfully fetched Menu for today',

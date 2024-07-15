@@ -13,20 +13,20 @@ exports.handleAdmin = void 0;
 const MenuItemController_1 = require("../../controllers/MenuItemController");
 const menuItemController = new MenuItemController_1.MenuItemController();
 function handleAdmin(socket, user) {
-    socket.on('getMenuItems', () => __awaiter(this, void 0, void 0, function* () {
-        const response = yield menuItemController.getMenuItems();
+    socket.on('getMenuItems', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield menuItemController.getMenuItems(payload);
         socket.emit('getMenuItemsResponse', response);
     }));
     socket.on('addMenuItem', (payload) => __awaiter(this, void 0, void 0, function* () {
         const response = yield menuItemController.addMenuItem(payload);
         socket.emit('addMenuItemResponse', response);
     }));
-    socket.on('deleteMenuItem', (id) => __awaiter(this, void 0, void 0, function* () {
-        const response = yield menuItemController.deleteMenuItem(id);
+    socket.on('deleteMenuItem', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield menuItemController.deleteMenuItem(payload);
         socket.emit('deleteMenuItemResponse', response);
     }));
-    socket.on('updateMenuItem', (itemData) => __awaiter(this, void 0, void 0, function* () {
-        const response = yield menuItemController.updateMenuItem(itemData);
+    socket.on('updateMenuItem', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield menuItemController.updateMenuItem(payload);
         socket.emit('updateMenuItemResponse', response);
     }));
 }
