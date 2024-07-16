@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleAdmin = void 0;
 const MenuItemController_1 = require("../../controllers/MenuItemController");
 const menuItemController = new MenuItemController_1.MenuItemController();
-function handleAdmin(socket, user) {
+function handleAdmin(socket) {
     socket.on('getMenuItems', (payload) => __awaiter(this, void 0, void 0, function* () {
         const response = yield menuItemController.getMenuItems(payload);
         socket.emit('getMenuItemsResponse', response);

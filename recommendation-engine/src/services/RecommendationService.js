@@ -41,15 +41,15 @@ class RecommendationService {
             try {
                 var breakfastItems = items.breakfast.map((id) => {
                     const date = new Date();
-                    return { id: parseInt(id), mealType: 'breakfast', date: date.toISOString().slice(0, 10) };
+                    return { id, mealType: 'breakfast', date: date.toISOString().slice(0, 10) };
                 });
                 var lunchItems = items.lunch.map((id) => {
                     const date = new Date();
-                    return { id: parseInt(id), mealType: 'lunch', date: date.toISOString().slice(0, 10) };
+                    return { id, mealType: 'lunch', date: date.toISOString().slice(0, 10) };
                 });
                 var dinnerItems = items.dinner.map((id) => {
                     const date = new Date();
-                    return { id: parseInt(id), mealType: 'dinner', date: date.toISOString().slice(0, 10) };
+                    return { id, mealType: 'dinner', date: date.toISOString().slice(0, 10) };
                 });
                 const itemsCount = yield this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
                 yield this.notificationService.sendNotificationForRolledOutItems();
@@ -96,10 +96,10 @@ class RecommendationService {
                     return { id: parseInt(id), mealType: 'dinner' };
                 });
                 const itemsCount = yield this.recommendationRepository.markItemAsPrepared([...breakfastItems, ...lunchItems, ...dinnerItems]);
-                const notificationResponse = yield this.notificationService.sendNotificationForFinalizedMenuItems();
+                yield this.notificationService.sendNotificationForFinalizedMenuItems();
                 const response = {
                     status: 'success',
-                    message: 'Successfully Rolled out finalized Menu Items',
+                    message: `Successfully Rolled out ${itemsCount} finalized Menu Items`,
                     data: []
                 };
                 return response;

@@ -1,3 +1,5 @@
+import { MealType } from "../enums/MealType";
+
 export function showMenu(menuItems: any) {
     if(menuItems.breakfast) {
         console.log('BREAKFAST MENU ITEMS');
@@ -18,17 +20,17 @@ export function showMenu(menuItems: any) {
 export function constructMenu(menuItems: any) {
     const response: any = {};
     response.breakfast = menuItems.filter((item: any) => {
-        if('breakfast' === item.mealType) return true;
+        if(MealType.BREAKFAST === item.mealType) return true;
         return false;
     });
     
     response.lunch = menuItems.filter((item: any) => {
-        if('lunch' === item.mealType) return true;
+        if(MealType.LUNCH === item.mealType) return true;
         return false;
     });
 
     response.dinner = menuItems.filter((item: any) => {
-        if('dinner' === item.mealType) return true;
+        if(MealType.DINNER === item.mealType) return true;
         return false;
     });
     return response;

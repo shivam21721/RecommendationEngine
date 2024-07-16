@@ -22,13 +22,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express = require('express');
+const express_1 = __importDefault(require("express"));
 const http = __importStar(require("http"));
 const socket_io_1 = require("socket.io");
 const config_1 = require("./config");
 const SocketHandler_1 = require("./sockets/SocketHandler");
-const app = express();
+const app = (0, express_1.default)();
 const server = http.createServer(app);
 const io = new socket_io_1.Server(server);
 const port = config_1.config.port;

@@ -2,13 +2,12 @@ import { Socket } from "socket.io";
 import { MenuItemController } from "../../controllers/MenuItemController";
 import { FeedbackController } from "../../controllers/FeedbackController";
 import { NotificationController } from "../../controllers/NotificationController";
-import { Payload, SelectedMenuItems } from "../../interfaces/Interface";
 
 const menuItemController = new MenuItemController();
 const feedbackController = new FeedbackController();
 const notificationController = new NotificationController();
 
-export function handleEmployee(socket: Socket, user: any) {
+export function handleEmployee(socket: Socket) {
 
     socket.on('getTodayMenu', async (payload) => {
         const response = await menuItemController.getTodayMenu(payload);

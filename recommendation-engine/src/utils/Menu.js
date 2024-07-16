@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.showCategoryBasedMenuItems = exports.constructMenu = exports.showMenu = void 0;
+const MealType_1 = require("../enums/MealType");
 function showMenu(menuItems) {
     if (menuItems.breakfast) {
         console.log('BREAKFAST MENU ITEMS');
@@ -19,17 +20,17 @@ exports.showMenu = showMenu;
 function constructMenu(menuItems) {
     const response = {};
     response.breakfast = menuItems.filter((item) => {
-        if ('breakfast' === item.mealType)
+        if (MealType_1.MealType.BREAKFAST === item.mealType)
             return true;
         return false;
     });
     response.lunch = menuItems.filter((item) => {
-        if ('lunch' === item.mealType)
+        if (MealType_1.MealType.LUNCH === item.mealType)
             return true;
         return false;
     });
     response.dinner = menuItems.filter((item) => {
-        if ('dinner' === item.mealType)
+        if (MealType_1.MealType.DINNER === item.mealType)
             return true;
         return false;
     });

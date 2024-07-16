@@ -2,7 +2,7 @@ import { RecommendationRepository } from "../repositories/RecommendationReposito
 import { NotificationService } from "./NotificationService";
 import { prepareRecommendation, prepareRecommendationForFinalMenu } from "../utils/RecommendationEngine";
 import { constructMenu } from "../utils/Menu";
-import { RecommendedMenu, Response, Payload, SelectedMenuItems } from "../interfaces/Interface";
+import { RecommendedMenu, Response, Payload, SelectedMenuItems, FinalizedMenuItem } from "../interfaces/Interface";
 
 export class RecommendationService {
     private recommendationRepository: RecommendationRepository;
@@ -16,7 +16,7 @@ export class RecommendationService {
     async getNextDayMenuRecommendation(): Promise<Response<RecommendedMenu[]>> {
         try {
             const recommendedMenu = await this.recommendationRepository.getMenuForRecommendation();
-            const preparedRecommendation = prepareRecommendation(recommendedMenu);
+            const preparedRecommendation = prepareRecommendation(recommendedMenu as RecommendedMenu[]);
             const response: Response<RecommendedMenu[]> = {
                 status: 'success',
                 message: 'Successfully fetched next day menu recommendation menu',
@@ -31,19 +31,19 @@ export class RecommendationService {
     async rolloutItems(items: SelectedMenuItems): Promise<Response<[]>> {
         try {
 
-            var breakfastItems = items.breakfast.map((id: any) => {
+            var breakfastItems = items.breakfast.map((id: number) => {
                 const date = new Date();
-                return {id: parseInt(id), mealType: 'breakfast', date: date.toISOString().slice(0,10)};
+                return {id, mealType: 'breakfast', date: date.toISOString().slice(0,10)};
             });
 
-            var lunchItems = items.lunch.map((id: any) => {
+            var lunchItems = items.lunch.map((id: number) => {
                 const date = new Date();
-                return {id: parseInt(id), mealType: 'lunch', date: date.toISOString().slice(0,10)};
+                return {id, mealType: 'lunch', date: date.toISOString().slice(0,10)};
             });
 
-            var dinnerItems = items.dinner.map((id: any) => {
+            var dinnerItems = items.dinner.map((id: number) => {
                 const date = new Date();
-                return {id: parseInt(id), mealType: 'dinner', date: date.toISOString().slice(0,10)};
+                return {id, mealType: 'dinner', date: date.toISOString().slice(0,10)};
             });
 
             const itemsCount = await this.recommendationRepository.addRecommendedItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
@@ -62,7 +62,7 @@ export class RecommendationService {
     async fetchFinalMenuRecommendation(): Promise<Response<any>> {
         try {
             const recommendedMenu = await this.recommendationRepository.fetchFinalMenuRecommendation();
-            const sortedRecommendedMenu = prepareRecommendationForFinalMenu(recommendedMenu);
+            const sortedRecommendedMenu = prepareRecommendationForFinalMenu(recommendedMenu as FinalizedMenuItem[]);
             const finalRecommendedMenuData = constructMenu(sortedRecommendedMenu);
                 
             const response: Response<any> = {
@@ -90,10 +90,10 @@ export class RecommendationService {
                 return {id: parseInt(id), mealType: 'dinner'};
             });
             const itemsCount = await this.recommendationRepository.markItemAsPrepared([...breakfastItems, ...lunchItems, ...dinnerItems]);
-            const notificationResponse = await this.notificationService.sendNotificationForFinalizedMenuItems();
+            await this.notificationService.sendNotificationForFinalizedMenuItems();
             const response: Response<[]> = {
                 status: 'success',
-                message: 'Successfully Rolled out finalized Menu Items',
+                message: `Successfully Rolled out ${itemsCount} finalized Menu Items`,
                 data: []
             };
             return response;

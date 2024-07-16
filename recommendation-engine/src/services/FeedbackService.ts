@@ -2,7 +2,6 @@ import { Feedback, Response } from "../interfaces/Interface";
 import { FeedbackRepository } from "../repositories/FeedbackRepository"
 import { sentimentScoreGenerator } from "../utils/Sentiment";
 
-
 export class FeedbackService {
     private feedbackRepository: FeedbackRepository;
 

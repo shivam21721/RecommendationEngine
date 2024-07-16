@@ -25,18 +25,19 @@ export class SocketHandler {
             }
         }
         );
+
         socket.on('logout', () => {
             this.handleLogout(socket);
-        })
+        });
     }
 
     private handleUser(socket: Socket, user: User) {
         if (UserRole.Admin === user.role) {
-            handleAdmin(socket, user);
+            handleAdmin(socket);
         } else if (UserRole.Chef === user.role) {
-            handleChef(socket, user);
+            handleChef(socket);
         } else if (UserRole.Employee === user.role) {
-            handleEmployee(socket, user);
+            handleEmployee(socket);
         }
     };
 

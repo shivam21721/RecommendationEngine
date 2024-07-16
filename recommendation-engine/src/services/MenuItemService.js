@@ -106,13 +106,13 @@ class MenuItemService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 var breakfastItems = items.breakfast.map((id) => {
-                    return { id: parseInt(id), mealType: 'breakfast' };
+                    return { id, mealType: 'breakfast' };
                 });
                 var lunchItems = items.lunch.map((id) => {
-                    return { id: parseInt(id), mealType: 'lunch' };
+                    return { id, mealType: 'lunch' };
                 });
                 var dinnerItems = items.dinner.map((id) => {
-                    return { id: parseInt(id), mealType: 'dinner' };
+                    return { id, mealType: 'dinner' };
                 });
                 const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
                 const response = {

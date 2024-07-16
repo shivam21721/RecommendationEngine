@@ -39,7 +39,6 @@ export class MenuItemService {
         } catch(error) {
             throw error;
         }
-        
     }
 
     async deleteMenuItem(id: number): Promise<Response<[]>> {
@@ -55,7 +54,6 @@ export class MenuItemService {
         } catch(error) {
             throw error;
         }
-        
     }
 
     async updateMenuItem(itemData: MenuItem): Promise<Response<[]>> {
@@ -90,16 +88,16 @@ export class MenuItemService {
 
     async updateVotedMenuItems(items: SelectedMenuItems): Promise<Response<[]>> {
         try {
-            var breakfastItems = items.breakfast.map((id: any) => {
-                return {id: parseInt(id), mealType: 'breakfast'};
+            var breakfastItems = items.breakfast.map((id: number) => {
+                return {id, mealType: 'breakfast'};
             });
 
-            var lunchItems = items.lunch.map((id: any) => {
-                return {id: parseInt(id), mealType: 'lunch'};
+            var lunchItems = items.lunch.map((id: number) => {
+                return {id, mealType: 'lunch'};
             });
 
-            var dinnerItems = items.dinner.map((id: any) => {
-                return {id: parseInt(id), mealType: 'dinner'};
+            var dinnerItems = items.dinner.map((id: number) => {
+                return {id, mealType: 'dinner'};
             });
             const updatedItemsCount = this.menuItemRepository.updateVotedMenuItems([...breakfastItems, ...lunchItems, ...dinnerItems]);
             const response: Response<[]> =  {

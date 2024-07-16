@@ -169,7 +169,7 @@ function handleNotification(userId) {
                 data: null
             };
             const notifications = yield notificationService.fetchUserNotifications(payload);
-            console.log(notifications);
+            console.table(notifications);
             showChefOptions(userId);
         }
         catch (error) {

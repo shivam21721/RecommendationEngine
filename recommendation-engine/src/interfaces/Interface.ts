@@ -46,6 +46,7 @@ export interface RolledOutMenuItem {
 export interface Notification {
     message: string;
     date: Date;
+    type?: number
 };
 
 export interface RecommendedMenu {
@@ -94,4 +95,14 @@ export interface Feedback {
     rating: number;
     feedbackDate?: string;
     sentimentScore?: number;
+}
+
+export interface VotedMenuItem {
+    id: number;
+    mealType: string;
+}
+
+export interface PreparedItem {
+    id: number;
+    mealType: string;
 }

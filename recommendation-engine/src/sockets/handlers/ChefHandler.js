@@ -16,7 +16,7 @@ const RecommendationController_1 = require("../../controllers/RecommendationCont
 const menuItemController = new MenuItemController_1.MenuItemController();
 const recommendationController = new RecommendationController_1.RecommendationController();
 const notificationController = new NotificationController_1.NotificationController();
-function handleChef(socket, user) {
+function handleChef(socket) {
     socket.on('getMenuItems', (payload) => __awaiter(this, void 0, void 0, function* () {
         const response = yield menuItemController.getMenuItems(payload);
         socket.emit('getMenuItemsResponse', response);

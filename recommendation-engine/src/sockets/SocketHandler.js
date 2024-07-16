@@ -35,13 +35,13 @@ class SocketHandler {
     }
     handleUser(socket, user) {
         if (UserRoles_1.UserRole.Admin === user.role) {
-            (0, AdminHandler_1.handleAdmin)(socket, user);
+            (0, AdminHandler_1.handleAdmin)(socket);
         }
         else if (UserRoles_1.UserRole.Chef === user.role) {
-            (0, ChefHandler_1.handleChef)(socket, user);
+            (0, ChefHandler_1.handleChef)(socket);
         }
         else if (UserRoles_1.UserRole.Employee === user.role) {
-            (0, EmployeeHandler_1.handleEmployee)(socket, user);
+            (0, EmployeeHandler_1.handleEmployee)(socket);
         }
     }
     ;

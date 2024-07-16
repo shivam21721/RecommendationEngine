@@ -1,5 +1,5 @@
 import db from "../db/db";
-import { MenuRecommendation, QueryResult } from "../interfaces/Interface";
+import { MenuRecommendation, PreparedItem, QueryResult } from "../interfaces/Interface";
 
 export class RecommendationRepository {
     private pool = db.getPool();
@@ -99,10 +99,10 @@ export class RecommendationRepository {
           }
     };
 
-    async markItemAsPrepared(items: any) {
+    async markItemAsPrepared(items: PreparedItem[]) {
           const connection = await this.pool.getConnection();
           try {
-               const conditions = items.map((item: any) => `(menuItemId = ${item.id} AND mealType = '${item.mealType}')`).join(' OR ');
+               const conditions = items.map((item: PreparedItem) => `(menuItemId = ${item.id} AND mealType = '${item.mealType}')`).join(' OR ');
                const query = `
                     UPDATE RecommendedItem
                     SET isPrepared = TRUE

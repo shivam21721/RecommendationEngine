@@ -3,7 +3,7 @@ import { MenuItemController } from '../../controllers/MenuItemController';
 
 const menuItemController = new MenuItemController();
 
-export function handleAdmin(socket: Socket, user: any) {
+export function handleAdmin(socket: Socket) {
     socket.on('getMenuItems', async (payload) => {
         const response = await menuItemController.getMenuItems(payload);
         socket.emit('getMenuItemsResponse', response);

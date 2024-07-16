@@ -1,5 +1,5 @@
 import db from "../db/db";
-import { MenuItem, QueryResult } from "../interfaces/Interface";
+import { MenuItem, QueryResult, VotedMenuItem } from "../interfaces/Interface";
 
 export class MenuItemRepository {
     private pool = db.getPool();
@@ -103,7 +103,7 @@ export class MenuItemRepository {
         }
     }
 
-    async updateVotedMenuItems(items: any): Promise<number> {
+    async updateVotedMenuItems(items: VotedMenuItem[]): Promise<number> {
         const connection = await this.pool.getConnection();
         try {
             const conditions = items.map((item: any) => `(menuItemId = ${item.id} AND mealType = '${item.mealType}')`).join(' OR ');

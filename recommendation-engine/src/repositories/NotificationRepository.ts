@@ -1,10 +1,10 @@
 import db from "../db/db";
-import { QueryResult } from "../interfaces/Interface";
+import { Notification, QueryResult } from "../interfaces/Interface";
 
 export class NotificationRepository {
     private pool = db.getPool();
 
-    async addNotification(notification: any): Promise<number> {
+    async addNotification(notification: Notification): Promise<number> {
         const connection = await this.pool.getConnection();
         try {
             const {message, date, type} = notification;
@@ -23,7 +23,7 @@ export class NotificationRepository {
         }
     };
 
-    async getUserNotifications(type: any) {
+    async getUserNotifications(type: number) {
         const connection = await this.pool.getConnection();
         try {
              const query = `

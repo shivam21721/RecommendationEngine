@@ -16,7 +16,7 @@ const NotificationController_1 = require("../../controllers/NotificationControll
 const menuItemController = new MenuItemController_1.MenuItemController();
 const feedbackController = new FeedbackController_1.FeedbackController();
 const notificationController = new NotificationController_1.NotificationController();
-function handleEmployee(socket, user) {
+function handleEmployee(socket) {
     socket.on('getTodayMenu', (payload) => __awaiter(this, void 0, void 0, function* () {
         const response = yield menuItemController.getTodayMenu(payload);
         socket.emit('getTodayMenuResponse', response);
