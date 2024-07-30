@@ -110,7 +110,7 @@ export class MenuItemController {
             if(!isAuthorizedUser(payload.userId, [UserRole.Employee])) {
                 throw new Error("Unauthorized user");
             }
-            const response = await this.menuItemService.fetchRolledOutMenu();
+            const response = await this.menuItemService.fetchRolledOutMenu(payload.userId);
             return response;
         } catch(error) {
             console.error(error);
@@ -147,6 +147,24 @@ export class MenuItemController {
                 throw new Error("Unauthorized user");
             }
             const response = await this.recommendationService.getNextDayFinalizedMenu();
+            return response;
+        } catch(error) {
+            console.error(error);
+            const response: Response<[]> = {
+                status: 'error',
+                message: (error as Error).message,
+                data: []
+            }
+            return response;
+        }
+    }
+
+    async getDiscardMenuItems(payload: Payload<null>) {
+        try {
+            if(!isAuthorizedUser(payload.userId, [UserRole.Chef, UserRole.Admin])) {
+                throw new Error("Unauthorized user");
+            }
+            const response = await this.menuItemService.getDiscardMenuItems();
             return response;
         } catch(error) {
             console.error(error);

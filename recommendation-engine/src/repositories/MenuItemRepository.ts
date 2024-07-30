@@ -1,5 +1,5 @@
 import db from "../db/db";
-import { MenuItem, QueryResult, VotedMenuItem } from "../interfaces/Interface";
+import { DiscardMenuItem, MenuItem, QueryResult, VotedMenuItem } from "../interfaces/Interface";
 
 export class MenuItemRepository {
     private pool = db.getPool();
@@ -20,9 +20,9 @@ export class MenuItemRepository {
     async addMenuItem(itemData: MenuItem): Promise<number> {
         const connection = await this.pool.getConnection();
         try {
-            const {name, categoryId, availability, price} = itemData;
-            const query = 'INSERT INTO MenuItem (name, categoryId, availability, price) VALUES (?, ?, ?, ?)';
-            const values = [name, categoryId, availability, price];
+            const {name, categoryId, availability, price, dietType, spicyLevel, cuisineType} = itemData;
+            const query = 'INSERT INTO MenuItem (name, categoryId, availability, price, dietType, spicyLevel, cuisineType) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            const values = [name, categoryId, availability, price, dietType, spicyLevel, cuisineType];
             const [result] = await connection.execute(query, values);
             return (result as QueryResult).insertId ;
         } catch(error) {
@@ -53,9 +53,9 @@ export class MenuItemRepository {
     async updateMenuItem(itemData: MenuItem): Promise<number>  {
         const connection = await this.pool.getConnection();
         try {
-            const {id, name, categoryId, availability, price} = itemData;
-            const query = 'UPDATE MenuItem SET name = ?, categoryId = ?, price = ?, availability = ? WHERE id = ?';
-            const values = [name, categoryId, price, availability, id];
+            const {id, name, categoryId, availability, price, dietType, spicyLevel, cuisineType} = itemData;
+            const query = 'UPDATE MenuItem SET name = ?, categoryId = ?, price = ?, availability = ?, dietType = ?, spicyLevel = ?, cuisineType = ?  WHERE id = ?';
+            const values = [name, categoryId, price, availability, dietType, spicyLevel, cuisineType, id];
             const [result] = await connection.execute(query, values);
             if ((result as QueryResult).affectedRows > 0) {
                 return id as number; 
@@ -77,6 +77,9 @@ export class MenuItemRepository {
                 mi.name AS menuItemName,
                 mc.name AS categoryName,
                 mi.price AS menuItemPrice,
+                mi.dietType AS dietType,
+                mi.spicyLevel AS spicyLevel,
+                mi.cuisineType AS cuisineType,
                 ri.mealType,
                 AVG(f.rating) AS averageRating,
                 AVG(f.sentimentScore) AS averageSentimentScore
@@ -121,6 +124,33 @@ export class MenuItemRepository {
             }
         } catch(error) {
             throw new Error("Error while updating voted Menu items: " + error);
+        } finally {
+            connection.release();
+        }
+    }
+
+    async getDiscardMenuItems(): Promise<DiscardMenuItem[]> {
+        const connection = await this.pool.getConnection();
+        try {
+            const query = `
+                SELECT 
+                    mi.id, 
+                    mi.name, 
+                    AVG(f.rating) AS averageRating, 
+                    AVG(f.sentimentScore) AS averageSentiment
+                FROM 
+                    menuitem mi
+                LEFT JOIN 
+                    feedback f ON mi.id = f.menuItemId
+                GROUP BY 
+                    mi.id, mi.name
+                HAVING 
+                    averageRating < 2 OR averageSentiment < 2
+            `;
+            const [result] = await connection.execute(query);
+            return result as DiscardMenuItem[];
+        } catch(error) {
+            throw new Error("Error while fetching discard Menu items: " + error);
         } finally {
             connection.release();
         }

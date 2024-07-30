@@ -1,4 +1,4 @@
-import { User } from "../interfaces/Interface";
+import { User, UserMenuItemPreference } from "../interfaces/Interface";
 import db from "../db/db";
 
 export class UserRepository {
@@ -40,5 +40,25 @@ export class UserRepository {
             connection.release();
         }
     }
+    
+    async getUserMenuItemPreferences(userId: number) {
+        const connection = await this.pool.getConnection();
+        try {
+            const query = `
+                SELECT preferredSpicyLevel, preferredDietType, preferredCuisineType
+                FROM user
+                WHERE id = ?
+            `;
+            const values = [userId];
+            const [result] = await connection.execute(query, values);
+            console.log(result);
+            return (result as any)[0];
+        } catch(error) {
+            throw new Error("Error while fetching user menu item preferences: " + error);
+        } finally {
+            connection.release();
+        }
+    }
+
 }
 

@@ -13,6 +13,9 @@ export interface MenuItem {
     categoryId: number;
     price: number;
     availability: boolean;
+    dietType: string;
+    spicyLevel: string;
+    cuisineType: string;
 };
 
 export interface User {
@@ -45,7 +48,7 @@ export interface RolledOutMenuItem {
 
 export interface Notification {
     message: string;
-    date: Date;
+    date: string;
     type?: number
 };
 
@@ -105,4 +108,17 @@ export interface VotedMenuItem {
 export interface PreparedItem {
     id: number;
     mealType: string;
+}
+
+export interface DiscardMenuItem {
+    id: number,
+    name: string,
+    averageRating: number,
+    averageSentiment: number
+}
+
+export interface UserMenuItemPreference {
+    preferredDietType: string;  
+    preferredCuisineType: string;
+    preferredSpicyLevel: string;
 }

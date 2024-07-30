@@ -23,4 +23,9 @@ export function handleAdmin(socket: Socket) {
         const response = await menuItemController.updateMenuItem(payload);
         socket.emit('updateMenuItemResponse', response);
     });
+
+    socket.on('fetchDiscardMenuItems', async (payload) => {
+        const response = await menuItemController.getDiscardMenuItems(payload);
+        socket.emit('fetchDiscardMenuItemsResponse', response);
+    })
 }

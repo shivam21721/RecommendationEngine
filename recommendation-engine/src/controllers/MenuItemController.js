@@ -125,7 +125,7 @@ class MenuItemController {
                 if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Employee])) {
                     throw new Error("Unauthorized user");
                 }
-                const response = yield this.menuItemService.fetchRolledOutMenu();
+                const response = yield this.menuItemService.fetchRolledOutMenu(payload.userId);
                 return response;
             }
             catch (error) {
@@ -166,6 +166,26 @@ class MenuItemController {
                     throw new Error("Unauthorized user");
                 }
                 const response = yield this.recommendationService.getNextDayFinalizedMenu();
+                return response;
+            }
+            catch (error) {
+                console.error(error);
+                const response = {
+                    status: 'error',
+                    message: error.message,
+                    data: []
+                };
+                return response;
+            }
+        });
+    }
+    getDiscardMenuItems(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!(0, Authorization_1.isAuthorizedUser)(payload.userId, [UserRoles_1.UserRole.Chef, UserRoles_1.UserRole.Admin])) {
+                    throw new Error("Unauthorized user");
+                }
+                const response = yield this.menuItemService.getDiscardMenuItems();
                 return response;
             }
             catch (error) {

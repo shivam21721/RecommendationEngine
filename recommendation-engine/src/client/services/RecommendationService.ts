@@ -26,7 +26,6 @@ export class RecommendationService {
         return new Promise((resolve, reject) => {
             this.socket.emit('getFinalMenuRecommendation', payload);
             this.socket.once('getFinalMenuRecommendationResponse', (response) => {
-                console.log(response);
                 if ('success' === response.status) {
                     resolve(response.data);
                 } else {

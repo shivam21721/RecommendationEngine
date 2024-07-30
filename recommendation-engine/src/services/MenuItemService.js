@@ -11,12 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuItemService = void 0;
 const MenuItemRepository_1 = require("../repositories/MenuItemRepository");
+const UserRepository_1 = require("../repositories/UserRepository");
 const Menu_1 = require("../utils/Menu");
 const NotificationService_1 = require("./NotificationService");
 class MenuItemService {
     constructor() {
         this.menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
         this.notificationService = new NotificationService_1.NotificationService();
+        this.userRepository = new UserRepository_1.UserRepository();
     }
     getMenuItems() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -85,11 +87,13 @@ class MenuItemService {
             }
         });
     }
-    fetchRolledOutMenu() {
+    fetchRolledOutMenu(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const menuItems = yield this.menuItemRepository.fetchRolledOutMenu();
-                const mealTypeBasedMenuItems = (0, Menu_1.constructMenu)(menuItems);
+                const { preferredSpicyLevel, preferredDietType, preferredCuisineType } = yield this.userRepository.getUserMenuItemPreferences(userId);
+                const sortedMenuItems = (0, Menu_1.sortMenuItemsAccordingToUserPreference)(menuItems, preferredDietType, preferredCuisineType, preferredSpicyLevel);
+                const mealTypeBasedMenuItems = (0, Menu_1.constructMenu)(sortedMenuItems);
                 const response = {
                     status: 'success',
                     message: `Successfully fetched the menu items`,
@@ -119,6 +123,22 @@ class MenuItemService {
                     status: 'success',
                     message: `${updatedItemsCount}Items successfully voted`,
                     data: []
+                };
+                return response;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    getDiscardMenuItems() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const discardMenuItems = yield this.menuItemRepository.getDiscardMenuItems();
+                const response = {
+                    status: 'success',
+                    message: 'Successfully fetched Discard Menu Items',
+                    data: discardMenuItems
                 };
                 return response;
             }

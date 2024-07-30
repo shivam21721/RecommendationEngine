@@ -10,6 +10,7 @@ const adminOptions = [
     '2. DELETE MENU ITEM',
     '3. UPDATE MENU ITEM',
     '4. VIEW MENU ITEM',
+    '5. VIEW DISCARD MENU ITEM LIST',
     'X. LOGOUT'
 ];
 
@@ -38,6 +39,9 @@ async function handleAdminChoice(choice: string, userId: number) {
         case '4': 
             handleViewMenuItems(userId);
             break;
+        case '5': 
+            handleDiscardMenuItems(userId);
+            break;
         case 'X':
             handleLogout();
             break;
@@ -49,12 +53,12 @@ async function handleAdminChoice(choice: string, userId: number) {
 
 async function handleAddMenuItem(userId: number) {
     try {
-        const itemData = await asyncUserInput('Enter item name, category, availability (true/false), and price: ');
-        const {name, categoryId, availability, price} = processMenuItemInput(itemData, false);
+        const itemData = await asyncUserInput('Enter item name, category, availability (true/false), price, dietType, spicyLevel, cuisineType: ');
+        const {name, categoryId, availability, price, dietType, spicyLevel, cuisineType} = processMenuItemInput(itemData, false);
         
         const payload = {
             userId: userId,
-            data: {name, categoryId, availability, price }
+            data: {name, categoryId, availability, price, dietType, spicyLevel, cuisineType}
         }
         const response = await menuItemService.addMenuItem(payload);
         console.log(response);
@@ -89,11 +93,11 @@ async function handleDeleteMenuItem(userId: number) {
 
 async function handleUpdateMenuItem(userId: number) {
     try {
-        const itemData = await asyncUserInput('Enter item ID, new name, new category, new availability (true/false), and price: ');
-        const {id, name, categoryId, availability, price} = processMenuItemInput(itemData, true);
+        const itemData = await asyncUserInput('Enter item ID, new name, new category, new availability (true/false), price, dietType, spicyLevel and cuisineType: ');
+        const {id, name, categoryId, availability, price, dietType, spicyLevel, cuisineType} = processMenuItemInput(itemData, true);
         const payload = {
             userId: userId,
-            data: {id, name, categoryId, availability, price} 
+            data: {id, name, categoryId, availability, price, dietType, spicyLevel, cuisineType}     
         }
         const response = await menuItemService.updateMenuItem(payload);
         console.log(response);
@@ -119,6 +123,30 @@ async function handleViewMenuItems(userId: number) {
     }
 }
 
+async function handleDiscardMenuItems(userId: number) {
+    try {
+        const payload = {
+            userId: userId,
+            data: null
+        }
+        const response = await menuItemService.fetchDiscardMenuItems(payload);
+        console.table(response);
+        const itemsToBeRemoved = await asyncUserInput('Enter item IDs to remove: ');
+        const items = itemsToBeRemoved.split(',').map(item => Number(item));
+        for (const item of items) {
+            const payload = {
+                userId: userId,
+                data: item
+            }
+            await menuItemService.deleteMenuItem(payload);
+        }
+        showAdminOptions(userId);
+    } catch(error) {
+        console.log('Error: ', (error as Error).message);
+        showAdminOptions(userId);
+    }
+}
+
 function handleLogout() {
     authService.logout();
 }
@@ -129,7 +157,7 @@ function isValidMenuItemId(id: string, menuItems: MenuItem[]): boolean {
 
 function parseMenuItemInput(input: string, hasMenuId: boolean): string[] {
     const values = input.split(',').map(item => item.trim());
-    const expectedLength = hasMenuId ? 5 : 4;
+    const expectedLength = hasMenuId ? 8 : 7;
     if (values.length !== expectedLength) {
         throw new Error(`Input must contain exactly ${expectedLength} comma-separated values`);
     }
@@ -184,7 +212,10 @@ function processMenuItemInput(input: string, hasMenuId: boolean): MenuItem {
         name: "",
         categoryId: 0,
         price: 0,
-        availability: false
+        availability: false,
+        dietType: "",
+        spicyLevel: "", 
+        cuisineType: ""
     };
     if (hasMenuId) {
         menuItem.id = convertMenuId(values[index++]);
@@ -193,6 +224,9 @@ function processMenuItemInput(input: string, hasMenuId: boolean): MenuItem {
     menuItem.categoryId = convertCategoryId(values[index++]);
     menuItem.availability = convertAvailability(values[index++]);
     menuItem.price = convertPrice(values[index++]);
+    menuItem.dietType = values[index++];
+    menuItem.spicyLevel = values[index++];
+    menuItem.cuisineType = values[index++];   
     return menuItem;
 }
 

@@ -1,15 +1,18 @@
 import { MenuItemRepository } from "../repositories/MenuItemRepository";
-import { MenuItem, Response, RolledOutMenuItem, SelectedMenuItems } from "../interfaces/Interface";
-import { constructMenu } from "../utils/Menu";
+import { UserRepository } from "../repositories/UserRepository";
+import { DiscardMenuItem, MenuItem, Response, RolledOutMenuItem, SelectedMenuItems } from "../interfaces/Interface";
+import { constructMenu, sortMenuItemsAccordingToUserPreference } from "../utils/Menu";
 import { NotificationService } from "./NotificationService";
 
 export class MenuItemService {
     private menuItemRepository: MenuItemRepository;
     private notificationService: NotificationService;
+    private userRepository: UserRepository;
 
     constructor() {
         this.menuItemRepository = new MenuItemRepository();
         this.notificationService = new NotificationService();
+        this.userRepository = new UserRepository();
     } 
 
     async getMenuItems(): Promise<Response<MenuItem[]>> {
@@ -71,10 +74,14 @@ export class MenuItemService {
         }
     }
 
-    async fetchRolledOutMenu(): Promise<Response<RolledOutMenuItem[]>> {
+    async fetchRolledOutMenu(userId: number): Promise<Response<RolledOutMenuItem[]>> {
         try {
             const menuItems =  await this.menuItemRepository.fetchRolledOutMenu();
-            const mealTypeBasedMenuItems = constructMenu(menuItems);
+            const {preferredSpicyLevel, preferredDietType, preferredCuisineType} = await this.userRepository.getUserMenuItemPreferences(userId);
+            
+            const sortedMenuItems = sortMenuItemsAccordingToUserPreference(menuItems as MenuItem[], preferredDietType, preferredCuisineType, preferredSpicyLevel);
+            
+            const mealTypeBasedMenuItems = constructMenu(sortedMenuItems);
             const response: Response<RolledOutMenuItem[]> =  {
                 status: 'success',
                 message: `Successfully fetched the menu items`,
@@ -109,5 +116,19 @@ export class MenuItemService {
         } catch (error) {
             throw error;
         }  
+    }
+
+    async getDiscardMenuItems() {
+        try {
+            const discardMenuItems = await this.menuItemRepository.getDiscardMenuItems();
+            const response: Response<DiscardMenuItem[]> =  {
+                status: 'success',
+                message: 'Successfully fetched Discard Menu Items',
+                data: discardMenuItems
+            };
+            return response;
+        } catch (error) {
+            throw error;
+        } 
     }
 }

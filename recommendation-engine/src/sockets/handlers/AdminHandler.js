@@ -29,5 +29,9 @@ function handleAdmin(socket) {
         const response = yield menuItemController.updateMenuItem(payload);
         socket.emit('updateMenuItemResponse', response);
     }));
+    socket.on('fetchDiscardMenuItems', (payload) => __awaiter(this, void 0, void 0, function* () {
+        const response = yield menuItemController.getDiscardMenuItems(payload);
+        socket.emit('fetchDiscardMenuItemsResponse', response);
+    }));
 }
 exports.handleAdmin = handleAdmin;

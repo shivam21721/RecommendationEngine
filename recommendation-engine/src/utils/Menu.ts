@@ -1,4 +1,5 @@
 import { MealType } from "../enums/MealType";
+import { MenuItem } from "../interfaces/Interface";
 
 export function showMenu(menuItems: any) {
     if(menuItems.breakfast) {
@@ -50,4 +51,28 @@ export function showCategoryBasedMenuItems(menuItems: any) {
     console.table(breakfastItems);
     console.log('LUNCH AND DINNER ITEMS');
     console.table(lunchAndDinnerItems);
+}
+
+export function sortMenuItemsAccordingToUserPreference(menuItems: MenuItem[], preferredDietType: string, preferredCuisineType: string, preferredSpicyLevel: string) {
+    return menuItems.sort((a, b) => {
+        if (a.dietType !== b.dietType) {
+            if (a.dietType === preferredDietType) return -1;
+            if (b.dietType === preferredDietType) return 1;
+            return a.dietType.localeCompare(b.dietType);
+        }
+
+        if (a.cuisineType !== b.cuisineType) {
+            if (a.cuisineType === preferredCuisineType) return -1;
+            if (b.cuisineType === preferredCuisineType) return 1;
+            return a.cuisineType.localeCompare(b.cuisineType);
+        }
+
+        const spicyLevelOrder = ['Low', 'Medium', 'High'];
+        if (a.spicyLevel !== b.spicyLevel) {
+            if (a.spicyLevel === preferredSpicyLevel) return -1;
+            if (b.spicyLevel === preferredSpicyLevel) return 1;
+            return spicyLevelOrder.indexOf(a.spicyLevel) - spicyLevelOrder.indexOf(b.spicyLevel);
+        }
+        return 0;
+    });
 }

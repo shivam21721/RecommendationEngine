@@ -61,5 +61,27 @@ class UserRepository {
             }
         });
     }
+    getUserMenuItemPreferences(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const connection = yield this.pool.getConnection();
+            try {
+                const query = `
+                SELECT preferredSpicyLevel, preferredDietType, preferredCuisineType
+                FROM user
+                WHERE id = ?
+            `;
+                const values = [userId];
+                const [result] = yield connection.execute(query, values);
+                console.log(result);
+                return result[0];
+            }
+            catch (error) {
+                throw new Error("Error while fetching user menu item preferences: " + error);
+            }
+            finally {
+                connection.release();
+            }
+        });
+    }
 }
 exports.UserRepository = UserRepository;

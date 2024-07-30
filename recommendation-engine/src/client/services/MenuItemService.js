@@ -134,5 +134,20 @@ class MenuItemService {
             });
         });
     }
+    fetchDiscardMenuItems(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.socket.emit('fetchDiscardMenuItems', payload);
+                this.socket.on('fetchDiscardMenuItemsResponse', (response) => {
+                    if ('success' === response.status) {
+                        resolve(response.data);
+                    }
+                    else {
+                        reject(new Error(response.message));
+                    }
+                });
+            });
+        });
+    }
 }
 exports.MenuItemService = MenuItemService;
